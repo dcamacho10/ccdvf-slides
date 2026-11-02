@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CCDV-F Ep 02: How LLMs Behave - Interactive Slide Deck</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: JetBrains Mono & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cyber: {
+                            bg: '#0B0F19',
+                            panel: '#111827',
+                            border: '#1F2937',
+                            accent: '#3B82F6',
+                            cyan: '#06B6D4',
+                            amber: '#F59E0B',
+                            red: '#EF4444',
+                            green: '#10B981',
+                            purple: '#8B5CF6'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #0B0F19;
+            color: #E5E7EB;
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        /* Fixed 16:9 Aspect Ratio Container */
+        .aspect-16-9-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .slide-deck-frame {
+            width: 100%;
+            max-width: 1280px;
+            aspect-ratio: 16 / 9;
+            max-height: 92vh;
+            background: #111827;
+            border: 1px solid #1F2937;
+            border-radius: 0.75rem;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 20px rgba(59, 130, 246, 0.15);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0B0F19;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #374151;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3B82F6;
+        }
+
+        /* Terminal Scanline Effect */
+        .scanline {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+            background-size: 100% 4px;
+            z-index: 40;
+            pointer-events: none;
+            opacity: 0.4;
+        }
+
+        .slide-content {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+            height: 100%;
+        }
+
+        .slide-content.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        /* Cyber Glow utilities */
+        .glow-blue {
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+        }
+        .glow-cyan {
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.3);
+        }
+        .glow-amber {
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.3);
+        }
+        .glow-red {
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.3);
+        }
+
+        /* Pulse Animations */
+        @keyframes pulse-fast {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+        .animate-pulse-fast {
+            animation: pulse-fast 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+    </style>
+</head>
+<body class="bg-cyber-bg text-gray-200">
+
+    <!-- Container Principal 16:9 Responsivo -->
+    <div class="aspect-16-9-container">
+        <div class="slide-deck-frame">
+            <!-- Scanline Overlay visual Cyberpunk -->
+            <div class="scanline"></div>
+
+            <!-- HEADER DO TERMINAL -->
+            <header class="h-12 border-b border-cyber-border bg-gray-950/80 px-4 flex items-center justify-between shrink-0 z-10">
+                <div class="flex items-center space-x-3">
+                    <div class="flex space-x-1.5">
+                        <span class="w-3 h-3 rounded-full bg-red-500/80 inline-block"></span>
+                        <span class="w-3 h-3 rounded-full bg-amber-500/80 inline-block"></span>
+                        <span class="w-3 h-3 rounded-full bg-emerald-500/80 inline-block"></span>
+                    </div>
+                    <span class="text-xs font-mono text-gray-400 tracking-wider">APEXCORP // CCDV-F SIMULATOR v2.4</span>
+                </div>
+                <div class="flex items-center space-x-4 text-xs font-mono">
+                    <span class="text-cyber-cyan bg-cyber-cyan/10 px-2 py-0.5 rounded border border-cyber-cyan/30">
+                        <i class="fa-solid fa-graduation-cap mr-1"></i> CCDV-F Module 01
+                    </span>
+                    <span class="text-gray-400 hidden sm:inline" id="slide-title-header">Incident Briefing</span>
+                </div>
+            </header>
+
+            <!-- ÁREA PRINCIPAL DE CONTEÚDO DOS SLIDES (SCROLLABLE SE NECESSÁRIO) -->
+            <main class="flex-1 relative overflow-y-auto p-6 z-10">
+                
+                <!-- SLIDE 1: MISSION BRIEFING -->
+                <section id="slide-1" class="slide-content active flex-col justify-between">
+                    <div class="space-y-4">
+                        <div class="flex items-center space-x-3">
+                            <span class="bg-red-500/20 text-red-400 border border-red-500/40 text-xs px-2.5 py-1 rounded font-mono uppercase tracking-wider animate-pulse">
+                                <i class="fa-solid fa-triangle-exclamation mr-1"></i> CRITICAL SYSTEM INCIDENT #404-TOK
+                            </span>
+                            <span class="text-xs font-mono text-gray-400">TIMESTAMP: 2026-11-02 01:14:00 UTC</span>
+                        </div>
+                        
+                        <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight text-white font-mono">
+                            How LLMs Behave: <span class="text-cyber-accent">Tokens, Context, Sampling & Non-Determinism</span>
+                        </h1>
+                        <p class="text-gray-300 text-sm md:text-base max-w-3xl leading-relaxed">
+                            ApexCorp's automated enterprise customer service engine crashed in production during a peak usage spike. The system triggered API 400 rejection errors, unhandled truncated outputs, and test suite evaluation failures.
+                        </p>
+                    </div>
+
+                    <!-- Grid de Premissa da Missão -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 my-auto">
+                        <div class="bg-gray-900/80 border border-cyber-border p-4 rounded-lg">
+                            <div class="text-cyber-cyan font-mono text-xs uppercase mb-1"><i class="fa-solid fa-bug mr-1"></i> Objective 01</div>
+                            <h3 class="text-white font-semibold text-sm mb-1">Master Token Dynamics</h3>
+                            <p class="text-gray-400 text-xs">Understand tokenization math vs character counts and why tokens control cost and memory budget.</p>
+                        </div>
+                        <div class="bg-gray-900/80 border border-cyber-border p-4 rounded-lg">
+                            <div class="text-cyber-amber font-mono text-xs uppercase mb-1"><i class="fa-solid fa-shield-cat mr-1"></i> Objective 02</div>
+                            <h3 class="text-white font-semibold text-sm mb-1">Context & Sampling Traps</h3>
+                            <p class="text-gray-400 text-xs">Differentiate 400 HTTP errors from output context limits, and avoid parameter traps in new Claude models.</p>
+                        </div>
+                        <div class="bg-gray-900/80 border border-cyber-border p-4 rounded-lg">
+                            <div class="text-cyber-purple font-mono text-xs uppercase mb-1"><i class="fa-solid fa-vial mr-1"></i> Objective 03</div>
+                            <h3 class="text-white font-semibold text-sm mb-1">Evals & Robust Assertions</h3>
+                            <p class="text-gray-400 text-xs">Replace brittle exact-string tests with non-deterministic properties & model-graded evaluators.</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-cyber-accent/10 border border-cyber-accent/30 p-3 rounded-lg flex items-center justify-between">
+                        <div class="flex items-center space-x-3 text-xs font-mono">
+                            <i class="fa-solid fa-user-ninja text-cyber-accent text-base"></i>
+                            <span>ROLE: Lead AI Systems Engineer | Target Certification: CCDV-F</span>
+                        </div>
+                        <span class="text-xs font-mono text-gray-400">PRESS [NEXT →] TO INVESTIGATE ROOT CAUSE</span>
+                    </div>
+                </section>
+
+                <!-- SLIDE 2: THE PRODUCTION INCIDENT -->
+                <section id="slide-2" class="slide-content flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start mb-3">
+                            <div>
+                                <span class="text-xs font-mono text-cyber-amber uppercase tracking-wider">Root Cause Analysis</span>
+                                <h2 class="text-2xl font-bold text-white font-mono">Incident #404-TOK Breakdown</h2>
+                            </div>
+                            <span class="bg-red-950 text-red-400 text-xs font-mono px-2.5 py-1 rounded border border-red-800">Status: FAILED</span>
+                        </div>
+                        <p class="text-xs text-gray-300 mb-4">
+                            Three distinct architectural missteps caused the ApexCorp AI Engine breakdown during live operations:
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <!-- Case 1 -->
+                        <div class="bg-gray-900/90 border border-red-500/30 p-3.5 rounded-lg">
+                            <div class="flex items-center space-x-2 text-red-400 text-xs font-mono mb-2">
+                                <i class="fa-solid fa-triangle-exclamation"></i>
+                                <span>Failure 1: Parameter Trap</span>
+                            </div>
+                            <div class="bg-black/60 p-2 rounded font-mono text-xs text-red-300 mb-2 overflow-x-auto border border-red-900/40">
+                                HTTP 400: "temperature parameter is not supported for this model"
+                            </div>
+                            <p class="text-gray-300 text-xs leading-relaxed">
+                                Devs passed <code class="text-cyber-cyan">temperature: 0.2</code> to a newer Claude model that enforces strict prompt steering and rejects legacy parameters.
+                            </p>
+                        </div>
+
+                        <!-- Case 2 -->
+                        <div class="bg-gray-900/90 border border-amber-500/30 p-3.5 rounded-lg">
+                            <div class="flex items-center space-x-2 text-amber-400 text-xs font-mono mb-2">
+                                <i class="fa-solid fa-memory"></i>
+                                <span>Failure 2: Truncation Blindspot</span>
+                            </div>
+                            <div class="bg-black/60 p-2 rounded font-mono text-xs text-amber-300 mb-2 border border-amber-900/40">
+                                stop_reason: "model_context_window_exceeded"
+                            </div>
+                            <p class="text-gray-300 text-xs leading-relaxed">
+                                Long conversation history pushed generation into the window ceiling. The app assumed an error occurred, discarding partial output instead of trimming context.
+                            </p>
+                        </div>
+
+                        <!-- Case 3 -->
+                        <div class="bg-gray-900/90 border border-purple-500/30 p-3.5 rounded-lg">
+                            <div class="flex items-center space-x-2 text-purple-400 text-xs font-mono mb-2">
+                                <i class="fa-solid fa-flask"></i>
+                                <span>Failure 3: Brittle CI/CD Evals</span>
+                            </div>
+                            <div class="bg-black/60 p-2 rounded font-mono text-xs text-purple-300 mb-2 border border-purple-900/40">
+                                AssertionError: expected "Yes, account is active" got "Account status: Active"
+                            </div>
+                            <p class="text-gray-300 text-xs leading-relaxed">
+                                Exact string match unit tests failed on re-deployments despite identical semantic responses due to natural non-deterministic sampling variations.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-900 border border-cyber-border p-3 rounded-lg flex items-center justify-between text-xs">
+                        <span class="text-gray-400"><i class="fa-solid fa-circle-info text-cyber-cyan mr-1.5"></i> <strong>Exam Reality:</strong> CCDV-F tests your exact understanding of API status codes, edge behaviors, and testing philosophies.</span>
+                    </div>
+                </section>
+
+                <!-- SLIDE 3: TOKENS & PRICING ANATOMY -->
+                <section id="slide-3" class="slide-content flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <div>
+                                <span class="text-xs font-mono text-cyber-cyan uppercase tracking-wider">Foundation Concept</span>
+                                <h2 class="text-2xl font-bold text-white font-mono">Tokens: The Atomic Unit of LLMs</h2>
+                            </div>
+                            <span class="text-xs font-mono text-gray-400 bg-gray-800 px-2.5 py-1 rounded">Cost & Budget Metric</span>
+                        </div>
+                        <p class="text-xs text-gray-300">
+                            Claude does not read raw characters or words. Everything (system prompts, history, tool outputs, generated text) is measured and billed in <strong class="text-cyber-cyan">tokens</strong>.
+                        </p>
+                    </div>
+
+                    <!-- Interactive Tokenization Simulator -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-2">
+                        <div class="bg-gray-900 border border-cyber-border p-3.5 rounded-lg flex flex-col justify-between">
+                            <div>
+                                <label class="text-xs font-mono text-gray-400 block mb-1">
+                                    <i class="fa-solid fa-keyboard mr-1"></i> Interactive Tokenizer Simulator:
+                                </label>
+                                <textarea id="token-input" rows="3" class="w-full bg-black/60 border border-gray-700 rounded p-2 text-xs font-mono text-cyber-cyan focus:border-cyber-accent outline-none" placeholder="Type prompt here to test token vs character estimation...">Claude Certified Developer Foundations exam requires thinking in tokens!</textarea>
+                            </div>
+                            <div class="grid grid-cols-3 gap-2 mt-3 text-center">
+                                <div class="bg-gray-800 p-2 rounded">
+                                    <div class="text-gray-400 text-[10px] uppercase font-mono">Characters</div>
+                                    <div id="char-count" class="text-lg font-bold font-mono text-white">68</div>
+                                </div>
+                                <div class="bg-gray-800 p-2 rounded">
+                                    <div class="text-gray-400 text-[10px] uppercase font-mono">Est. Tokens</div>
+                                    <div id="token-count" class="text-lg font-bold font-mono text-cyber-cyan">16</div>
+                                </div>
+                                <div class="bg-gray-800 p-2 rounded">
+                                    <div class="text-gray-400 text-[10px] uppercase font-mono">Chars / Token</div>
+                                    <div id="ratio-count" class="text-lg font-bold font-mono text-cyber-amber">4.25</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Technical Principles -->
+                        <div class="bg-gray-900 border border-cyber-border p-3.5 rounded-lg space-y-2 text-xs">
+                            <h3 class="text-white font-mono font-bold border-b border-gray-800 pb-1">
+                                <i class="fa-solid fa-triangle-exclamation text-cyber-amber mr-1"></i> Key CCDV-F Exam Rules:
+                            </h3>
+                            <ul class="space-y-2 text-gray-300">
+                                <li class="flex items-start space-x-2">
+                                    <i class="fa-solid fa-check text-cyber-cyan mt-0.5"></i>
+                                    <span><strong>Model-Dependent:</strong> Characters-per-token ratios vary across model generations and tokenizers. Never rely on hardcoded character rules of thumb!</span>
+                                </li>
+                                <li class="flex items-start space-x-2">
+                                    <i class="fa-solid fa-check text-cyber-cyan mt-0.5"></i>
+                                    <span><strong>Total Accumulation:</strong> Input tokens include: System Prompt + Full History + Tool Definitions + Tool Results + Final Response.</span>
+                                </li>
+                                <li class="flex items-start space-x-2">
+                                    <i class="fa-solid fa-check text-cyber-cyan mt-0.5"></i>
+                                    <span><strong>Billing Standard:</strong> API rate limits and pricing are calculated exclusively per token, not per character or word.</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="bg-cyber-blue/10 border border-cyber-accent/30 p-2.5 rounded-lg text-xs text-gray-300 flex items-center justify-between">
+                        <span><i class="fa-solid fa-lightbulb text-cyber-amber mr-2"></i><strong>Pro Habit:</strong> Always estimate costs and context allocation in <em>tokens</em> during system design.</span>
+                    </div>
+                </section>
+
+                <!-- SLIDE 4: CONTEXT WINDOW EDGE BEHAVIORS -->
+                <section id="slide-4" class="slide-content flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <div>
+                                <span class="text-xs font-mono text-cyber-amber uppercase tracking-wider">Memory Allocation</span>
+                                <h2 class="text-2xl font-bold text-white font-mono">The Context Window: Fixed Budget & Edge Cases</h2>
+                            </div>
+                            <span class="text-xs font-mono bg-cyber-amber/20 text-cyber-amber px-2.5 py-1 rounded border border-cyber-amber/40">Critical Exam Trap</span>
+                        </div>
+                        <p class="text-xs text-gray-300">
+                            The context window is a fixed budget holding input and output simultaneously. What happens when you breach it?
+                        </p>
+                    </div>
+
+                    <!-- Visual Comparison: Input Overflow vs Output Exceeded -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-2">
+                        <!-- Scenario A -->
+                        <div class="bg-gray-900 border border-red-500/40 p-3.5 rounded-lg">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs font-mono text-red-400 font-bold"><i class="fa-solid fa-ban mr-1"></i> Edge Case 1: Input Overflow</span>
+                                <span class="text-[10px] font-mono bg-red-900/50 text-red-300 px-1.5 py-0.5 rounded">Before Generation</span>
+                            </div>
+                            <p class="text-xs text-gray-300 mb-2">
+                                Request prompt + history is <strong>already larger</strong> than the maximum window size.
+                            </p>
+                            <div class="bg-black/70 p-2.5 rounded border border-red-900/50 font-mono text-[11px] text-red-300 mb-2">
+                                API Behavior: Immediate Request Rejection<br>
+                                Error: <span class="text-white">Validation Error (HTTP 400 / 422)</span><br>
+                                Generation Status: <span class="text-red-400">0 Tokens Generated</span>
+                            </div>
+                            <p class="text-[11px] text-gray-400 italic">
+                                Result: The call fails outright before the model processes any text.
+                            </p>
+                        </div>
+
+                        <!-- Scenario B -->
+                        <div class="bg-gray-900 border border-amber-500/40 p-3.5 rounded-lg">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs font-mono text-amber-400 font-bold"><i class="fa-solid fa-scissors mr-1"></i> Edge Case 2: Output Overflow</span>
+                                <span class="text-[10px] font-mono bg-amber-900/50 text-amber-300 px-1.5 py-0.5 rounded">During Generation</span>
+                            </div>
+                            <p class="text-xs text-gray-300 mb-2">
+                                Input fits, but the model hits the context limit <strong>while generating output</strong>.
+                            </p>
+                            <div class="bg-black/70 p-2.5 rounded border border-amber-900/50 font-mono text-[11px] text-amber-300 mb-2">
+                                API Behavior: Stops generation gracefully<br>
+                                Output: <span class="text-white">Partial response returned so far</span><br>
+                                stop_reason: <span class="text-cyber-cyan">"model_context_window_exceeded"</span>
+                            </div>
+                            <p class="text-[11px] text-gray-400 italic">
+                                Result: No API error code raised! App must inspect <code class="text-cyber-cyan">stop_reason</code>.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Strategy Box -->
+                    <div class="bg-gray-900 border border-cyber-border p-3 rounded-lg flex items-center justify-between text-xs">
+                        <div>
+                            <span class="text-cyber-cyan font-bold font-mono uppercase mr-2"><i class="fa-solid fa-wrench mr-1"></i> Mitigation:</span>
+                            <span class="text-gray-300">Long running chat sessions <strong>must trim or summarize older history</strong> before each call.</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SLIDE 5: SAMPLING CONTROLS & THE 400 API TRAP -->
+                <section id="slide-5" class="slide-content flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <div>
+                                <span class="text-xs font-mono text-cyber-purple uppercase tracking-wider">Probability & Steering</span>
+                                <h2 class="text-2xl font-bold text-white font-mono">Sampling Controls & The New Model 400 Trap</h2>
+                            </div>
+                            <span class="text-xs font-mono bg-red-950 text-red-400 px-2 py-0.5 rounded border border-red-800">Exam Hotspot</span>
+                        </div>
+                        <p class="text-xs text-gray-300">
+                            LLMs produce probability distributions over possible next tokens. How parameters shape this behavior varies by model generation!
+                        </p>
+                    </div>
+
+                    <!-- Dynamic Visualizer & Model Behavior -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-2">
+                        <!-- Left: Interactive Temperature Widget -->
+                        <div class="bg-gray-900 border border-cyber-border p-3.5 rounded-lg flex flex-col justify-between">
+                            <h3 class="text-xs font-mono text-cyber-cyan mb-2">
+                                <i class="fa-solid fa-sliders mr-1"></i> Temperature Probability Distribution
+                            </h3>
+                            
+                            <div class="space-y-3">
+                                <div>
+                                    <div class="flex justify-between text-xs font-mono mb-1">
+                                        <span class="text-gray-400">Temperature:</span>
+                                        <span id="temp-val" class="text-cyber-cyan font-bold">0.2 (Low)</span>
+                                    </div>
+                                    <input type="range" id="temp-slider" min="0" max="100" value="20" class="w-full accent-cyber-accent cursor-pointer">
+                                </div>
+
+                                <div class="bg-black/60 p-3 rounded space-y-2 border border-gray-800">
+                                    <div class="text-[11px] font-mono text-gray-400 mb-1">Next Token Probability:</div>
+                                    
+                                    <div>
+                                        <div class="flex justify-between text-[10px] font-mono text-gray-300">
+                                            <span>"verified"</span>
+                                            <span id="prob-1" class="text-cyber-cyan">85%</span>
+                                        </div>
+                                        <div class="w-full bg-gray-800 h-2 rounded overflow-hidden">
+                                            <div id="bar-1" class="bg-cyber-cyan h-full transition-all duration-300" style="width: 85%;"></div>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <div class="flex justify-between text-[10px] font-mono text-gray-300">
+                                            <span>"confirmed"</span>
+                                            <span id="prob-2" class="text-cyber-accent">12%</span>
+                                        </div>
+                                        <div class="w-full bg-gray-800 h-2 rounded overflow-hidden">
+                                            <div id="bar-2" class="bg-cyber-accent h-full transition-all duration-300" style="width: 12%;"></div>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <div class="flex justify-between text-[10px] font-mono text-gray-300">
+                                            <span>"validated"</span>
+                                            <span id="prob-3" class="text-cyber-purple">3%</span>
+                                        </div>
+                                        <div class="w-full bg-gray-800 h-2 rounded overflow-hidden">
+                                            <div id="bar-3" class="bg-cyber-purple h-full transition-all duration-300" style="width: 3%;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <p class="text-[10px] text-gray-400 mt-2">
+                                <i class="fa-solid fa-circle-info mr-1"></i> Lower temp concentrates probability on top tokens. High temp flattens distribution.
+                            </p>
+                        </div>
+
+                        <!-- Right: CCDV-F API Trap Warning -->
+                        <div class="bg-gray-900 border border-red-500/30 p-3.5 rounded-lg space-y-3">
+                            <div class="bg-red-950/60 border border-red-800 p-2.5 rounded">
+                                <h4 class="text-xs font-mono font-bold text-red-400 flex items-center">
+                                    <i class="fa-solid fa-ban mr-1.5"></i> The API 400 Parameter Trap
+                                </h4>
+                                <p class="text-xs text-red-200/90 mt-1 leading-relaxed">
+                                    Newer Claude models <strong>do not accept</strong> non-default sampling parameters (<code class="text-white bg-black/40 px-1 rounded">temperature</code>, <code class="text-white bg-black/40 px-1 rounded">top_p</code>, <code class="text-white bg-black/40 px-1 rounded">top_k</code>).
+                                </p>
+                            </div>
+
+                            <ul class="space-y-2 text-xs text-gray-300">
+                                <li class="flex items-start space-x-2">
+                                    <i class="fa-solid fa-xmark text-red-400 mt-0.5"></i>
+                                    <span>Passing sampling params to models that do not support them returns a <strong>HTTP 400 Error</strong>.</span>
+                                </li>
+                                <li class="flex items-start space-x-2">
+                                    <i class="fa-solid fa-check text-cyber-cyan mt-0.5"></i>
+                                    <span>These models are steered <strong>exclusively through prompting</strong> (system instructions & examples).</span>
+                                </li>
+                                <li class="flex items-start space-x-2">
+                                    <i class="fa-solid fa-triangle-exclamation text-cyber-amber mt-0.5"></i>
+                                    <span><strong>Temp 0 Myth:</strong> Even where accepted, <code class="text-cyber-cyan">temperature: 0</code> does <em>not</em> guarantee 100% identical outputs across calls due to underlying system non-determinism.</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-900 border border-cyber-border p-2.5 rounded-lg text-xs text-gray-400 font-mono">
+                        Rule of Thumb: Always verify parameter support in the official API reference at build time.
+                    </div>
+                </section>
+
+                <!-- SLIDE 6: NON-DETERMINISM & EVALS -->
+                <section id="slide-6" class="slide-content flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <div>
+                                <span class="text-xs font-mono text-cyber-purple uppercase tracking-wider">Testing Methodology</span>
+                                <h2 class="text-2xl font-bold text-white font-mono">Non-Determinism & Modern Evals Strategy</h2>
+                            </div>
+                            <span class="text-xs font-mono bg-cyber-purple/20 text-cyber-purple px-2.5 py-1 rounded border border-cyber-purple/40">Testing Architecture</span>
+                        </div>
+                        <p class="text-xs text-gray-300">
+                            Because LLMs sample next tokens, identical inputs produce varied surface phrasing. Brittle text equality assertions will break.
+                        </p>
+                    </div>
+
+                    <!-- Side by Side Comparison: Brittle vs Robust -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-2">
+                        <!-- Brittle Testing -->
+                        <div class="bg-gray-900 border border-red-500/40 p-3.5 rounded-lg">
+                            <div class="flex items-center space-x-2 text-red-400 font-mono text-xs mb-2">
+                                <i class="fa-solid fa-circle-xmark text-sm"></i>
+                                <span class="font-bold">WRONG: Exact String Assertions</span>
+                            </div>
+                            <div class="bg-black/70 p-2.5 rounded font-mono text-xs text-red-300 border border-red-900/40 mb-2">
+                                // BRITTLE TEST (Fails frequently)<br>
+                                assert response.text == <br>
+                                &nbsp;&nbsp;"The status is ACTIVE."
+                            </div>
+                            <p class="text-[11px] text-gray-400 leading-relaxed">
+                                Fails whenever Claude phrases the valid response as "Status: Active" or "Account is active".
+                            </p>
+                        </div>
+
+                        <!-- Robust Testing -->
+                        <div class="bg-gray-900 border border-emerald-500/40 p-3.5 rounded-lg">
+                            <div class="flex items-center space-x-2 text-emerald-400 font-mono text-xs mb-2">
+                                <i class="fa-solid fa-circle-check text-sm"></i>
+                                <span class="font-bold">CORRECT: Structural & Model-Graded Evals</span>
+                            </div>
+                            <div class="bg-black/70 p-2.5 rounded font-mono text-xs text-emerald-300 border border-emerald-900/40 mb-2">
+                                // ROBUST TEST (Properties & Structure)<br>
+                                assert "status" in response.json()<br>
+                                assert response.json()["status"] in ["ACTIVE"]<br>
+                                // Model-graded judge for semantic meaning
+                            </div>
+                            <p class="text-[11px] text-gray-400 leading-relaxed">
+                                Asserts on invariant structural properties or uses a model-graded judge for subjective meaning.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Evaluation Spectrum -->
+                    <div class="bg-gray-900 border border-cyber-border p-3 rounded-lg grid grid-cols-3 gap-2 text-center text-xs">
+                        <div class="bg-black/40 p-2 rounded">
+                            <div class="text-cyber-cyan font-mono font-bold">1. Structural Invariants</div>
+                            <p class="text-[10px] text-gray-400">JSON schema, regex match, key presence.</p>
+                        </div>
+                        <div class="bg-black/40 p-2 rounded">
+                            <div class="text-cyber-amber font-mono font-bold">2. Programmatic Bounds</div>
+                            <p class="text-[10px] text-gray-400">Numeric range, array length, non-empty text.</p>
+                        </div>
+                        <div class="bg-black/40 p-2 rounded">
+                            <div class="text-cyber-purple font-mono font-bold">3. Model-Graded Judge</div>
+                            <p class="text-[10px] text-gray-400">Use Claude to evaluate semantic correctness.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SLIDE 7: EXAM TRAPS & DO'S VS DON'TS -->
+                <section id="slide-7" class="slide-content flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <div>
+                                <span class="text-xs font-mono text-cyber-cyan uppercase tracking-wider">Exam Prep Matrix</span>
+                                <h2 class="text-2xl font-bold text-white font-mono">CCDV-F Architectural Do's & Don'ts</h2>
+                            </div>
+                            <span class="text-xs font-mono bg-cyber-cyan/20 text-cyber-cyan px-2.5 py-1 rounded border border-cyber-cyan/40">Quick Checklist</span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-2">
+                        <!-- DO'S -->
+                        <div class="bg-gray-900/90 border border-emerald-500/40 p-3.5 rounded-lg space-y-2">
+                            <h3 class="text-xs font-mono font-bold text-emerald-400 uppercase flex items-center border-b border-gray-800 pb-1.5">
+                                <i class="fa-solid fa-thumbs-up mr-2"></i> CERTIFIED DO'S (Best Practices)
+                            </h3>
+                            <ul class="space-y-2 text-xs text-gray-300">
+                                <li class="flex items-start space-x-2">
+                                    <i class="fa-solid fa-check text-emerald-400 mt-0.5"></i>
+                                    <span><strong>Measure in Tokens:</strong> Estimate context budget and pricing using token counters, not character/word heuristics.</span>
+                                </li>
+                                <li class="flex items-start space-x-2">
+                                    <i class="fa-solid fa-check text-emerald-400 mt-0.5"></i>
+                                    <span><strong>Inspect stop_reason:</strong> Check for <code class="text-cyber-cyan">model_context_window_exceeded</code> to catch truncated outputs gracefully.</span>
+                                </li>
+                                <li class="flex items-start space-x-2">
+                                    <i class="fa-solid fa-check text-emerald-400 mt-0.5"></i>
+                                    <span><strong>Steer via Prompting:</strong> Use system prompts and few-shot examples on models that do not accept temperature.</span>
+                                </li>
+                                <li class="flex items-start space-x-2">
+                                    <i class="fa-solid fa-check text-emerald-400 mt-0.5"></i>
+                                    <span><strong>Use Model Judges:</strong> Test output meaning with model-graded evals instead of rigid string matching.</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- DON'TS -->
+                        <div class="bg-gray-900/90 border border-red-500/40 p-3.5 rounded-lg space-y-2">
+                            <h3 class="text-xs font-mono font-bold text-red-400 uppercase flex items-center border-b border-gray-800 pb-1.5">
+                                <i class="fa-solid fa-thumbs-down mr-2"></i> CERTIFIED DON'TS (Exam Traps)
+                            </h3>
+                            <ul class="space-y-2 text-xs text-gray-300">
+                                <li class="flex items-start space-x-2">
+                                    <i class="fa-solid fa-xmark text-red-400 mt-0.5"></i>
+                                    <span><strong>Don't Assume Fixed Chars/Token:</strong> Tokenizers vary by model generation.</span>
+                                </li>
+                                <li class="flex items-start space-x-2">
+                                    <i class="fa-solid fa-xmark text-red-400 mt-0.5"></i>
+                                    <span><strong>Don't Expect 400 on Output Overflow:</strong> Context ceiling during generation returns partial text, not an HTTP error code.</span>
+                                </li>
+                                <li class="flex items-start space-x-2">
+                                    <i class="fa-solid fa-xmark text-red-400 mt-0.5"></i>
+                                    <span><strong>Don't Pass Legacy Params Blindly:</strong> Passing <code class="text-red-300">temperature</code> to unsupported Claude models throws a 400 validation error.</span>
+                                </li>
+                                <li class="flex items-start space-x-2">
+                                    <i class="fa-solid fa-xmark text-red-400 mt-0.5"></i>
+                                    <span><strong>Don't Rely on Temp 0 for Determinism:</strong> Sampling non-determinism can still produce slight variations.</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-900 border border-cyber-border p-2.5 rounded-lg text-xs text-center text-gray-400 font-mono">
+                        READY TO TEST YOUR KNOWLEDGE? PRESS [NEXT →] FOR THE SIMULATED EXAM QUIZ.
+                    </div>
+                </section>
+
+                <!-- SLIDE 8: INTERACTIVE EXAM SIMULATOR QUIZ -->
+                <section id="slide-8" class="slide-content flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <div>
+                                <span class="text-xs font-mono text-cyber-amber uppercase tracking-wider">Exam Simulator</span>
+                                <h2 class="text-2xl font-bold text-white font-mono">CCDV-F Practice Challenge</h2>
+                            </div>
+                            <div class="text-xs font-mono bg-gray-800 px-3 py-1 rounded text-cyber-cyan border border-gray-700">
+                                Score: <span id="quiz-score" class="font-bold text-white">0</span> / 3
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quiz Question Container -->
+                    <div id="quiz-container" class="bg-gray-900 border border-cyber-border p-4 rounded-lg my-auto space-y-3">
+                        <div class="flex items-center space-x-2 text-xs font-mono text-cyber-cyan">
+                            <span id="q-number" class="bg-cyber-cyan/20 px-2 py-0.5 rounded border border-cyber-cyan/40">QUESTION 1 OF 3</span>
+                        </div>
+                        
+                        <h3 id="q-text" class="text-sm font-semibold text-white leading-relaxed">
+                            Loading question...
+                        </h3>
+
+                        <div id="q-options" class="space-y-2 pt-2">
+                            <!-- Dynamically Generated Buttons -->
+                        </div>
+
+                        <div id="q-feedback" class="hidden p-3 rounded text-xs font-mono mt-3">
+                            <!-- Feedback text -->
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between items-center text-xs font-mono text-gray-400">
+                        <span>Select an option to test your understanding.</span>
+                        <button id="next-q-btn" onclick="nextQuestion()" class="hidden bg-cyber-accent hover:bg-blue-600 text-white px-3 py-1.5 rounded transition">
+                            Next Question <i class="fa-solid fa-arrow-right ml-1"></i>
+                        </button>
+                    </div>
+                </section>
+
+                <!-- SLIDE 9: ELITE KEY TAKEAWAYS -->
+                <section id="slide-9" class="slide-content flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <div>
+                                <span class="text-xs font-mono text-cyber-cyan uppercase tracking-wider">Certification Cheatsheet</span>
+                                <h2 class="text-2xl font-bold text-white font-mono">CCDV-F Key Takeaways: Module 01</h2>
+                            </div>
+                            <span class="bg-emerald-950 text-emerald-400 text-xs font-mono px-2.5 py-1 rounded border border-emerald-800">
+                                <i class="fa-solid fa-award mr-1"></i> EXAM READY
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 my-2">
+                        <div class="bg-gray-900 border border-cyber-border p-3 rounded-lg space-y-1">
+                            <div class="text-cyber-cyan font-mono font-bold text-xs"><i class="fa-solid fa-coins mr-1"></i> 1. Tokens = Cost & Limits</div>
+                            <p class="text-xs text-gray-300">
+                                Everything (prompt, history, tools, outputs) is counted in tokens. Tokenizers are model-dependent. Never rely on hardcoded character rules.
+                            </p>
+                        </div>
+
+                        <div class="bg-gray-900 border border-cyber-border p-3 rounded-lg space-y-1">
+                            <div class="text-cyber-amber font-mono font-bold text-xs"><i class="fa-solid fa-triangle-exclamation mr-1"></i> 2. Window Edge Behaviors</div>
+                            <p class="text-xs text-gray-300">
+                                Input overflow = HTTP Validation Error (400). Output overflow = partial output returned with <code class="text-cyber-cyan">stop_reason: "model_context_window_exceeded"</code>.
+                            </p>
+                        </div>
+
+                        <div class="bg-gray-900 border border-cyber-border p-3 rounded-lg space-y-1">
+                            <div class="text-cyber-red font-mono font-bold text-xs"><i class="fa-solid fa-ban mr-1"></i> 3. Sampling Parameter Trap</div>
+                            <p class="text-xs text-gray-300">
+                                Newer Claude models reject temperature/top_p/top_k with a 400 error. Steer behavior via prompting. Temperature 0 does not guarantee 100% determinism.
+                            </p>
+                        </div>
+
+                        <div class="bg-gray-900 border border-cyber-border p-3 rounded-lg space-y-1">
+                            <div class="text-cyber-purple font-mono font-bold text-xs"><i class="fa-solid fa-vial mr-1"></i> 4. Robust Evals Strategy</div>
+                            <p class="text-xs text-gray-300">
+                                Avoid exact string assertions in unit tests. Assert on structural invariants (JSON schemas, keys) or use model-graded evaluators.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="bg-gradient-to-r from-cyber-accent/20 to-cyber-cyan/20 border border-cyber-accent/40 p-3 rounded-lg flex items-center justify-between">
+                        <div class="text-xs text-gray-200 font-mono">
+                            <i class="fa-solid fa-circle-check text-emerald-400 mr-2"></i>
+                            <strong>Congratulations!</strong> You have completed Episode 02 interactive review for CCDV-F.
+                        </div>
+                        <button onclick="goToSlide(1)" class="bg-cyber-accent hover:bg-blue-600 text-white text-xs font-mono px-3 py-1.5 rounded transition">
+                            Restart Module <i class="fa-solid fa-rotate-right ml-1"></i>
+                        </button>
+                    </div>
+                </section>
+
+            </main>
+
+            <!-- FOOTER COM NAVEGAÇÃO INTERATIVA -->
+            <footer class="h-14 border-t border-cyber-border bg-gray-950 px-4 flex items-center justify-between shrink-0 z-10">
+                <!-- Status Slide Counter -->
+                <div class="flex items-center space-x-3 text-xs font-mono">
+                    <span class="text-gray-400">SLIDE:</span>
+                    <span id="slide-indicator" class="text-cyber-cyan font-bold bg-gray-900 px-2 py-1 rounded border border-gray-800">01 / 09</span>
+                </div>
+
+                <!-- Barra de Progresso Visual -->
+                <div class="hidden sm:block flex-1 max-w-md mx-6">
+                    <div class="w-full bg-gray-900 h-1.5 rounded-full overflow-hidden border border-gray-800">
+                        <div id="progress-bar" class="bg-gradient-to-r from-cyber-accent to-cyber-cyan h-full w-[11.11%] transition-all duration-300"></div>
+                    </div>
+                </div>
+
+                <!-- Botões de Navegação -->
+                <div class="flex items-center space-x-2">
+                    <button id="prev-btn" onclick="prevSlide()" class="bg-gray-900 hover:bg-gray-800 text-gray-300 border border-gray-700 px-3 py-1.5 rounded text-xs font-mono transition flex items-center space-x-1 disabled:opacity-40 disabled:cursor-not-allowed">
+                        <i class="fa-solid fa-chevron-left text-[10px]"></i>
+                        <span class="hidden sm:inline">PREV</span>
+                    </button>
+                    <button id="next-btn" onclick="nextSlide()" class="bg-cyber-accent hover:bg-blue-600 text-white px-3 py-1.5 rounded text-xs font-mono transition flex items-center space-x-1 glow-blue">
+                        <span class="hidden sm:inline">NEXT</span>
+                        <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                    </button>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT DE LÓGICA E INTERATIVIDADE -->
+    <script>
+        // State Management
+        let currentSlide = 1;
+        const totalSlides = 9;
+
+        const slideTitles = [
+            "Incident Briefing",
+            "Root Cause Analysis",
+            "Token Economics",
+            "Context Window Limits",
+            "Sampling Controls & API 400",
+            "Non-Determinism & Evals",
+            "Cert Do's vs Don'ts",
+            "Interactive Exam Quiz",
+            "Elite Key Takeaways"
+        ];
+
+        // Atualização da UI do Slide
+        function updateSlideUI() {
+            // Alternar visibilidade
+            document.querySelectorAll('.slide-content').forEach((slide, index) => {
+                if (index + 1 === currentSlide) {
+                    slide.classList.add('active');
+                } else {
+                    slide.classList.remove('active');
+                }
+            });
+
+            // Atualizar cabeçalho e rodapé
+            document.getElementById('slide-title-header').innerText = slideTitles[currentSlide - 1];
+            document.getElementById('slide-indicator').innerText = `${String(currentSlide).padStart(2, '0')} / ${String(totalSlides).padStart(2, '0')}`;
+            
+            // Atualizar barra de progresso
+            const progressPercent = (currentSlide / totalSlides) * 100;
+            document.getElementById('progress-bar').style.width = `${progressPercent}%`;
+
+            // Controlar botões prev/next
+            document.getElementById('prev-btn').disabled = (currentSlide === 1);
+            if (currentSlide === totalSlides) {
+                document.getElementById('next-btn').innerHTML = `<span class="hidden sm:inline">FINISH</span> <i class="fa-solid fa-check text-[10px]"></i>`;
+            } else {
+                document.getElementById('next-btn').innerHTML = `<span class="hidden sm:inline">NEXT</span> <i class="fa-solid fa-chevron-right text-[10px]"></i>`;
+            }
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides) {
+                currentSlide++;
+                updateSlideUI();
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 1) {
+                currentSlide--;
+                updateSlideUI();
+            }
+        }
+
+        function goToSlide(slideNum) {
+            if (slideNum >= 1 && slideNum <= totalSlides) {
+                currentSlide = slideNum;
+                updateSlideUI();
+            }
+        }
+
+        // Navegação por teclado (Setas)
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === 'PageDown') {
+                nextSlide();
+            } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+                prevSlide();
+            }
+        });
+
+        // -------------------------------------------------------------
+        // SLIDE 3: SIMULADOR DE TOKENIZAÇÃO (Lógica Interativa)
+        // -------------------------------------------------------------
+        const tokenInput = document.getElementById('token-input');
+        if (tokenInput) {
+            tokenInput.addEventListener('input', (e) => {
+                const text = e.target.value;
+                const charCount = text.length;
+                // Estimativa simples aproximada: ~4 caracteres por token em inglês
+                const estTokens = text.trim() === '' ? 0 : Math.max(1, Math.ceil(charCount / 4.1));
+                const ratio = estTokens > 0 ? (charCount / estTokens).toFixed(2) : "0.00";
+
+                document.getElementById('char-count').innerText = charCount;
+                document.getElementById('token-count').innerText = estTokens;
+                document.getElementById('ratio-count').innerText = ratio;
+            });
+        }
+
+        // -------------------------------------------------------------
+        // SLIDE 5: SIMULADOR DE TEMPERATURA / SAMPLING
+        // -------------------------------------------------------------
+        const tempSlider = document.getElementById('temp-slider');
+        if (tempSlider) {
+            tempSlider.addEventListener('input', (e) => {
+                const val = parseInt(e.target.value);
+                const tempValDisplay = document.getElementById('temp-val');
+                
+                let tempFormatted = (val / 100).toFixed(2);
+                let label = "";
+
+                if (val < 30) {
+                    label = `${tempFormatted} (Low / Repeatable)`;
+                    // Distribuição concentrada
+                    updateBars(85 - Math.floor(val/2), 12 + Math.floor(val/3), 3 + Math.floor(val/6));
+                } else if (val < 70) {
+                    label = `${tempFormatted} (Balanced)`;
+                    updateBars(55 - Math.floor((val-30)/3), 30 + Math.floor((val-30)/5), 15 + Math.floor((val-30)/6));
+                } else {
+                    label = `${tempFormatted} (High / Diverse)`;
+                    updateBars(38, 34, 28);
+                }
+
+                tempValDisplay.innerText = label;
+            });
+        }
+
+        function updateBars(p1, p2, p3) {
+            document.getElementById('prob-1').innerText = `${p1}%`;
+            document.getElementById('bar-1').style.width = `${p1}%`;
+
+            document.getElementById('prob-2').innerText = `${p2}%`;
+            document.getElementById('bar-2').style.width = `${p2}%`;
+
+            document.getElementById('prob-3').innerText = `${p3}%`;
+            document.getElementById('bar-3').style.width = `${p3}%`;
+        }
+
+        // -------------------------------------------------------------
+        // SLIDE 8: LÓGICA DO QUIZ SIMULADOR DE EXAME CCDV-F
+        // -------------------------------------------------------------
+        const quizData = [
+            {
+                question: "You pass `temperature: 0.5` to one of the newest Claude models via the API. What is the expected result?",
+                options: [
+                    "A) The model generates output with balanced creativity.",
+                    "B) The API returns a 400 Validation Error stating temperature is not supported.",
+                    "C) The model defaults temperature to 0.0 automatically.",
+                    "D) The API returns a 422 Unprocessable Entity error."
+                ],
+                correct: 1,
+                explanation: "Correct! The newest Claude models do not accept non-default sampling parameters (temperature, top_p, top_k) and return an HTTP 400 error. Behavior is steered through prompting instead."
+            },
+            {
+                question: "During a long multi-turn dialogue, the request prompt input itself exceeds the model's context window. What happens?",
+                options: [
+                    "A) The request is rejected before generation begins with a validation error.",
+                    "B) Generation starts and stops midway with stop_reason: 'model_context_window_exceeded'.",
+                    "C) Claude automatically summarizes the oldest history to make room.",
+                    "D) The API silently truncates the system prompt."
+                ],
+                correct: 0,
+                explanation: "Correct! If the input alone exceeds the context window budget, the request is rejected immediately with a validation error before generation begins."
+            },
+            {
+                question: "Which approach is recommended for testing a Claude feature in a CI/CD evaluation pipeline?",
+                options: [
+                    "A) Asserting exact string equality on response text (assert res.text == expected).",
+                    "B) Setting temperature = 0 to guarantee 100% identical token output across calls.",
+                    "C) Asserting structural/property invariants or using a model-graded judge for semantic meaning.",
+                    "D) Converting response text to character count and checking character parity."
+                ],
+                correct: 2,
+                explanation: "Correct! Due to sampling non-determinism, exact string matching is brittle. You should assert structural properties (JSON fields, key presence) or use model-graded evaluators."
+            }
+        ];
+
+        let currentQIndex = 0;
+        let score = 0;
+        let answered = false;
+
+        function renderQuestion() {
+            const q = quizData[currentQIndex];
+            document.getElementById('q-number').innerText = `QUESTION ${currentQIndex + 1} OF ${quizData.length}`;
+            document.getElementById('q-text').innerText = q.question;
+            
+            const optionsContainer = document.getElementById('q-options');
+            optionsContainer.innerHTML = '';
+
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left p-2.5 rounded bg-black/50 hover:bg-gray-800 border border-gray-700 text-xs font-mono text-gray-200 transition flex items-center justify-between";
+                btn.innerText = opt;
+                btn.onclick = () => selectOption(idx);
+                optionsContainer.appendChild(btn);
+            });
+
+            const feedback = document.getElementById('q-feedback');
+            feedback.classList.add('hidden');
+            document.getElementById('next-q-btn').classList.add('hidden');
+            answered = false;
+        }
+
+        function selectOption(optionIdx) {
+            if (answered) return;
+            answered = true;
+
+            const q = quizData[currentQIndex];
+            const feedback = document.getElementById('q-feedback');
+            const options = document.getElementById('q-options').children;
+
+            if (optionIdx === q.correct) {
+                score++;
+                document.getElementById('quiz-score').innerText = score;
+                options[optionIdx].classList.add('border-emerald-500', 'bg-emerald-950/60', 'text-emerald-300');
+                feedback.className = "p-3 rounded text-xs font-mono bg-emerald-950/80 border border-emerald-500/50 text-emerald-200 mt-3";
+                feedback.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400 mr-1"></i> ${q.explanation}`;
+            } else {
+                options[optionIdx].classList.add('border-red-500', 'bg-red-950/60', 'text-red-300');
+                options[q.correct].classList.add('border-emerald-500', 'bg-emerald-950/40');
+                feedback.className = "p-3 rounded text-xs font-mono bg-red-950/80 border border-red-500/50 text-red-200 mt-3";
+                feedback.innerHTML = `<i class="fa-solid fa-circle-xmark text-red-400 mr-1"></i> Incorrect. ${q.explanation}`;
+            }
+
+            feedback.classList.remove('hidden');
+            document.getElementById('next-q-btn').classList.remove('hidden');
+        }
+
+        function nextQuestion() {
+            if (currentQIndex < quizData.length - 1) {
+                currentQIndex++;
+                renderQuestion();
+            } else {
+                // Final do Quiz
+                document.getElementById('quiz-container').innerHTML = `
+                    <div class="text-center py-6 space-y-3">
+                        <i class="fa-solid fa-trophy text-cyber-amber text-4xl"></i>
+                        <h3 class="text-xl font-mono font-bold text-white">Quiz Completed!</h3>
+                        <p class="text-xs text-gray-300">Final Score: <strong class="text-cyber-cyan text-base">${score} / ${quizData.length}</strong></p>
+                        <p class="text-xs text-gray-400 max-w-md mx-auto">
+                            ${score === 3 ? 'Perfect Score! You demonstrate elite understanding of LLM behaviors for CCDV-F.' : 'Good effort! Review the edge behaviors and parameter rules before taking the certification.'}
+                        </p>
+                    </div>
+                `;
+                document.getElementById('next-q-btn').classList.add('hidden');
+            }
+        }
+
+        // Inicializações ao carregar janela
+        window.onload = function() {
+            updateSlideUI();
+            renderQuestion();
+        }
+    </script>
+</body>
+</html>
