@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CCDV-F Episode 02: Slide Deck Launcher</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: JetBrains Mono & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cyber: {
+                            bg: '#0B0F19',
+                            panel: '#111827',
+                            border: '#1F2937',
+                            accent: '#3B82F6',
+                            cyan: '#06B6D4',
+                            amber: '#F59E0B',
+                            red: '#EF4444',
+                            green: '#10B981',
+                            purple: '#8B5CF6'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #0B0F19;
+            color: #E5E7EB;
+            font-family: 'Inter', sans-serif;
+            background-image: 
+                radial-gradient(circle at 20% 20%, rgba(6, 182, 212, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.08) 0%, transparent 40%);
+            min-height: 100vh;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center p-4 antialiased">
+    <div class="max-w-2xl w-full bg-cyber-panel border border-cyber-border rounded-2xl p-6 sm:p-8 space-y-6 shadow-2xl relative overflow-hidden">
+        <!-- Accent Glow -->
+        <div class="absolute -right-20 -top-20 w-56 h-56 bg-cyber-cyan/10 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div class="space-y-3">
+            <div class="flex items-center justify-between">
+                <span class="bg-cyber-cyan/10 text-cyber-cyan border border-cyber-cyan/30 text-xs font-mono px-3 py-1 rounded-full uppercase tracking-wider font-semibold">
+                    <i class="fa-solid fa-graduation-cap mr-1"></i> Module 01 &bull; MSO Foundations
+                </span>
+                <a href="index.html" class="text-xs font-mono text-gray-400 hover:text-cyber-cyan transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-arrow-left text-[10px]"></i> Curriculum Hub
+                </a>
+            </div>
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-white font-mono">
+                Episode 02 Slide Decks
+            </h1>
+            <p class="text-gray-300 text-sm leading-relaxed">
+                The MSO Foundations module is organized into two interactive slide simulations in the <code class="text-cyber-cyan font-mono">MSO Foundations/</code> folder. Choose a deck to launch:
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <!-- Part 1 -->
+            <a href="MSO%20Foundations/How%20LLMs%20behave.html" class="bg-gray-900/90 border border-cyber-border hover:border-cyber-cyan/60 hover:bg-gray-850 p-5 rounded-xl transition flex flex-col justify-between space-y-4 group">
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between text-xs font-mono">
+                        <span class="text-cyber-cyan font-semibold">PART 01</span>
+                        <span class="text-gray-400">9 Slides</span>
+                    </div>
+                    <h2 class="text-base font-bold text-white font-mono group-hover:text-cyber-cyan transition flex items-center gap-2">
+                        <i class="fa-solid fa-microchip text-cyber-cyan text-sm"></i> How LLMs Behave
+                    </h2>
+                    <p class="text-xs text-gray-400 leading-relaxed font-sans">
+                        Tokens, context limits, sampling controls, non-determinism, and robust evals.
+                    </p>
+                </div>
+                <div class="pt-2">
+                    <span class="inline-flex items-center gap-1.5 text-xs font-mono text-cyber-cyan font-semibold group-hover:underline">
+                        <span>Launch Part 1</span>
+                        <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                    </span>
+                </div>
+            </a>
+
+            <!-- Part 2 -->
+            <a href="MSO%20Foundations/Models%20%26%20Reasoning.html" class="bg-gray-900/90 border border-cyber-border hover:border-cyber-accent/60 hover:bg-gray-850 p-5 rounded-xl transition flex flex-col justify-between space-y-4 group">
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between text-xs font-mono">
+                        <span class="text-cyber-accent font-semibold">PART 02</span>
+                        <span class="text-gray-400">8 Slides</span>
+                    </div>
+                    <h2 class="text-base font-bold text-white font-mono group-hover:text-cyber-accent transition flex items-center gap-2">
+                        <i class="fa-solid fa-brain text-cyber-accent text-sm"></i> Models &amp; Reasoning
+                    </h2>
+                    <p class="text-xs text-gray-400 leading-relaxed font-sans">
+                        Claude family tiers, Adaptive Thinking with effort, and budget_tokens traps.
+                    </p>
+                </div>
+                <div class="pt-2">
+                    <span class="inline-flex items-center gap-1.5 text-xs font-mono text-cyber-accent font-semibold group-hover:underline">
+                        <span>Launch Part 2</span>
+                        <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                    </span>
+                </div>
+            </a>
+        </div>
+
+        <div class="pt-2 border-t border-gray-800 flex justify-between items-center text-xs font-mono text-gray-500">
+            <span>ApexCorp Training System &copy; 2026</span>
+            <a href="index.html" class="text-cyber-cyan hover:underline flex items-center gap-1">
+                <i class="fa-solid fa-table-cells"></i> Back to Main Hub
+            </a>
+        </div>
+    </div>
+</body>
+</html>

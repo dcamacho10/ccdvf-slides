@@ -152,13 +152,21 @@
                         <span class="w-3 h-3 rounded-full bg-amber-500/80 inline-block"></span>
                         <span class="w-3 h-3 rounded-full bg-emerald-500/80 inline-block"></span>
                     </div>
-                    <span class="text-xs font-mono text-gray-400 tracking-wider">APEXCORP // CCDV-F SIMULATOR v2.4</span>
+                    <a href="../index.html" class="text-xs font-mono text-gray-300 hover:text-cyber-cyan transition flex items-center gap-1.5 px-2 py-1 rounded bg-gray-900 border border-cyber-border hover:border-cyber-cyan/50" title="Return to Curriculum Hub">
+                        <i class="fa-solid fa-arrow-left text-[10px]"></i>
+                        <span class="font-semibold">CURRICULUM HUB</span>
+                    </a>
+                    <span class="text-xs font-mono text-gray-400 tracking-wider hidden lg:inline">APEXCORP // CCDV-F SIMULATOR v2.4</span>
                 </div>
-                <div class="flex items-center space-x-4 text-xs font-mono">
+                <div class="flex items-center space-x-3 text-xs font-mono">
+                    <a href="Models%20%26%20Reasoning.html" class="text-gray-400 hover:text-cyber-accent transition flex items-center gap-1.5 px-2 py-1 rounded bg-gray-900 border border-cyber-border hover:border-cyber-accent/50" title="Switch to Part 2: Models & Reasoning">
+                        <span class="hidden sm:inline">Part 2: Models &amp; Reasoning</span>
+                        <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                    </a>
                     <span class="text-cyber-cyan bg-cyber-cyan/10 px-2 py-0.5 rounded border border-cyber-cyan/30">
-                        <i class="fa-solid fa-graduation-cap mr-1"></i> CCDV-F Module 01
+                        <i class="fa-solid fa-graduation-cap mr-1"></i> Module 01
                     </span>
-                    <span class="text-gray-400 hidden sm:inline" id="slide-title-header">Incident Briefing</span>
+                    <span class="text-gray-400 hidden xl:inline" id="slide-title-header">Incident Briefing</span>
                 </div>
             </header>
 
@@ -734,14 +742,22 @@
                         </div>
                     </div>
 
-                    <div class="bg-gradient-to-r from-cyber-accent/20 to-cyber-cyan/20 border border-cyber-accent/40 p-3 rounded-lg flex items-center justify-between">
+                    <div class="bg-gradient-to-r from-cyber-accent/20 to-cyber-cyan/20 border border-cyber-accent/40 p-3 rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                         <div class="text-xs text-gray-200 font-mono">
                             <i class="fa-solid fa-circle-check text-emerald-400 mr-2"></i>
-                            <strong>Congratulations!</strong> You have completed Episode 02 interactive review for CCDV-F.
+                            <strong>Congratulations!</strong> You have completed Part 1: How LLMs Behave for CCDV-F.
                         </div>
-                        <button onclick="goToSlide(1)" class="bg-cyber-accent hover:bg-blue-600 text-white text-xs font-mono px-3 py-1.5 rounded transition">
-                            Restart Module <i class="fa-solid fa-rotate-right ml-1"></i>
-                        </button>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <button onclick="goToSlide(1)" class="bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs font-mono px-3 py-1.5 rounded transition">
+                                Restart <i class="fa-solid fa-rotate-right ml-1"></i>
+                            </button>
+                            <a href="../index.html" class="bg-gray-800 hover:bg-gray-700 text-cyber-cyan border border-cyber-cyan/40 text-xs font-mono px-3 py-1.5 rounded transition flex items-center gap-1.5">
+                                <i class="fa-solid fa-table-cells"></i> Curriculum Hub
+                            </a>
+                            <a href="Models%20%26%20Reasoning.html" class="bg-cyber-accent hover:bg-blue-600 text-white text-xs font-mono px-3 py-1.5 rounded transition flex items-center gap-1.5 glow-blue">
+                                Next: Part 2 <i class="fa-solid fa-arrow-right ml-1"></i>
+                            </a>
+                        </div>
                     </div>
                 </section>
 

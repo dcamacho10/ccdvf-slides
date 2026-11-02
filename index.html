@@ -159,9 +159,14 @@
                         <i class="fa-solid fa-list-check"></i>
                         <span>EXPLORE MACRO MODULES</span>
                     </a>
-                    <a href="ccdvf_episode02_slides.html" target="_blank" class="bg-cyber-card hover:bg-gray-700 text-gray-200 border border-cyber-border font-mono text-xs sm:text-sm font-semibold px-6 py-3 rounded-lg transition flex items-center space-x-2">
-                        <i class="fa-solid fa-desktop text-cyber-cyan"></i>
-                        <span>LAUNCH EPISODE 02 SLIDE DECK</span>
+                    <a href="MSO%20Foundations/How%20LLMs%20behave.html" target="_blank" class="bg-cyber-card hover:bg-gray-700 text-gray-200 border border-cyber-border hover:border-cyber-cyan/50 font-mono text-xs sm:text-sm font-semibold px-4 py-3 rounded-lg transition flex items-center space-x-2">
+                        <i class="fa-solid fa-play text-cyber-cyan text-xs"></i>
+                        <span>PART 1: HOW LLMS BEHAVE</span>
+                        <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-gray-400"></i>
+                    </a>
+                    <a href="MSO%20Foundations/Models%20%26%20Reasoning.html" target="_blank" class="bg-cyber-card hover:bg-gray-700 text-gray-200 border border-cyber-border hover:border-cyber-purple/50 font-mono text-xs sm:text-sm font-semibold px-4 py-3 rounded-lg transition flex items-center space-x-2">
+                        <i class="fa-solid fa-play text-cyber-purple text-xs"></i>
+                        <span>PART 2: MODELS & REASONING</span>
                         <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-gray-400"></i>
                     </a>
                 </div>
@@ -246,22 +251,26 @@
                         </div>
                     </div>
 
-                    <div class="flex items-center space-x-3 self-end sm:self-center">
-                        <a href="ccdvf_episode02_slides.html" target="_blank" class="bg-cyber-accent/10 hover:bg-cyber-accent hover:text-white text-cyber-accent border border-cyber-accent/40 px-3 py-1.5 rounded text-xs font-mono transition flex items-center gap-1.5">
-                            <i class="fa-solid fa-play text-[10px]"></i> Launch Slides
+                    <div class="flex flex-wrap items-center gap-2 self-start sm:self-center">
+                        <a href="MSO%20Foundations/How%20LLMs%20behave.html" target="_blank" class="bg-cyber-cyan/10 hover:bg-cyber-cyan hover:text-black text-cyber-cyan border border-cyber-cyan/40 px-3 py-1.5 rounded text-xs font-mono transition flex items-center gap-1.5 glow-cyan" title="Launch Part 1: How LLMs Behave">
+                            <i class="fa-solid fa-play text-[10px]"></i> Part 1: How LLMs Behave
                         </a>
-                        <button onclick="toggleAccordion('acc-1')" class="bg-gray-800 hover:bg-gray-700 text-gray-300 p-2 rounded transition">
+                        <a href="MSO%20Foundations/Models%20%26%20Reasoning.html" target="_blank" class="bg-cyber-accent/10 hover:bg-cyber-accent hover:text-white text-cyber-accent border border-cyber-accent/40 px-3 py-1.5 rounded text-xs font-mono transition flex items-center gap-1.5 glow-accent" title="Launch Part 2: Models & Reasoning">
+                            <i class="fa-solid fa-play text-[10px]"></i> Part 2: Models &amp; Reasoning
+                        </a>
+                        <button onclick="toggleAccordion('acc-1')" class="bg-gray-800 hover:bg-gray-700 text-gray-300 p-2 rounded transition" title="Toggle Module Details">
                             <i id="icon-acc-1" class="fa-solid fa-chevron-down text-xs"></i>
                         </button>
                     </div>
                 </div>
 
                 <p class="text-xs sm:text-sm text-gray-300 leading-relaxed pl-0 sm:pl-9">
-                    Learn the model fundamentals and technical foundations the rest of the Developer Foundations course builds on. Covers tokens, context window budgets, sampling parameters, non-determinism, and basic API mechanics.
+                    Learn the model fundamentals and technical foundations the rest of the Developer Foundations course builds on. Covers tokens, context window budgets, sampling parameters, non-determinism, model selection tiers, adaptive reasoning modes, and basic API mechanics.
                 </p>
 
                 <!-- Accordion Content -->
-                <div id="acc-1" class="hidden pt-4 border-t border-cyber-border space-y-3 pl-0 sm:pl-9">
+                <div id="acc-1" class="hidden pt-4 border-t border-cyber-border space-y-4 pl-0 sm:pl-9">
+                    <!-- Key Competencies -->
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs font-mono">
                         <div class="bg-black/50 p-3 rounded border border-gray-800">
                             <span class="text-cyber-cyan font-bold block mb-1"><i class="fa-solid fa-coins mr-1"></i> Key Competency 01</span>
@@ -273,7 +282,74 @@
                         </div>
                         <div class="bg-black/50 p-3 rounded border border-gray-800">
                             <span class="text-cyber-purple font-bold block mb-1"><i class="fa-solid fa-sliders mr-1"></i> Key Competency 03</span>
-                            Sampling dynamics & parameter rules for newer Claude generations.
+                            Sampling dynamics, model selection tiers & adaptive reasoning effort.
+                        </div>
+                    </div>
+
+                    <!-- Slide Decks in MSO Foundations -->
+                    <div class="space-y-3 pt-2">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                            <span class="text-xs font-mono font-bold text-gray-200 uppercase tracking-wider flex items-center gap-2">
+                                <i class="fa-solid fa-folder-open text-cyber-cyan"></i> Interactive Slide Decks &amp; Simulations
+                                <span class="bg-cyber-cyan/10 text-cyber-cyan border border-cyber-cyan/30 text-[10px] px-2 py-0.5 rounded font-mono">
+                                    FOLDER: MSO Foundations
+                                </span>
+                            </span>
+                            <span class="text-[11px] font-mono text-gray-400">2 Interactive Decks Available</span>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Deck 1 Card -->
+                            <div class="bg-gray-900/90 border border-cyber-border hover:border-cyber-cyan/60 rounded-xl p-4 flex flex-col justify-between space-y-3 transition">
+                                <div class="space-y-2">
+                                    <div class="flex items-center justify-between">
+                                        <span class="bg-cyber-cyan/10 text-cyber-cyan border border-cyber-cyan/30 text-[10px] font-mono px-2 py-0.5 rounded uppercase font-semibold">
+                                            Lesson 01 &bull; 9 Slides
+                                        </span>
+                                        <span class="text-gray-400 text-[11px] font-mono"><i class="fa-regular fa-clock mr-1"></i> ~27 Min</span>
+                                    </div>
+                                    <h4 class="text-sm font-bold text-white font-mono flex items-center gap-2">
+                                        <i class="fa-solid fa-microchip text-cyber-cyan"></i> How LLMs Behave
+                                    </h4>
+                                    <p class="text-xs text-gray-300 leading-relaxed">
+                                        Interactive token economics, context window boundary conditions (HTTP 400 vs model_context_window_exceeded), sampling controls in modern Claude models, non-determinism, and model-graded evals.
+                                    </p>
+                                    <div class="text-[11px] font-mono text-gray-400 flex items-center gap-1.5">
+                                        <i class="fa-regular fa-file-code text-cyber-cyan"></i>
+                                        <span>MSO Foundations/How LLMs behave.html</span>
+                                    </div>
+                                </div>
+                                <a href="MSO%20Foundations/How%20LLMs%20behave.html" target="_blank" class="w-full bg-cyber-cyan/10 hover:bg-cyber-cyan hover:text-black text-cyber-cyan border border-cyber-cyan/40 px-3 py-2 rounded-lg text-xs font-mono font-semibold transition flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-play text-[10px]"></i> Launch "How LLMs Behave" Deck
+                                    <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                                </a>
+                            </div>
+
+                            <!-- Deck 2 Card -->
+                            <div class="bg-gray-900/90 border border-cyber-border hover:border-cyber-accent/60 rounded-xl p-4 flex flex-col justify-between space-y-3 transition">
+                                <div class="space-y-2">
+                                    <div class="flex items-center justify-between">
+                                        <span class="bg-cyber-accent/10 text-cyber-accent border border-cyber-accent/30 text-[10px] font-mono px-2 py-0.5 rounded uppercase font-semibold">
+                                            Lesson 02 &bull; 8 Slides
+                                        </span>
+                                        <span class="text-gray-400 text-[11px] font-mono"><i class="fa-regular fa-clock mr-1"></i> ~30 Min</span>
+                                    </div>
+                                    <h4 class="text-sm font-bold text-white font-mono flex items-center gap-2">
+                                        <i class="fa-solid fa-brain text-cyber-accent"></i> Models &amp; Reasoning Modes
+                                    </h4>
+                                    <p class="text-xs text-gray-300 leading-relaxed">
+                                        The Claude family architecture (Sonnet default, Haiku speed, Opus/Fable depth), Adaptive Thinking mechanics with the <code class="text-cyber-cyan font-mono">effort</code> parameter, deprecated budget_tokens traps, and enterprise incident simulation.
+                                    </p>
+                                    <div class="text-[11px] font-mono text-gray-400 flex items-center gap-1.5">
+                                        <i class="fa-regular fa-file-code text-cyber-accent"></i>
+                                        <span>MSO Foundations/Models &amp; Reasoning.html</span>
+                                    </div>
+                                </div>
+                                <a href="MSO%20Foundations/Models%20%26%20Reasoning.html" target="_blank" class="w-full bg-cyber-accent/10 hover:bg-cyber-accent hover:text-white text-cyber-accent border border-cyber-accent/40 px-3 py-2 rounded-lg text-xs font-mono font-semibold transition flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-play text-[10px]"></i> Launch "Models &amp; Reasoning" Deck
+                                    <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -612,11 +688,9 @@
 
             document.querySelectorAll('.module-card').forEach(card => {
                 const id = card.getAttribute('data-id');
-                const title = card.querySelector('h3').innerText.toLowerCase();
-                const desc = card.querySelector('p').innerText.toLowerCase();
                 const isCompleted = !!saved[id];
 
-                const matchesSearch = title.includes(searchQuery) || desc.includes(searchQuery);
+                const matchesSearch = card.innerText.toLowerCase().includes(searchQuery);
                 let matchesFilter = true;
 
                 if (currentFilter === 'pending') matchesFilter = !isCompleted;
