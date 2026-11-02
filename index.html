@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CCDV-F Certification Portal | Claude Certified Developer Foundations</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: JetBrains Mono & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cyber: {
+                            bg: '#0B0F19',
+                            panel: '#111827',
+                            card: '#1F2937',
+                            border: '#374151',
+                            accent: '#3B82F6',
+                            cyan: '#06B6D4',
+                            amber: '#F59E0B',
+                            red: '#EF4444',
+                            green: '#10B981',
+                            purple: '#8B5CF6'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #0B0F19;
+            color: #E5E7EB;
+            font-family: 'Inter', sans-serif;
+            background-image: 
+                radial-gradient(circle at 15% 15%, rgba(6, 182, 212, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 85% 75%, rgba(59, 130, 246, 0.05) 0%, transparent 40%);
+            background-attachment: fixed;
+        }
+
+        /* Scanline Overlay Effect */
+        .scanline-bg {
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%);
+            background-size: 100% 4px;
+        }
+
+        /* Cyber Glow utilities */
+        .glow-cyan {
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.25);
+        }
+        .glow-accent {
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.25);
+        }
+        .glow-amber {
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.25);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0B0F19;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1F2937;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3B82F6;
+        }
+
+        .terminal-border {
+            border: 1px solid #1F2937;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .terminal-border:hover {
+            border-color: #3B82F6;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between scanline-bg antialiased selection:bg-cyber-cyan selection:text-black">
+
+    <!-- TOP NAVIGATION BAR -->
+    <header class="sticky top-0 z-50 bg-cyber-bg/90 backdrop-blur-md border-b border-cyber-card/80 px-4 lg:px-8 py-3">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="flex space-x-1.5">
+                    <span class="w-3 h-3 rounded-full bg-red-500/80 inline-block"></span>
+                    <span class="w-3 h-3 rounded-full bg-amber-500/80 inline-block"></span>
+                    <span class="w-3 h-3 rounded-full bg-emerald-500/80 inline-block"></span>
+                </div>
+                <span class="font-mono text-sm text-white font-bold tracking-wider flex items-center gap-2">
+                    <i class="fa-solid fa-terminal text-cyber-cyan"></i> CCDV-F // CURRICULUM HUB
+                </span>
+            </div>
+
+            <!-- Header Quick Stats -->
+            <div class="hidden md:flex items-center space-x-6 font-mono text-xs">
+                <div class="flex items-center space-x-2 text-gray-400">
+                    <i class="fa-solid fa-clock text-cyber-amber"></i>
+                    <span>TOTAL DURATION: <strong class="text-white">674 MIN (~11.2 HRS)</strong></span>
+                </div>
+                <div class="flex items-center space-x-2 text-gray-400">
+                    <i class="fa-solid fa-layer-group text-cyber-cyan"></i>
+                    <span>MODULES: <strong class="text-white">5 MACRO UNITS</strong></span>
+                </div>
+                <a href="#readiness-section" class="bg-cyber-accent/10 border border-cyber-accent/40 text-cyber-accent px-3 py-1.5 rounded hover:bg-cyber-accent hover:text-white transition glow-accent">
+                    <i class="fa-solid fa-gauge-high mr-1"></i> STATUS: READY
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 lg:px-8 py-8 space-y-10">
+
+        <!-- HERO SECTION -->
+        <section class="bg-cyber-panel/90 border border-cyber-card p-6 lg:p-10 rounded-2xl relative overflow-hidden shadow-2xl">
+            <!-- Decorative Accent Elements -->
+            <div class="absolute -right-16 -top-16 w-64 h-64 bg-cyber-accent/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -left-16 -bottom-16 w-64 h-64 bg-cyber-cyan/10 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div class="relative z-10 space-y-6">
+                <div class="flex flex-wrap items-center gap-3">
+                    <span class="bg-cyber-cyan/10 text-cyber-cyan border border-cyber-cyan/30 text-xs font-mono px-3 py-1 rounded-full uppercase tracking-widest font-semibold">
+                        <i class="fa-solid fa-certificate mr-1.5"></i> Claude Certified Developer
+                    </span>
+                    <span class="bg-cyber-amber/10 text-cyber-amber border border-cyber-amber/30 text-xs font-mono px-3 py-1 rounded-full uppercase tracking-widest font-semibold">
+                        Foundations Track (CCDV-F)
+                    </span>
+                </div>
+
+                <div class="space-y-3">
+                    <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight font-sans">
+                        Master Production-Grade AI Engineering on <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyber-cyan via-cyber-accent to-cyber-purple">Claude</span>
+                    </h1>
+                    <p class="text-gray-300 text-sm sm:text-base max-w-3xl leading-relaxed">
+                        Transform dense certification knowledge into hands-on architectural mastery. Follow the official 5-macro module roadmap, track your readiness score, and launch interactive cyberpunk simulations for each lesson.
+                    </p>
+                </div>
+
+                <!-- CTA Buttons & Summary Indicators -->
+                <div class="pt-2 flex flex-wrap items-center gap-4">
+                    <a href="#curriculum-section" class="bg-cyber-accent hover:bg-blue-600 text-white font-mono text-xs sm:text-sm font-semibold px-6 py-3 rounded-lg transition flex items-center space-x-2 glow-accent">
+                        <i class="fa-solid fa-list-check"></i>
+                        <span>EXPLORE MACRO MODULES</span>
+                    </a>
+                    <a href="ccdvf_episode02_slides.html" target="_blank" class="bg-cyber-card hover:bg-gray-700 text-gray-200 border border-cyber-border font-mono text-xs sm:text-sm font-semibold px-6 py-3 rounded-lg transition flex items-center space-x-2">
+                        <i class="fa-solid fa-desktop text-cyber-cyan"></i>
+                        <span>LAUNCH EPISODE 02 SLIDE DECK</span>
+                        <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-gray-400"></i>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- CERTIFICATION READINESS SCORECARD -->
+        <section id="readiness-section" class="bg-cyber-panel border border-cyber-card p-6 rounded-xl space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <span class="text-xs font-mono text-cyber-cyan uppercase tracking-widest font-semibold">Interactive Progress Tracker</span>
+                    <h2 class="text-xl font-bold text-white font-mono flex items-center gap-2">
+                        <i class="fa-solid fa-sliders text-cyber-accent"></i> Certification Readiness Scorecard
+                    </h2>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="text-right">
+                        <span class="text-xs font-mono text-gray-400">COMPLETED TIME</span>
+                        <div id="completed-time-display" class="text-sm font-mono font-bold text-cyber-amber">0 / 674 MIN</div>
+                    </div>
+                    <div class="bg-gray-900 border border-cyber-border px-4 py-2 rounded-lg text-center">
+                        <span class="text-[10px] font-mono text-gray-400 block">READINESS</span>
+                        <span id="readiness-score" class="text-xl font-mono font-extrabold text-cyber-cyan">0%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="w-full bg-black/60 h-3 rounded-full overflow-hidden border border-gray-800 relative">
+                <div id="readiness-bar" class="bg-gradient-to-r from-cyber-cyan via-cyber-accent to-cyber-green h-full w-0 transition-all duration-500"></div>
+            </div>
+
+            <div class="flex justify-between items-center text-xs font-mono text-gray-400">
+                <span id="completed-count">0 of 5 Macro Modules Completed</span>
+                <button onclick="resetProgress()" class="hover:text-cyber-red transition flex items-center gap-1">
+                    <i class="fa-solid fa-arrows-rotate text-[10px]"></i> Reset Progress
+                </button>
+            </div>
+        </section>
+
+        <!-- SEARCH AND FILTER CONTROLS -->
+        <section class="flex flex-col sm:flex-row gap-4 items-center justify-between">
+            <!-- Search Box -->
+            <div class="relative w-full sm:w-80">
+                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-gray-500 text-xs"></i>
+                <input type="text" id="module-search" oninput="filterModules()" placeholder="Search modules or keywords..." 
+                    class="w-full bg-cyber-panel border border-cyber-border rounded-lg pl-9 pr-4 py-2 text-xs font-mono text-white focus:border-cyber-accent outline-none transition">
+            </div>
+
+            <!-- Filter Buttons -->
+            <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto font-mono text-xs">
+                <button onclick="setFilter('all')" id="btn-filter-all" class="filter-btn active bg-cyber-accent text-white px-3 py-1.5 rounded border border-cyber-accent transition">
+                    All (5)
+                </button>
+                <button onclick="setFilter('pending')" id="btn-filter-pending" class="filter-btn bg-cyber-panel text-gray-400 hover:text-white px-3 py-1.5 rounded border border-cyber-border transition">
+                    Incomplete
+                </button>
+                <button onclick="setFilter('completed')" id="btn-filter-completed" class="filter-btn bg-cyber-panel text-gray-400 hover:text-white px-3 py-1.5 rounded border border-cyber-border transition">
+                    Completed
+                </button>
+            </div>
+        </section>
+
+        <!-- CURRICULUM MACRO MODULES LIST -->
+        <section id="curriculum-section" class="space-y-4">
+            
+            <!-- MODULE 1 -->
+            <div class="module-card bg-cyber-panel border border-cyber-border rounded-xl p-5 sm:p-6 terminal-border space-y-4" data-id="mod-1" data-duration="57">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div class="flex items-start space-x-4">
+                        <input type="checkbox" id="check-mod-1" onchange="toggleModule('mod-1')" class="mt-1.5 w-5 h-5 accent-cyber-cyan cursor-pointer rounded">
+                        <div class="space-y-1">
+                            <div class="flex flex-wrap items-center gap-2">
+                                <span class="bg-cyber-cyan/10 text-cyber-cyan border border-cyber-cyan/30 text-[10px] font-mono px-2 py-0.5 rounded uppercase font-semibold">
+                                    Module 01 / Core Fundamentals
+                                </span>
+                                <span class="text-xs font-mono text-gray-400"><i class="fa-regular fa-clock mr-1"></i> 57 Minutes</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-white font-mono hover:text-cyber-cyan transition cursor-pointer" onclick="toggleAccordion('acc-1')">
+                                MSO Foundations
+                            </h3>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center space-x-3 self-end sm:self-center">
+                        <a href="ccdvf_episode02_slides.html" target="_blank" class="bg-cyber-accent/10 hover:bg-cyber-accent hover:text-white text-cyber-accent border border-cyber-accent/40 px-3 py-1.5 rounded text-xs font-mono transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-play text-[10px]"></i> Launch Slides
+                        </a>
+                        <button onclick="toggleAccordion('acc-1')" class="bg-gray-800 hover:bg-gray-700 text-gray-300 p-2 rounded transition">
+                            <i id="icon-acc-1" class="fa-solid fa-chevron-down text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <p class="text-xs sm:text-sm text-gray-300 leading-relaxed pl-0 sm:pl-9">
+                    Learn the model fundamentals and technical foundations the rest of the Developer Foundations course builds on. Covers tokens, context window budgets, sampling parameters, non-determinism, and basic API mechanics.
+                </p>
+
+                <!-- Accordion Content -->
+                <div id="acc-1" class="hidden pt-4 border-t border-cyber-border space-y-3 pl-0 sm:pl-9">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs font-mono">
+                        <div class="bg-black/50 p-3 rounded border border-gray-800">
+                            <span class="text-cyber-cyan font-bold block mb-1"><i class="fa-solid fa-coins mr-1"></i> Key Competency 01</span>
+                            Token math vs character rules of thumb & cost/context budget calculation.
+                        </div>
+                        <div class="bg-black/50 p-3 rounded border border-gray-800">
+                            <span class="text-cyber-amber font-bold block mb-1"><i class="fa-solid fa-memory mr-1"></i> Key Competency 02</span>
+                            Handling context overflow (HTTP 400 rejection vs model_context_window_exceeded).
+                        </div>
+                        <div class="bg-black/50 p-3 rounded border border-gray-800">
+                            <span class="text-cyber-purple font-bold block mb-1"><i class="fa-solid fa-sliders mr-1"></i> Key Competency 03</span>
+                            Sampling dynamics & parameter rules for newer Claude generations.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODULE 2 -->
+            <div class="module-card bg-cyber-panel border border-cyber-border rounded-xl p-5 sm:p-6 terminal-border space-y-4" data-id="mod-2" data-duration="209">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div class="flex items-start space-x-4">
+                        <input type="checkbox" id="check-mod-2" onchange="toggleModule('mod-2')" class="mt-1.5 w-5 h-5 accent-cyber-cyan cursor-pointer rounded">
+                        <div class="space-y-1">
+                            <div class="flex flex-wrap items-center gap-2">
+                                <span class="bg-cyber-accent/10 text-cyber-accent border border-cyber-accent/30 text-[10px] font-mono px-2 py-0.5 rounded uppercase font-semibold">
+                                    Module 02 / Core Integration
+                                </span>
+                                <span class="text-xs font-mono text-gray-400"><i class="fa-regular fa-clock mr-1"></i> 209 Minutes</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-white font-mono hover:text-cyber-cyan transition cursor-pointer" onclick="toggleAccordion('acc-2')">
+                                Production-Grade Prompting, Agents & Tool Use
+                            </h3>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center space-x-3 self-end sm:self-center">
+                        <button onclick="alert('Module 02 Slide Deck coming soon!')" class="bg-gray-800 text-gray-500 border border-gray-700 px-3 py-1.5 rounded text-xs font-mono cursor-not-allowed flex items-center gap-1.5">
+                            <i class="fa-solid fa-lock text-[10px]"></i> Slides Soon
+                        </button>
+                        <button onclick="toggleAccordion('acc-2')" class="bg-gray-800 hover:bg-gray-700 text-gray-300 p-2 rounded transition">
+                            <i id="icon-acc-2" class="fa-solid fa-chevron-down text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <p class="text-xs sm:text-sm text-gray-300 leading-relaxed pl-0 sm:pl-9">
+                    Build your first production integration on Claude, with reliable prompts, tools, context management, and agent loops. Master structured output parsing and robust error recovery.
+                </p>
+
+                <!-- Accordion Content -->
+                <div id="acc-2" class="hidden pt-4 border-t border-cyber-border space-y-3 pl-0 sm:pl-9">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs font-mono">
+                        <div class="bg-black/50 p-3 rounded border border-gray-800">
+                            <span class="text-cyber-cyan font-bold block mb-1"><i class="fa-solid fa-wrench mr-1"></i> Key Competency 01</span>
+                            Tool definition syntax, JSON schemas, and execution handling.
+                        </div>
+                        <div class="bg-black/50 p-3 rounded border border-gray-800">
+                            <span class="text-cyber-amber font-bold block mb-1"><i class="fa-solid fa-rotate mr-1"></i> Key Competency 02</span>
+                            Agentic loop design: stop conditions, turn limits, and state tracking.
+                        </div>
+                        <div class="bg-black/50 p-3 rounded border border-gray-800">
+                            <span class="text-cyber-green font-bold block mb-1"><i class="fa-solid fa-align-left mr-1"></i> Key Competency 03</span>
+                            Dynamic system prompts & prompt engineering patterns.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODULE 3 -->
+            <div class="module-card bg-cyber-panel border border-cyber-border rounded-xl p-5 sm:p-6 terminal-border space-y-4" data-id="mod-3" data-duration="142">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div class="flex items-start space-x-4">
+                        <input type="checkbox" id="check-mod-3" onchange="toggleModule('mod-3')" class="mt-1.5 w-5 h-5 accent-cyber-cyan cursor-pointer rounded">
+                        <div class="space-y-1">
+                            <div class="flex flex-wrap items-center gap-2">
+                                <span class="bg-cyber-purple/10 text-cyber-purple border border-cyber-purple/30 text-[10px] font-mono px-2 py-0.5 rounded uppercase font-semibold">
+                                    Module 03 / Architecture & MCP
+                                </span>
+                                <span class="text-xs font-mono text-gray-400"><i class="fa-regular fa-clock mr-1"></i> 142 Minutes</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-white font-mono hover:text-cyber-cyan transition cursor-pointer" onclick="toggleAccordion('acc-3')">
+                                Claude Code, MCP & Integration
+                            </h3>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center space-x-3 self-end sm:self-center">
+                        <button onclick="alert('Module 03 Slide Deck coming soon!')" class="bg-gray-800 text-gray-500 border border-gray-700 px-3 py-1.5 rounded text-xs font-mono cursor-not-allowed flex items-center gap-1.5">
+                            <i class="fa-solid fa-lock text-[10px]"></i> Slides Soon
+                        </button>
+                        <button onclick="toggleAccordion('acc-3')" class="bg-gray-800 hover:bg-gray-700 text-gray-300 p-2 rounded transition">
+                            <i id="icon-acc-3" class="fa-solid fa-chevron-down text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <p class="text-xs sm:text-sm text-gray-300 leading-relaxed pl-0 sm:pl-9">
+                    Learn to make a working Claude integration configurable, shareable, and safe to connect to real systems. Master the Model Context Protocol (MCP) servers, client architecture, and CLI workflows.
+                </p>
+
+                <!-- Accordion Content -->
+                <div id="acc-3" class="hidden pt-4 border-t border-cyber-border space-y-3 pl-0 sm:pl-9">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs font-mono">
+                        <div class="bg-black/50 p-3 rounded border border-gray-800">
+                            <span class="text-cyber-cyan font-bold block mb-1"><i class="fa-solid fa-network-wired mr-1"></i> Key Competency 01</span>
+                            MCP Client/Server protocol specs, resources, tools, and prompts.
+                        </div>
+                        <div class="bg-black/50 p-3 rounded border border-gray-800">
+                            <span class="text-cyber-amber font-bold block mb-1"><i class="fa-solid fa-terminal mr-1"></i> Key Competency 02</span>
+                            Claude Code agentic CLI tools, workflow customization & hooks.
+                        </div>
+                        <div class="bg-black/50 p-3 rounded border border-gray-800">
+                            <span class="text-cyber-purple font-bold block mb-1"><i class="fa-solid fa-plug mr-1"></i> Key Competency 03</span>
+                            External system connections & secure transport setup.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODULE 4 -->
+            <div class="module-card bg-cyber-panel border border-cyber-border rounded-xl p-5 sm:p-6 terminal-border space-y-4" data-id="mod-4" data-duration="211">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div class="flex items-start space-x-4">
+                        <input type="checkbox" id="check-mod-4" onchange="toggleModule('mod-4')" class="mt-1.5 w-5 h-5 accent-cyber-cyan cursor-pointer rounded">
+                        <div class="space-y-1">
+                            <div class="flex flex-wrap items-center gap-2">
+                                <span class="bg-cyber-amber/10 text-cyber-amber border border-cyber-amber/30 text-[10px] font-mono px-2 py-0.5 rounded uppercase font-semibold">
+                                    Module 04 / Evals & Reliability
+                                </span>
+                                <span class="text-xs font-mono text-gray-400"><i class="fa-regular fa-clock mr-1"></i> 211 Minutes</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-white font-mono hover:text-cyber-cyan transition cursor-pointer" onclick="toggleAccordion('acc-4')">
+                                Production Engineering, Evals & Security
+                            </h3>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center space-x-3 self-end sm:self-center">
+                        <button onclick="alert('Module 04 Slide Deck coming soon!')" class="bg-gray-800 text-gray-500 border border-gray-700 px-3 py-1.5 rounded text-xs font-mono cursor-not-allowed flex items-center gap-1.5">
+                            <i class="fa-solid fa-lock text-[10px]"></i> Slides Soon
+                        </button>
+                        <button onclick="toggleAccordion('acc-4')" class="bg-gray-800 hover:bg-gray-700 text-gray-300 p-2 rounded transition">
+                            <i id="icon-acc-4" class="fa-solid fa-chevron-down text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <p class="text-xs sm:text-sm text-gray-300 leading-relaxed pl-0 sm:pl-9">
+                    Learn to take an agent that works in development and prove it holds up under real production traffic. Master evals suites, model-graded judges, prompt injection defenses, and fallback architectures.
+                </p>
+
+                <!-- Accordion Content -->
+                <div id="acc-4" class="hidden pt-4 border-t border-cyber-border space-y-3 pl-0 sm:pl-9">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs font-mono">
+                        <div class="bg-black/50 p-3 rounded border border-gray-800">
+                            <span class="text-cyber-cyan font-bold block mb-1"><i class="fa-solid fa-flask mr-1"></i> Key Competency 01</span>
+                            Automated eval datasets, assertion properties & model judges.
+                        </div>
+                        <div class="bg-black/50 p-3 rounded border border-gray-800">
+                            <span class="text-cyber-red font-bold block mb-1"><i class="fa-solid fa-shield-halved mr-1"></i> Key Competency 02</span>
+                            Security: Jailbreak mitigation, prompt injection & data privacy.
+                        </div>
+                        <div class="bg-black/50 p-3 rounded border border-gray-800">
+                            <span class="text-cyber-amber font-bold block mb-1"><i class="fa-solid fa-chart-line mr-1"></i> Key Competency 03</span>
+                            Latency, rate limit backoff & production telemetry logging.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODULE 5 -->
+            <div class="module-card bg-cyber-panel border border-cyber-border rounded-xl p-5 sm:p-6 terminal-border space-y-4" data-id="mod-5" data-duration="155">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div class="flex items-start space-x-4">
+                        <input type="checkbox" id="check-mod-5" onchange="toggleModule('mod-5')" class="mt-1.5 w-5 h-5 accent-cyber-cyan cursor-pointer rounded">
+                        <div class="space-y-1">
+                            <div class="flex flex-wrap items-center gap-2">
+                                <span class="bg-cyber-green/10 text-cyber-green border border-cyber-green/30 text-[10px] font-mono px-2 py-0.5 rounded uppercase font-semibold">
+                                    Module 05 / Enterprise Scale
+                                </span>
+                                <span class="text-xs font-mono text-gray-400"><i class="fa-regular fa-clock mr-1"></i> 155 Minutes</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-white font-mono hover:text-cyber-cyan transition cursor-pointer" onclick="toggleAccordion('acc-5')">
+                                Accelerators & IP Contribution
+                            </h3>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center space-x-3 self-end sm:self-center">
+                        <button onclick="alert('Module 05 Slide Deck coming soon!')" class="bg-gray-800 text-gray-500 border border-gray-700 px-3 py-1.5 rounded text-xs font-mono cursor-not-allowed flex items-center gap-1.5">
+                            <i class="fa-solid fa-lock text-[10px]"></i> Slides Soon
+                        </button>
+                        <button onclick="toggleAccordion('acc-5')" class="bg-gray-800 hover:bg-gray-700 text-gray-300 p-2 rounded transition">
+                            <i id="icon-acc-5" class="fa-solid fa-chevron-down text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <p class="text-xs sm:text-sm text-gray-300 leading-relaxed pl-0 sm:pl-9">
+                    Package a build that works into one that survives reuse, review, and deployment beyond the engagement that created it. Reusable patterns, SDK wrappers, and IP contribution guidelines.
+                </p>
+
+                <!-- Accordion Content -->
+                <div id="acc-5" class="hidden pt-4 border-t border-cyber-border space-y-3 pl-0 sm:pl-9">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs font-mono">
+                        <div class="bg-black/50 p-3 rounded border border-gray-800">
+                            <span class="text-cyber-cyan font-bold block mb-1"><i class="fa-solid fa-box mr-1"></i> Key Competency 01</span>
+                            Packaging modular AI components for cross-team reuse.
+                        </div>
+                        <div class="bg-black/50 p-3 rounded border border-gray-800">
+                            <span class="text-cyber-green font-bold block mb-1"><i class="fa-solid fa-code-branch mr-1"></i> Key Competency 02</span>
+                            Architecture review standards & code maintenance blueprints.
+                        </div>
+                        <div class="bg-black/50 p-3 rounded border border-gray-800">
+                            <span class="text-cyber-purple font-bold block mb-1"><i class="fa-solid fa-cloud-arrow-up mr-1"></i> Key Competency 03</span>
+                            Enterprise deployment pipelines & IP governance.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-cyber-card bg-cyber-bg/90 mt-12 py-8 px-4 lg:px-8">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-xs font-mono text-gray-500">
+            <div class="flex items-center space-x-2">
+                <i class="fa-solid fa-terminal text-cyber-cyan"></i>
+                <span>CCDV-F Developer Certification Hub &copy; 2026 ApexCorp Training System</span>
+            </div>
+            
+            <div class="flex flex-wrap items-center gap-6">
+                <a href="https://pages.github.com/" target="_blank" class="hover:text-cyber-cyan transition">
+                    <i class="fa-brands fa-github mr-1"></i> GitHub Pages Deployment Guide
+                </a>
+                <span class="text-gray-700">|</span>
+                <span class="text-emerald-400 flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> SYSTEM ONLINE
+                </span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- INTERACTIVE SCRIPT -->
+    <script>
+        const totalCourseMinutes = 674;
+        let currentFilter = 'all';
+
+        // Load progress from localStorage on startup
+        function loadProgress() {
+            const saved = JSON.parse(localStorage.getItem('ccdvf_progress') || '{}');
+            document.querySelectorAll('.module-card').forEach(card => {
+                const id = card.getAttribute('data-id');
+                const checkbox = document.getElementById(`check-${id}`);
+                if (checkbox && saved[id]) {
+                    checkbox.checked = true;
+                    card.classList.add('border-cyber-cyan/50', 'bg-cyber-panel/90');
+                }
+            });
+            updateScorecard();
+        }
+
+        // Toggle Module Completion State
+        function toggleModule(id) {
+            const checkbox = document.getElementById(`check-${id}`);
+            const card = document.querySelector(`[data-id="${id}"]`);
+            const saved = JSON.parse(localStorage.getItem('ccdvf_progress') || '{}');
+
+            if (checkbox.checked) {
+                saved[id] = true;
+                card.classList.add('border-cyber-cyan/50', 'bg-cyber-panel/90');
+            } else {
+                delete saved[id];
+                card.classList.remove('border-cyber-cyan/50', 'bg-cyber-panel/90');
+            }
+
+            localStorage.setItem('ccdvf_progress', JSON.stringify(saved));
+            updateScorecard();
+            if (currentFilter !== 'all') filterModules();
+        }
+
+        // Recalculate Readiness Stats
+        function updateScorecard() {
+            const saved = JSON.parse(localStorage.getItem('ccdvf_progress') || '{}');
+            let completedMinutes = 0;
+            let completedCount = 0;
+
+            document.querySelectorAll('.module-card').forEach(card => {
+                const id = card.getAttribute('data-id');
+                const duration = parseInt(card.getAttribute('data-duration') || '0');
+                if (saved[id]) {
+                    completedMinutes += duration;
+                    completedCount++;
+                }
+            });
+
+            const percent = Math.round((completedMinutes / totalCourseMinutes) * 100);
+
+            document.getElementById('completed-time-display').innerText = `${completedMinutes} / ${totalCourseMinutes} MIN`;
+            document.getElementById('readiness-score').innerText = `${percent}%`;
+            document.getElementById('readiness-bar').style.width = `${percent}%`;
+            document.getElementById('completed-count').innerText = `${completedCount} of 5 Macro Modules Completed`;
+        }
+
+        // Reset All Progress
+        function resetProgress() {
+            if (confirm("Reset all module completion data?")) {
+                localStorage.removeItem('ccdvf_progress');
+                document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+                document.querySelectorAll('.module-card').forEach(card => card.classList.remove('border-cyber-cyan/50', 'bg-cyber-panel/90'));
+                updateScorecard();
+                if (currentFilter !== 'all') filterModules();
+            }
+        }
+
+        // Accordion Toggle
+        function toggleAccordion(accId) {
+            const content = document.getElementById(accId);
+            const icon = document.getElementById(`icon-${accId}`);
+            if (content.classList.contains('hidden')) {
+                content.classList.remove('hidden');
+                icon.classList.replace('fa-chevron-down', 'fa-chevron-up');
+            } else {
+                content.classList.add('hidden');
+                icon.classList.replace('fa-chevron-up', 'fa-chevron-down');
+            }
+        }
+
+        // Filter Functionality
+        function setFilter(filter) {
+            currentFilter = filter;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('bg-cyber-accent', 'text-white');
+                btn.classList.add('bg-cyber-panel', 'text-gray-400');
+            });
+            const activeBtn = document.getElementById(`btn-filter-${filter}`);
+            activeBtn.classList.remove('bg-cyber-panel', 'text-gray-400');
+            activeBtn.classList.add('bg-cyber-accent', 'text-white');
+
+            filterModules();
+        }
+
+        function filterModules() {
+            const searchQuery = document.getElementById('module-search').value.toLowerCase();
+            const saved = JSON.parse(localStorage.getItem('ccdvf_progress') || '{}');
+
+            document.querySelectorAll('.module-card').forEach(card => {
+                const id = card.getAttribute('data-id');
+                const title = card.querySelector('h3').innerText.toLowerCase();
+                const desc = card.querySelector('p').innerText.toLowerCase();
+                const isCompleted = !!saved[id];
+
+                const matchesSearch = title.includes(searchQuery) || desc.includes(searchQuery);
+                let matchesFilter = true;
+
+                if (currentFilter === 'pending') matchesFilter = !isCompleted;
+                if (currentFilter === 'completed') matchesFilter = isCompleted;
+
+                if (matchesSearch && matchesFilter) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // Initialize Page
+        window.onload = function() {
+            loadProgress();
+        };
+    </script>
+</body>
+</html>
