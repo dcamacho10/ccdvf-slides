@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CCDV-F Module 1 Recap - Interactive Slide Deck</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            cyberBg: '#0B0F19',
+            cyberSurface: '#111827',
+            cyberSurfaceBorder: '#1F2937',
+            cyberBlue: '#3B82F6',
+            cyberCyan: '#06B6D4',
+            cyberAmber: '#F59E0B',
+            cyberGreen: '#10B981',
+            cyberRose: '#F43F5E',
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+        },
+      },
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #060911;
+      color: #F3F4F6;
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+    }
+    
+    .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* 16:9 Aspect Ratio Main Container */
+    .slide-aspect-container {
+      width: 100%;
+      max-width: 1280px;
+      aspect-ratio: 16 / 9;
+      max-height: calc(100vh - 80px);
+    }
+
+    /* Custom Scrollbar for Terminal Panels */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0B0F19;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1F2937;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #3B82F6;
+    }
+
+    /* Glow Effects */
+    .glow-blue {
+      box-shadow: 0 0 15px rgba(59, 130, 246, 0.25);
+    }
+    .glow-cyan {
+      box-shadow: 0 0 15px rgba(6, 182, 212, 0.25);
+    }
+    .glow-amber {
+      box-shadow: 0 0 15px rgba(245, 158, 11, 0.25);
+    }
+
+    /* Custom Terminal Lines Animation */
+    @keyframes pulseScan {
+      0% { opacity: 0.3; }
+      50% { opacity: 0.8; }
+      100% { opacity: 0.3; }
+    }
+    .scanline {
+      background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(6, 182, 212, 0.1) 50%, rgba(6, 182, 212, 0.1));
+      background-size: 100% 4px;
+    }
+
+    .slide {
+      display: none;
+      opacity: 0;
+      transition: opacity 0.3s ease-in-out;
+    }
+    .slide.active {
+      display: flex;
+      opacity: 1;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-2 sm:p-4 bg-cyberBg text-gray-200 select-none">
+
+  <!-- TOP DECK HEADER / APP BAR -->
+  <header class="w-full max-w-[1280px] flex items-center justify-between py-2 px-4 mb-2 bg-cyberSurface/80 border border-cyberSurfaceBorder rounded-lg backdrop-blur">
+    <div class="flex items-center space-x-3">
+      <a href="../index.html" class="text-xs font-mono text-gray-300 hover:text-cyberCyan transition flex items-center gap-1.5 px-2 py-1 rounded bg-cyberBg border border-cyberSurfaceBorder hover:border-cyberCyan/50" title="Return to Curriculum Hub">
+        <i class="fa-solid fa-arrow-left text-[10px]"></i>
+        <span class="font-semibold hidden sm:inline">HUB</span>
+      </a>
+      <div class="flex items-center justify-center w-8 h-8 rounded bg-cyberBlue/20 text-cyberBlue border border-cyberBlue/40 font-mono font-bold text-xs">
+        CCDV
+      </div>
+      <div>
+        <h1 class="text-xs font-mono font-semibold tracking-wider text-gray-300">
+          CLAUDE CERTIFIED DEVELOPER — FOUNDATIONS
+        </h1>
+        <p class="text-[10px] text-cyberCyan font-mono">Module 1 Recap: The Five Core Takeaways</p>
+      </div>
+    </div>
+
+    <!-- Slide Navigation Indicators Top -->
+    <div class="hidden md:flex items-center space-x-1" id="pill-indicators">
+      <!-- Generated via JS -->
+    </div>
+
+    <div class="flex items-center space-x-3">
+      <button id="btn-fullscreen" onclick="toggleFullscreen()" class="p-1.5 text-xs text-gray-400 hover:text-cyberCyan transition rounded bg-cyberBg border border-cyberSurfaceBorder" title="Alternar Tela Cheia">
+        <i class="fa-solid fa-expand"></i>
+      </button>
+      <div class="text-xs font-mono bg-cyberBg px-2.5 py-1 rounded border border-cyberSurfaceBorder text-gray-400">
+        Slide <span id="current-slide-num" class="text-cyberBlue font-bold">1</span> / <span id="total-slides-num">9</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN SLIDE CANVAS (16:9 Aspect Ratio) -->
+  <main id="slide-container" class="slide-aspect-container relative bg-cyberSurface border border-cyberSurfaceBorder rounded-xl shadow-2xl overflow-hidden flex flex-col justify-between p-6 scanline">
+    
+    <!-- ================= SLIDE 1: COVER / MISSION ================= -->
+    <div class="slide active flex-col justify-between h-full" data-slide="1">
+      <div class="flex justify-between items-start">
+        <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-cyberAmber/10 border border-cyberAmber/30 text-cyberAmber text-xs font-mono">
+          <i class="fa-solid fa-triangle-exclamation animate-pulse"></i>
+          <span>INCIDENT REPORT #8092 • CYBERDYNE SYSTEMS</span>
+        </div>
+        <div class="text-right text-xs font-mono text-gray-500">
+          STATUS: POST-MORTEM REVIEW
+        </div>
+      </div>
+
+      <div class="my-auto text-center max-w-3xl mx-auto space-y-4">
+        <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
+          <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyberBlue via-cyberCyan to-cyberGreen">
+            Module 1 Recap: The Five Core Takeaways
+          </span>
+        </h2>
+        <p class="text-gray-300 text-sm sm:text-base font-light leading-relaxed">
+          Yesterday, CyberDyne Systems suffered a $45,000 API budget overrun and a 14% request failure rate during peak traffic. The root cause? A total misunderstanding of Claude's core API mechanics.
+        </p>
+
+        <!-- Mission Details Box -->
+        <div class="p-4 bg-cyberBg/90 border border-cyberBlue/30 rounded-lg text-left grid grid-cols-1 md:grid-cols-3 gap-3 font-mono text-xs">
+          <div class="border-l-2 border-cyberRose pl-3">
+            <span class="text-gray-400 block text-[10px]">CRITICAL ISSUE #1</span>
+            <span class="text-gray-200 font-semibold">Unexpected Context Limits & Truncations</span>
+          </div>
+          <div class="border-l-2 border-cyberAmber pl-3">
+            <span class="text-gray-400 block text-[10px]">CRITICAL ISSUE #2</span>
+            <span class="text-gray-200 font-semibold">Flaky Unit Tests on String Equality</span>
+          </div>
+          <div class="border-l-2 border-cyberCyan pl-3">
+            <span class="text-gray-400 block text-[10px]">CRITICAL ISSUE #3</span>
+            <span class="text-gray-200 font-semibold">Wrong Model Tier & Sync Protocol Usage</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between text-xs text-gray-400 font-mono border-t border-cyberSurfaceBorder pt-3">
+        <span><i class="fa-solid fa-keyboard text-cyberCyan mr-1"></i> Use as setas <kbd class="px-1.5 py-0.5 bg-cyberBg border border-gray-700 rounded text-gray-200">←</kbd> <kbd class="px-1.5 py-0.5 bg-cyberBg border border-gray-700 rounded text-gray-200">→</kbd> do teclado</span>
+        <span class="text-cyberBlue">Pressione &quot;Próximo&quot; para iniciar a investigação <i class="fa-solid fa-arrow-right ml-1"></i></span>
+      </div>
+    </div>
+
+    <!-- ================= SLIDE 2: INCIDENT DIAGNOSTICS ================= -->
+    <div class="slide flex-col justify-between h-full" data-slide="2">
+      <div class="flex justify-between items-center border-b border-cyberSurfaceBorder pb-3">
+        <div>
+          <span class="text-xs font-mono text-cyberBlue uppercase tracking-widest">Post-Mortem Analysis</span>
+          <h2 class="text-xl font-bold text-white">Production Log Diagnostics</h2>
+        </div>
+        <div class="text-xs font-mono bg-cyberBg px-3 py-1 rounded border border-cyberRose/40 text-cyberRose">
+          <i class="fa-solid fa-bug mr-1"></i> 3 Core Architectural Errors
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 my-auto">
+        <!-- Error Card 1 -->
+        <div class="p-4 bg-cyberBg border border-cyberRose/40 rounded-lg hover:border-cyberRose transition">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-mono font-bold text-cyberRose">ERROR 400 vs TRUNCATION</span>
+            <i class="fa-solid fa-circle-exclamation text-cyberRose"></i>
+          </div>
+          <p class="text-xs text-gray-300 font-mono bg-black/60 p-2 rounded mb-2 overflow-x-auto text-[11px]">
+            HTTP 400: "prompt exceeds max context length"<br>
+            stop_reason: "model_context_window_exceeded"
+          </p>
+          <p class="text-xs text-gray-400">
+            <strong>The Mistake:</strong> Treating input context like elastic storage. Inputs above ceiling fail immediately; outputs hitting limits truncate mid-sentence!
+          </p>
+        </div>
+
+        <!-- Error Card 2 -->
+        <div class="p-4 bg-cyberBg border border-cyberAmber/40 rounded-lg hover:border-cyberAmber transition">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-mono font-bold text-cyberAmber">FLAKY EVAL SUITE</span>
+            <i class="fa-solid fa-flask-vial text-cyberAmber"></i>
+          </div>
+          <p class="text-xs text-gray-300 font-mono bg-black/60 p-2 rounded mb-2 overflow-x-auto text-[11px]">
+            ASSERT response.text == "Expected JSON"<br>
+            <span class="text-cyberRose">FAILED (Exact String Mismatch)</span>
+          </p>
+          <p class="text-xs text-gray-400">
+            <strong>The Mistake:</strong> Expecting exact deterministic string outputs from a probabilistic sampling model.
+          </p>
+        </div>
+
+        <!-- Error Card 3 -->
+        <div class="p-4 bg-cyberBg border border-cyberCyan/40 rounded-lg hover:border-cyberCyan transition">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-mono font-bold text-cyberCyan">LATENCY & COST BLOWOUT</span>
+            <i class="fa-solid fa-clock-rotate-left text-cyberCyan"></i>
+          </div>
+          <p class="text-xs text-gray-300 font-mono bg-black/60 p-2 rounded mb-2 overflow-x-auto text-[11px]">
+            MODEL: Opus 3.5 + Extended Thinking<br>
+            PROTOCOL: Synchronous REST (30s timeout)
+          </p>
+          <p class="text-xs text-gray-400">
+            <strong>The Mistake:</strong> Using massive reasoning models on simple synchronous batch jobs, causing HTTP timeouts.
+          </p>
+        </div>
+      </div>
+
+      <div class="p-3 bg-cyberBlue/10 border border-cyberBlue/30 rounded text-xs font-mono text-gray-300 flex items-center justify-between">
+        <span><strong class="text-cyberBlue">Especialista CCDV-F Note:</strong> Estes 3 erros refletem diretamente os tópicos cobertos nas 5 regras da prova.</span>
+        <span class="text-cyberCyan">Vamos revisar cada regra! →</span>
+      </div>
+    </div>
+
+    <!-- ================= SLIDE 3: TAKEAWAY 1 - TOKEN ECONOMICS ================= -->
+    <div class="slide flex-col justify-between h-full" data-slide="3">
+      <div class="flex justify-between items-center border-b border-cyberSurfaceBorder pb-2">
+        <div>
+          <span class="text-xs font-mono text-cyberBlue">TAKEAWAY #1</span>
+          <h2 class="text-lg font-bold text-white">Tokens: The Fundamental Unit of Input, Output & Cost</h2>
+        </div>
+        <div class="text-xs font-mono text-cyberCyan bg-cyberBg px-2.5 py-1 rounded border border-cyberSurfaceBorder">
+          Exam Trap: Words ≠ Tokens
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-auto">
+        <!-- Interactive Token Estimator Sandbox -->
+        <div class="bg-cyberBg p-4 rounded-lg border border-cyberSurfaceBorder space-y-3">
+          <div class="flex justify-between items-center">
+            <label class="text-xs font-mono text-cyberCyan font-semibold">Simulador de Tokens & Custo</label>
+            <span class="text-[10px] text-gray-400 font-mono">1 Token ≈ 0.75 palavras (Inglês)</span>
+          </div>
+
+          <textarea id="token-input-text" oninput="calculateTokens()" class="w-full h-24 bg-cyberSurface text-xs font-mono p-2.5 rounded border border-gray-700 text-gray-200 focus:border-cyberBlue focus:outline-none" placeholder="Digite ou cole um prompt aqui para calcular tokens..."></textarea>
+
+          <div class="grid grid-cols-3 gap-2 text-center font-mono">
+            <div class="p-2 bg-cyberSurface rounded border border-gray-800">
+              <span class="text-[10px] text-gray-400 block">WORDS</span>
+              <span id="word-count" class="text-sm font-bold text-white">0</span>
+            </div>
+            <div class="p-2 bg-cyberSurface rounded border border-gray-800">
+              <span class="text-[10px] text-cyberBlue block">EST. TOKENS</span>
+              <span id="token-count" class="text-sm font-bold text-cyberBlue">0</span>
+            </div>
+            <div class="p-2 bg-cyberSurface rounded border border-gray-800">
+              <span class="text-[10px] text-cyberGreen block">INPUT COST</span>
+              <span id="token-cost" class="text-sm font-bold text-cyberGreen">$0.0000</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Key Rules & CCDV-F Highlights -->
+        <div class="space-y-3 text-xs">
+          <div class="p-3 bg-cyberSurface border-l-4 border-cyberBlue rounded">
+            <h3 class="font-bold text-white mb-1 font-mono text-xs">Think & Budget in Tokens</h3>
+            <p class="text-gray-300 leading-relaxed">
+              The API does not count words, characters, or bytes. Pricing metering, rate limits (TPM - Tokens Per Minute), and maximum context window limits are <strong>strictly calculated in Tokens</strong>.
+            </p>
+          </div>
+
+          <div class="p-3 bg-cyberAmber/10 border border-cyberAmber/30 rounded text-gray-300">
+            <strong class="text-cyberAmber font-mono block mb-1">
+              <i class="fa-solid fa-triangle-exclamation mr-1"></i> CCDV-F EXAM TRAP
+            </strong>
+            <p>
+              Código fonte, JSON estruturado, pontuações e idiomas como Português ou Japonês consomem <strong>muito mais tokens por palavra</strong> do que texto em inglês comum devido à tokenização por subpalavras.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-xs font-mono text-gray-400 border-t border-cyberSurfaceBorder pt-2">
+        <span class="text-cyberBlue">Key Takeaway:</span> Always calculate token usage on real prompt payloads, including tool schemas and system instructions!
+      </div>
+    </div>
+
+    <!-- ================= SLIDE 4: TAKEAWAY 2 - CONTEXT WINDOW MECHANICS ================= -->
+    <div class="slide flex-col justify-between h-full" data-slide="4">
+      <div class="flex justify-between items-center border-b border-cyberSurfaceBorder pb-2">
+        <div>
+          <span class="text-xs font-mono text-cyberBlue">TAKEAWAY #2</span>
+          <h2 class="text-lg font-bold text-white">Context Window: Fixed Token Budget & Truncation Mechanics</h2>
+        </div>
+        <div class="text-xs font-mono text-cyberRose bg-cyberBg px-2.5 py-1 rounded border border-cyberRose/40">
+          Exam Focus: Error 400 vs Mid-Generation Stop
+        </div>
+      </div>
+
+      <!-- Comparison Matrix -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-auto text-xs font-mono">
+        <!-- Input Oversize Scenario -->
+        <div class="p-4 bg-cyberBg border border-cyberRose/50 rounded-lg space-y-2">
+          <div class="flex items-center justify-between text-cyberRose font-bold">
+            <span>1. OVERSIZED INPUT PROMPT</span>
+            <span class="px-2 py-0.5 bg-cyberRose/20 text-[10px] rounded">BEFORE GENERATION</span>
+          </div>
+          <div class="p-2.5 bg-black/80 rounded text-[11px] text-red-300 space-y-1">
+            <p class="text-cyberRose font-bold">HTTP 400 Bad Request</p>
+            <p>&quot;type&quot;: &quot;invalid_request_error&quot;</p>
+            <p>&quot;message&quot;: &quot;prompt is too long: 205,000 tokens &gt; max 200,000&quot;</p>
+          </div>
+          <p class="text-gray-300 font-sans text-xs">
+            A requisição <strong>falha antes de qualquer geração começar</strong>. Nenhum token de saída é faturado. É responsabilidade da aplicação cliente podar o histórico.
+          </p>
+        </div>
+
+        <!-- Output Context Ceiling Scenario -->
+        <div class="p-4 bg-cyberBg border border-cyberAmber/50 rounded-lg space-y-2">
+          <div class="flex items-center justify-between text-cyberAmber font-bold">
+            <span>2. MID-GENERATION CEILING</span>
+            <span class="px-2 py-0.5 bg-cyberAmber/20 text-[10px] rounded">DURING GENERATION</span>
+          </div>
+          <div class="p-2.5 bg-black/80 rounded text-[11px] text-amber-300 space-y-1">
+            <p class="text-cyberAmber font-bold">HTTP 200 OK (Truncated Output)</p>
+            <p>&quot;stop_reason&quot;: &quot;max_tokens&quot; | &quot;model_context_window_exceeded&quot;</p>
+            <p>&quot;text&quot;: &quot;The result of the query is {...[INCOMPLETE JSON]&quot;</p>
+          </div>
+          <p class="text-gray-300 font-sans text-xs">
+            A geração atinge o limite do `max_tokens` ou do contexto mid-stream. O modelo retorna uma resposta <strong>truncada e válida até aquele ponto</strong>.
+          </p>
+        </div>
+      </div>
+
+      <!-- Do's & Don'ts -->
+      <div class="grid grid-cols-2 gap-3 text-xs font-sans">
+        <div class="p-2.5 bg-cyberGreen/10 border border-cyberGreen/30 rounded flex items-center space-x-2">
+          <i class="fa-solid fa-circle-check text-cyberGreen text-base"></i>
+          <span><strong>DO:</strong> Implement prompt pruning, sliding window history, and summarize old turns in multi-turn apps.</span>
+        </div>
+        <div class="p-2.5 bg-cyberRose/10 border border-cyberRose/30 rounded flex items-center space-x-2">
+          <i class="fa-solid fa-circle-xmark text-cyberRose text-base"></i>
+          <span><strong>DON'T:</strong> Assume Claude will automatically trim excess conversation history for you in REST requests.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= SLIDE 5: TAKEAWAY 3 - SAMPLING & NON-DETERMINISM ================= -->
+    <div class="slide flex-col justify-between h-full" data-slide="5">
+      <div class="flex justify-between items-center border-b border-cyberSurfaceBorder pb-2">
+        <div>
+          <span class="text-xs font-mono text-cyberBlue">TAKEAWAY #3</span>
+          <h2 class="text-lg font-bold text-white">Sampling Makes Generation Non-Deterministic</h2>
+        </div>
+        <div class="text-xs font-mono text-cyberCyan bg-cyberBg px-2.5 py-1 rounded border border-cyberSurfaceBorder">
+          Testing Strategy: Evals > String Equivalence
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-auto">
+        <!-- Interactive Temperature Simulator -->
+        <div class="p-4 bg-cyberBg border border-cyberSurfaceBorder rounded-lg space-y-3">
+          <div class="flex justify-between items-center">
+            <span class="text-xs font-mono text-cyberCyan font-semibold">Simulador de Temperature & Variabilidade</span>
+            <span id="temp-val-display" class="text-xs font-mono text-cyberBlue font-bold">Temp: 0.7</span>
+          </div>
+
+          <input type="range" id="temp-slider" min="0" max="1" step="0.1" value="0.7" oninput="runTempSimulation()" class="w-full accent-cyberBlue">
+
+          <div class="space-y-1">
+            <span class="text-[10px] font-mono text-gray-400">Variância de Saída Simulação (3 chamadas idênticas):</span>
+            <div id="sim-output-1" class="p-2 bg-cyberSurface rounded text-[11px] font-mono text-gray-300 border border-gray-800">Run 1: "To process the user request, we must validate..."</div>
+            <div id="sim-output-2" class="p-2 bg-cyberSurface rounded text-[11px] font-mono text-gray-300 border border-gray-800">Run 2: "First, let us verify the user credentials..."</div>
+            <div id="sim-output-3" class="p-2 bg-cyberSurface rounded text-[11px] font-mono text-gray-300 border border-gray-800">Run 3: "Verification step: Checking payload integrity..."</div>
+          </div>
+        </div>
+
+        <!-- Testing & Evals Explanation -->
+        <div class="space-y-3 text-xs">
+          <div class="p-3 bg-cyberSurface border-l-4 border-cyberRose rounded">
+            <h3 class="font-bold text-white mb-1 font-mono">Por que Unit Tests de String exata falham?</h3>
+            <p class="text-gray-300 leading-relaxed">
+              Sampling probabilistic means exact string matches (e.g., `assert output == "OK"`) are inherently fragile. Even at `temperature: 0.0`, minor model tweaks or floating-point nuances can vary wording.
+            </p>
+          </div>
+
+          <div class="p-3 bg-cyberGreen/10 border border-cyberGreen/30 rounded text-gray-300 font-sans">
+            <strong class="text-cyberGreen font-mono block mb-1">
+              <i class="fa-solid fa-vial-circle-check mr-1"></i> A Solução de Engenharia: Evals
+            </strong>
+            <p>
+              Construa <strong>Evals (System Evaluations)</strong> baseados em asserções comportamentais: validação de Schema JSON, classificadores LLM-as-a-judge e verificações semânticas em vez de comparações literais de texto.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-xs font-mono text-gray-400 border-t border-cyberSurfaceBorder pt-2">
+        <span class="text-cyberBlue">Exam Rule:</span> Evals are the only reliable way to measure prompt performance and guard against regressions.
+      </div>
+    </div>
+
+    <!-- ================= SLIDE 6: TAKEAWAY 4 - MODEL CHOICES & REASONING LEVERS ================= -->
+    <div class="slide flex-col justify-between h-full" data-slide="6">
+      <div class="flex justify-between items-center border-b border-cyberSurfaceBorder pb-2">
+        <div>
+          <span class="text-xs font-mono text-cyberBlue">TAKEAWAY #4</span>
+          <h2 class="text-lg font-bold text-white">Model Choice & Reasoning Mode are Separate, Composable Levers</h2>
+        </div>
+        <div class="text-xs font-mono text-cyberAmber bg-cyberBg px-2.5 py-1 rounded border border-cyberAmber/30">
+          Architecture Rule: Scale Capabilities Moderately
+        </div>
+      </div>
+
+      <!-- Matrix Interactive Tool -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3 my-auto">
+        <!-- Haiku Card -->
+        <div onclick="selectModelTier('haiku')" id="tier-haiku" class="p-3 bg-cyberBg border-2 border-cyberBlue rounded-lg cursor-pointer hover:border-cyberBlue transition relative">
+          <div class="flex justify-between items-center mb-1">
+            <span class="font-mono text-xs font-bold text-cyberBlue">Claude Haiku</span>
+            <span class="text-[10px] font-mono px-1.5 py-0.5 bg-cyberBlue/20 text-cyberBlue rounded">Fast & Light</span>
+          </div>
+          <p class="text-[11px] text-gray-400 mb-2">Ideal for lightweight tasks, quick classification, and high-volume basic extractions.</p>
+          <div class="text-[10px] font-mono text-gray-300 space-y-1 border-t border-gray-800 pt-1.5">
+            <div>Cost: <span class="text-cyberGreen">$</span></div>
+            <div>Latency: <span class="text-cyberGreen">Ultra Fast</span></div>
+          </div>
+        </div>
+
+        <!-- Sonnet Card -->
+        <div onclick="selectModelTier('sonnet')" id="tier-sonnet" class="p-3 bg-cyberBg border border-cyberSurfaceBorder rounded-lg cursor-pointer hover:border-cyberBlue transition relative">
+          <div class="flex justify-between items-center mb-1">
+            <span class="font-mono text-xs font-bold text-white">Claude Sonnet</span>
+            <span class="text-[10px] font-mono px-1.5 py-0.5 bg-cyberCyan/20 text-cyberCyan rounded">Balanced Workhorse</span>
+          </div>
+          <p class="text-[11px] text-gray-400 mb-2">Optimal balance of intelligence, coding capability, and operational cost.</p>
+          <div class="text-[10px] font-mono text-gray-300 space-y-1 border-t border-gray-800 pt-1.5">
+            <div>Cost: <span class="text-cyberAmber">$$</span></div>
+            <div>Latency: <span class="text-cyberCyan">Moderate</span></div>
+          </div>
+        </div>
+
+        <!-- Opus Card -->
+        <div onclick="selectModelTier('opus')" id="tier-opus" class="p-3 bg-cyberBg border border-cyberSurfaceBorder rounded-lg cursor-pointer hover:border-cyberBlue transition relative">
+          <div class="flex justify-between items-center mb-1">
+            <span class="font-mono text-xs font-bold text-cyberRose">Claude Opus</span>
+            <span class="text-[10px] font-mono px-1.5 py-0.5 bg-cyberRose/20 text-cyberRose rounded">Max Intelligence</span>
+          </div>
+          <p class="text-[11px] text-gray-400 mb-2">Top-tier reasoning for highly complex analysis, deep research, and difficult agentic tasks.</p>
+          <div class="text-[10px] font-mono text-gray-300 space-y-1 border-t border-gray-800 pt-1.5">
+            <div>Cost: <span class="text-cyberRose">$$$$</span></div>
+            <div>Latency: <span class="text-cyberRose">Higher</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Composability Callout -->
+      <div id="model-recommendation-box" class="p-3 bg-cyberSurface border border-cyberBlue/40 rounded text-xs space-y-1">
+        <div class="flex items-center justify-between font-mono">
+          <span class="text-cyberBlue font-bold"><i class="fa-solid fa-sliders mr-1"></i> Composable Lever Philosophy</span>
+          <span class="text-[10px] text-gray-400">Rule of Thumb</span>
+        </div>
+        <p class="text-gray-300 text-[11px]">
+          &quot;Pick the smallest model and simplest reasoning/prompting that meets your eval baseline. Add capability (e.g. switch from Haiku to Sonnet or enable extended thinking) <strong>only where the eval explicitly dictates you need it</strong>.&quot;
+        </p>
+      </div>
+    </div>
+
+    <!-- ================= SLIDE 7: TAKEAWAY 5 - API DELIVERY PROTOCOLS ================= -->
+    <div class="slide flex-col justify-between h-full" data-slide="7">
+      <div class="flex justify-between items-center border-b border-cyberSurfaceBorder pb-2">
+        <div>
+          <span class="text-xs font-mono text-cyberBlue">TAKEAWAY #5</span>
+          <h2 class="text-lg font-bold text-white">API Delivery Protocols & Architecture Modes</h2>
+        </div>
+        <div class="text-xs font-mono text-cyberCyan bg-cyberBg px-2.5 py-1 rounded border border-cyberSurfaceBorder">
+          Latency vs Waiting User
+        </div>
+      </div>
+
+      <!-- Decision Matrix Table -->
+      <div class="overflow-x-auto my-auto">
+        <table class="w-full text-left font-mono text-xs border-collapse">
+          <thead>
+            <tr class="bg-cyberBg border-b border-cyberSurfaceBorder text-cyberCyan">
+              <th class="p-2.5">PROTOCOL</th>
+              <th class="p-2.5">USER WAITING?</th>
+              <th class="p-2.5">PRIMARY USE CASE</th>
+              <th class="p-2.5">ADVANTAGE / TRADEOFF</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-cyberSurfaceBorder text-gray-300 text-[11px]">
+            <tr class="hover:bg-cyberBg/50">
+              <td class="p-2.5 font-bold text-white">Synchronous REST</td>
+              <td class="p-2.5 text-cyberAmber">Yes (Short)</td>
+              <td class="p-2.5">Quick programmatic APIs, simple scripts</td>
+              <td class="p-2.5 text-gray-400">Blocking HTTP call. Subject to timeouts on long generations.</td>
+            </tr>
+            <tr class="hover:bg-cyberBg/50 bg-cyberBlue/5">
+              <td class="p-2.5 font-bold text-cyberBlue">Streaming (SSE)</td>
+              <td class="p-2.5 text-cyberGreen">Yes (Interactive)</td>
+              <td class="p-2.5">Chat UIs, real-time token streaming</td>
+              <td class="p-2.5 text-gray-400">Perceived zero latency. Requires handling stream event chunks.</td>
+            </tr>
+            <tr class="hover:bg-cyberBg/50">
+              <td class="p-2.5 font-bold text-cyberCyan">Async / Await</td>
+              <td class="p-2.5 text-cyberAmber">Non-blocking UI</td>
+              <td class="p-2.5">Web app backend handlers, workflow engines</td>
+              <td class="p-2.5 text-gray-400">Prevents main thread blocking while awaiting response.</td>
+            </tr>
+            <tr class="hover:bg-cyberBg/50 bg-cyberGreen/5">
+              <td class="p-2.5 font-bold text-cyberGreen">Message Batches API</td>
+              <td class="p-2.5 text-cyberRose">No (Offline)</td>
+              <td class="p-2.5">Bulk indexing, overnight evaluation suites</td>
+              <td class="p-2.5 text-cyberGreen">50% Cost Discount + huge throughput limits (asynchronous 24h window).</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="p-2.5 bg-cyberSurface border border-cyberAmber/30 rounded text-xs text-gray-300 flex items-center justify-between font-mono">
+        <span><strong class="text-cyberAmber">Exam Rule:</strong> If user is waiting, use Stream/Sync. If bulk offline processing, ALWAYS choose Message Batches API.</span>
+      </div>
+    </div>
+
+    <!-- ================= SLIDE 8: INTERACTIVE CERTIFICATION CHALLENGE ================= -->
+    <div class="slide flex-col justify-between h-full" data-slide="8">
+      <div class="flex justify-between items-center border-b border-cyberSurfaceBorder pb-2">
+        <div>
+          <span class="text-xs font-mono text-cyberAmber">EXAM SIMULATOR</span>
+          <h2 class="text-lg font-bold text-white">CCDV-F Certification Challenge</h2>
+        </div>
+        <div class="text-xs font-mono text-gray-400">
+          Questão <span id="quiz-q-num">1</span> de 3
+        </div>
+      </div>
+
+      <!-- Quiz Body -->
+      <div id="quiz-container" class="my-auto bg-cyberBg p-4 rounded-lg border border-cyberSurfaceBorder space-y-4">
+        <p id="quiz-question" class="text-xs sm:text-sm font-semibold text-gray-200">
+          <!-- Question text inserted via JS -->
+        </p>
+
+        <div id="quiz-options" class="space-y-2 text-xs font-mono">
+          <!-- Options rendered via JS -->
+        </div>
+
+        <div id="quiz-feedback" class="hidden p-3 rounded text-xs font-sans">
+          <!-- Feedback rendered via JS -->
+        </div>
+      </div>
+
+      <div class="flex justify-between items-center text-xs font-mono">
+        <span id="quiz-score-display" class="text-cyberCyan">Score: 0/3</span>
+        <button id="quiz-next-btn" onclick="nextQuizQuestion()" class="hidden px-4 py-1.5 bg-cyberBlue hover:bg-blue-600 text-white rounded font-semibold transition">
+          Próxima Questão <i class="fa-solid fa-arrow-right ml-1"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- ================= SLIDE 9: RECAP & MODULE 2 TEASER ================= -->
+    <div class="slide flex-col justify-between h-full" data-slide="9">
+      <div class="flex justify-between items-center border-b border-cyberSurfaceBorder pb-2">
+        <div>
+          <span class="text-xs font-mono text-cyberGreen">SUMMARY & ROADMAP</span>
+          <h2 class="text-lg font-bold text-white">Elite Cheat Sheet & What Comes Next</h2>
+        </div>
+        <div class="text-xs font-mono text-cyberBlue bg-cyberBg px-2.5 py-1 rounded border border-cyberBlue/40">
+          Module 1 Complete
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-auto text-xs">
+        <!-- 5 Takeaways Cheat Sheet -->
+        <div class="bg-cyberBg p-3.5 rounded-lg border border-cyberSurfaceBorder space-y-2">
+          <h3 class="font-mono text-cyberGreen font-bold border-b border-gray-800 pb-1">5 Key Takeaways Summary</h3>
+          <ul class="space-y-1.5 text-[11px] text-gray-300">
+            <li class="flex items-start space-x-1.5">
+              <span class="text-cyberBlue font-mono font-bold">1.</span>
+              <span><strong>Tokens:</strong> Standard unit for metering input, output, and budget costs.</span>
+            </li>
+            <li class="flex items-start space-x-1.5">
+              <span class="text-cyberBlue font-mono font-bold">2.</span>
+              <span><strong>Context Window:</strong> Fixed budget. Oversize inputs throw HTTP 400; output max tokens truncate with `stop_reason`.</span>
+            </li>
+            <li class="flex items-start space-x-1.5">
+              <span class="text-cyberBlue font-mono font-bold">3.</span>
+              <span><strong>Sampling:</strong> Non-deterministic. Test using system evals, never string equality.</span>
+            </li>
+            <li class="flex items-start space-x-1.5">
+              <span class="text-cyberBlue font-mono font-bold">4.</span>
+              <span><strong>Composable Levers:</strong> Start with smallest model (Haiku) & scale capability only when evals dictate.</span>
+            </li>
+            <li class="flex items-start space-x-1.5">
+              <span class="text-cyberBlue font-mono font-bold">5.</span>
+              <span><strong>API Protocols:</strong> Match pattern (Sync, Stream, Async, Batch) to user wait state and real-time vs batch needs.</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Teaser Module 2 Card -->
+        <div class="bg-gradient-to-br from-cyberBg via-cyberSurface to-cyberBlue/10 p-3.5 rounded-lg border border-cyberBlue/40 flex flex-col justify-between">
+          <div>
+            <span class="text-[10px] font-mono text-cyberCyan font-bold uppercase tracking-wider block mb-1">WHAT COMES NEXT</span>
+            <h3 class="font-bold text-white text-sm mb-2">Module 2: Putting Foundations to Work</h3>
+            <p class="text-[11px] text-gray-300 leading-relaxed mb-3">
+              Module 2 translates these five foundational rules into real-world software architecture.
+            </p>
+            <div class="grid grid-cols-2 gap-2 text-[10px] font-mono text-gray-300">
+              <div class="p-1.5 bg-black/40 rounded border border-gray-800"><i class="fa-solid fa-terminal text-cyberBlue mr-1"></i> Prompting Craft</div>
+              <div class="p-1.5 bg-black/40 rounded border border-gray-800"><i class="fa-solid fa-plug text-cyberCyan mr-1"></i> Tool Schemas</div>
+              <div class="p-1.5 bg-black/40 rounded border border-gray-800"><i class="fa-solid fa-stream text-cyberAmber mr-1"></i> Streaming Protocol</div>
+              <div class="p-1.5 bg-black/40 rounded border border-gray-800"><i class="fa-solid fa-robot text-cyberGreen mr-1"></i> Agent Construction</div>
+            </div>
+          </div>
+
+          <div class="mt-3 pt-2 border-t border-cyberSurfaceBorder flex justify-between items-center text-[11px] font-mono">
+            <span class="text-cyberGreen"><i class="fa-solid fa-circle-check mr-1"></i> Ready for Module 2</span>
+            <a href="../index.html" class="px-2.5 py-1 bg-cyberBlue/20 hover:bg-cyberBlue text-cyberBlue hover:text-white border border-cyberBlue/40 rounded transition flex items-center gap-1">
+              <i class="fa-solid fa-arrow-left text-[10px]"></i> Curriculum Hub
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-xs font-mono text-center text-gray-400 border-t border-cyberSurfaceBorder pt-2">
+        Parabéns! Você concluiu a revisão do Módulo 1. Pressione <kbd class="px-1 py-0.5 bg-cyberBg border border-gray-700 rounded text-gray-200">←</kbd> para rever os slides ou refazer o simulador.
+      </div>
+    </div>
+
+  </main>
+
+  <!-- BOTTOM SLIDE CONTROLS BAR -->
+  <footer class="w-full max-w-[1280px] flex items-center justify-between py-2.5 px-4 mt-2 bg-cyberSurface/80 border border-cyberSurfaceBorder rounded-lg backdrop-blur">
+    <button id="btn-prev" onclick="prevSlide()" class="px-4 py-1.5 bg-cyberBg hover:bg-gray-800 border border-cyberSurfaceBorder text-gray-300 hover:text-white rounded text-xs font-mono transition flex items-center space-x-1.5">
+      <i class="fa-solid fa-chevron-left"></i>
+      <span>Anterior</span>
+    </button>
+
+    <div class="text-xs font-mono text-gray-400 hidden sm:block">
+      <span class="text-cyberCyan">CCDV-F</span> • CyberDyne Systems Ops
+    </div>
+
+    <button id="btn-next" onclick="nextSlide()" class="px-4 py-1.5 bg-cyberBlue hover:bg-blue-600 text-white rounded text-xs font-mono transition flex items-center space-x-1.5 font-semibold">
+      <span>Próximo</span>
+      <i class="fa-solid fa-chevron-right"></i>
+    </button>
+  </footer>
+
+  <!-- INTERACTIVE LOGIC & ENGINE SCRIPT -->
+  <script>
+    // State Variables
+    let currentSlide = 1;
+    const totalSlides = 9;
+
+    // Slide Titles for Indicator Pills
+    const slideTitles = [
+      "Missão", "Incidente", "1. Tokens", "2. Contexto",
+      "3. Sampling", "4. Modelos", "5. Modos API", "Simulado", "Resumo"
+    ];
+
+    // Initialize Page
+    document.addEventListener('DOMContentLoaded', () => {
+      renderPills();
+      updateSlideDisplay();
+      calculateTokens();
+      runTempSimulation();
+      loadQuizQuestion();
+
+      // Keyboard Event Listeners
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === 'Space') {
+          nextSlide();
+        } else if (e.key === 'ArrowLeft') {
+          prevSlide();
+        }
+      });
+    });
+
+    // Render Navigation Indicator Pills
+    function renderPills() {
+      const container = document.getElementById('pill-indicators');
+      container.innerHTML = '';
+      for (let i = 1; i <= totalSlides; i++) {
+        const pill = document.createElement('button');
+        pill.className = `px-2 py-0.5 text-[10px] font-mono rounded transition ${
+          i === currentSlide
+            ? 'bg-cyberBlue text-white font-bold'
+            : 'bg-cyberBg text-gray-400 hover:text-gray-200 border border-cyberSurfaceBorder'
+        }`;
+        pill.innerText = `${i}. ${slideTitles[i-1]}`;
+        pill.onclick = () => goToSlide(i);
+        container.appendChild(pill);
+      }
+    }
+
+    // Navigation Logic
+    function updateSlideDisplay() {
+      document.querySelectorAll('.slide').forEach((slide, idx) => {
+        if (idx + 1 === currentSlide) {
+          slide.classList.add('active');
+        } else {
+          slide.classList.remove('active');
+        }
+      });
+
+      document.getElementById('current-slide-num').innerText = currentSlide;
+      document.getElementById('total-slides-num').innerText = totalSlides;
+
+      // Update Prev/Next Buttons Disabled State
+      document.getElementById('btn-prev').disabled = currentSlide === 1;
+      document.getElementById('btn-prev').style.opacity = currentSlide === 1 ? '0.5' : '1';
+
+      if (currentSlide === totalSlides) {
+        document.getElementById('btn-next').innerText = "Finalizar";
+      } else {
+        document.getElementById('btn-next').innerHTML = `<span>Próximo</span> <i class="fa-solid fa-chevron-right ml-1"></i>`;
+      }
+
+      renderPills();
+    }
+
+    function goToSlide(slideNum) {
+      if (slideNum >= 1 && slideNum <= totalSlides) {
+        currentSlide = slideNum;
+        updateSlideDisplay();
+      }
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides) {
+        currentSlide++;
+        updateSlideDisplay();
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 1) {
+        currentSlide--;
+        updateSlideDisplay();
+      }
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      }
+    }
+
+    // ================= SLIDE 3: TOKEN CALCULATOR SIMULATION =================
+    function calculateTokens() {
+      const text = document.getElementById('token-input-text').value || "Explain Claude context window mechanisms for CCDV-F certification.";
+      const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+      // Approximation: 1 word ~ 1.33 tokens
+      const estTokens = Math.ceil(words * 1.33);
+      // Cost estimation based on Sonnet rates (~$3 per million tokens input)
+      const cost = (estTokens / 1000000) * 3.0;
+
+      document.getElementById('word-count').innerText = words;
+      document.getElementById('token-count').innerText = estTokens;
+      document.getElementById('token-cost').innerText = `$${cost.toFixed(6)}`;
+    }
+
+    // ================= SLIDE 5: TEMPERATURE SIMULATOR =================
+    function runTempSimulation() {
+      const temp = parseFloat(document.getElementById('temp-slider').value);
+      document.getElementById('temp-val-display').innerText = `Temp: ${temp.toFixed(1)}`;
+
+      const out1 = document.getElementById('sim-output-1');
+      const out2 = document.getElementById('sim-output-2');
+      const out3 = document.getElementById('sim-output-3');
+
+      if (temp === 0) {
+        out1.innerText = 'Run 1: "To process the user request, we must validate payload structure."';
+        out2.innerText = 'Run 2: "To process the user request, we must validate payload structure."';
+        out3.innerText = 'Run 3: "To process the user request, we must validate payload structure."';
+      } else if (temp <= 0.5) {
+        out1.innerText = 'Run 1: "To process the user request, we must validate payload structure."';
+        out2.innerText = 'Run 2: "To process the request properly, we must validate payload data."';
+        out3.innerText = 'Run 3: "To handle the incoming user prompt, payload verification is needed."';
+      } else {
+        out1.innerText = 'Run 1: "Initiating validation sequence for user payload parameters..."';
+        out2.innerText = 'Run 2: "First step in handling this query: full payload verification."';
+        out3.innerText = 'Run 3: "Let\'s inspect the incoming JSON payload to ensure integrity."';
+      }
+    }
+
+    // ================= SLIDE 6: MODEL TIER SELECTION =================
+    function selectModelTier(tier) {
+      const haiku = document.getElementById('tier-haiku');
+      const sonnet = document.getElementById('tier-sonnet');
+      const opus = document.getElementById('tier-opus');
+      const box = document.getElementById('model-recommendation-box');
+
+      haiku.className = haiku.className.replace('border-2 border-cyberBlue', 'border border-cyberSurfaceBorder');
+      sonnet.className = sonnet.className.replace('border-2 border-cyberBlue', 'border border-cyberSurfaceBorder');
+      opus.className = opus.className.replace('border-2 border-cyberBlue', 'border border-cyberSurfaceBorder');
+
+      if (tier === 'haiku') {
+        haiku.className = haiku.className.replace('border border-cyberSurfaceBorder', 'border-2 border-cyberBlue');
+        box.innerHTML = `
+          <div class="flex items-center justify-between font-mono">
+            <span class="text-cyberBlue font-bold"><i class="fa-solid fa-bolt mr-1"></i> Selected: Claude Haiku</span>
+            <span class="text-[10px] text-cyberGreen">Lowest Cost & Latency</span>
+          </div>
+          <p class="text-gray-300 text-[11px] mt-1">
+            Ideal default starting tier for simple routing, classification, and text extraction. If evals pass on Haiku, do NOT upgrade!
+          </p>`;
+      } else if (tier === 'sonnet') {
+        sonnet.className = sonnet.className.replace('border border-cyberSurfaceBorder', 'border-2 border-cyberBlue');
+        box.innerHTML = `
+          <div class="flex items-center justify-between font-mono">
+            <span class="text-white font-bold"><i class="fa-solid fa-balance-scale mr-1"></i> Selected: Claude Sonnet</span>
+            <span class="text-[10px] text-cyberCyan">Optimal Workhorse</span>
+          </div>
+          <p class="text-gray-300 text-[11px] mt-1">
+            Best default for complex software engineering, coding, tool use, and multi-step reasoning tasks.
+          </p>`;
+      } else if (tier === 'opus') {
+        opus.className = opus.className.replace('border border-cyberSurfaceBorder', 'border-2 border-cyberBlue');
+        box.innerHTML = `
+          <div class="flex items-center justify-between font-mono">
+            <span class="text-cyberRose font-bold"><i class="fa-solid fa-brain mr-1"></i> Selected: Claude Opus</span>
+            <span class="text-[10px] text-cyberRose">Maximum Intelligence</span>
+          </div>
+          <p class="text-gray-300 text-[11px] mt-1">
+            Reserved for deeply intricate reasoning, open-ended research, and highly nuanced architectural decisions.
+          </p>`;
+      }
+    }
+
+    // ================= SLIDE 8: CERTIFICATION QUIZ ENGINE =================
+    const quizData = [
+      {
+        question: "1. An application sends a 205,000 token prompt payload to Claude API (Max Context Limit: 200,000 tokens). What is the exact API behavior?",
+        options: [
+          { text: "A) Claude automatically truncates the prompt to 200k tokens and generates an output.", correct: false },
+          { text: "B) The API immediately returns an HTTP 400 Bad Request error before generation.", correct: true },
+          { text: "C) Claude processes the input but returns stop_reason: 'max_tokens'.", correct: false },
+          { text: "D) The request succeeds but input tokens are billed at 2x penalty rate.", correct: false }
+        ],
+        explanation: "EXAM TRAP ALERT: Input prompts exceeding the maximum context window fail BEFORE generation with an HTTP 400 Bad Request error. Truncation with stop_reason occurs mid-generation when output token limits are reached!"
+      },
+      {
+        question: "2. Your team's CI/CD unit test suite fails intermittently when asserting string equality on Claude's generated output (`assert response == 'OK'`). What is the recommended fix?",
+        options: [
+          { text: "A) Always set temperature to -1.0 in API calls.", correct: false },
+          { text: "B) Replace exact string matching with behavioural Evals (schema validation, LLM-as-a-judge).", correct: true },
+          { text: "C) Switch from REST API to Message Batches API.", correct: false },
+          { text: "D) Increase max_tokens parameter to avoid sampling randomness.", correct: false }
+        ],
+        explanation: "Sampling makes generation non-deterministic. Exact string matching in unit tests is inherently fragile. Evals are designed to measure semantic compliance and schema validity."
+      },
+      {
+        question: "3. You are building an offline nightly pipeline that processes 500,000 document extractions overnight where latency is not an issue. Which API protocol should you select?",
+        options: [
+          { text: "A) Synchronous REST API with high timeout limits.", correct: false },
+          { text: "B) Server-Sent Events (SSE) Streaming protocol.", correct: false },
+          { text: "C) Message Batches API (50% discount, asynchronous 24h window).", correct: true },
+          { text: "D) Async WebSocket feed.", correct: false }
+        ],
+        explanation: "For bulk offline workloads where users are not waiting, the Message Batches API provides huge throughput capacity and a 50% cost reduction."
+      }
+    ];
+
+    let currentQuizIdx = 0;
+    let quizScore = 0;
+    let quizAnswered = false;
+
+    function loadQuizQuestion() {
+      quizAnswered = false;
+      const q = quizData[currentQuizIdx];
+      document.getElementById('quiz-q-num').innerText = currentQuizIdx + 1;
+      document.getElementById('quiz-question').innerText = q.question;
+
+      const optsContainer = document.getElementById('quiz-options');
+      optsContainer.innerHTML = '';
+
+      q.options.forEach((opt, idx) => {
+        const btn = document.createElement('button');
+        btn.className = "w-full text-left p-2.5 rounded bg-cyberSurface hover:bg-cyberSurfaceBorder border border-gray-700 text-gray-200 transition font-mono text-xs flex items-center justify-between";
+        btn.innerHTML = `<span>${opt.text}</span>`;
+        btn.onclick = () => checkQuizAnswer(idx);
+        optsContainer.appendChild(btn);
+      });
+
+      document.getElementById('quiz-feedback').className = "hidden";
+      document.getElementById('quiz-next-btn').classList.add('hidden');
+    }
+
+    function checkQuizAnswer(selectedIdx) {
+      if (quizAnswered) return;
+      quizAnswered = true;
+
+      const q = quizData[currentQuizIdx];
+      const isCorrect = q.options[selectedIdx].correct;
+
+      if (isCorrect) quizScore++;
+
+      document.getElementById('quiz-score-display').innerText = `Score: ${quizScore}/3`;
+
+      const feedback = document.getElementById('quiz-feedback');
+      feedback.classList.remove('hidden');
+
+      if (isCorrect) {
+        feedback.className = "p-3 rounded text-xs font-sans bg-cyberGreen/10 border border-cyberGreen/40 text-cyberGreen";
+        feedback.innerHTML = `<strong><i class="fa-solid fa-circle-check mr-1"></i> Resposta Correta!</strong><p class="mt-1 text-gray-300 text-[11px]">${q.explanation}</p>`;
+      } else {
+        feedback.className = "p-3 rounded text-xs font-sans bg-cyberRose/10 border border-cyberRose/40 text-cyberRose";
+        feedback.innerHTML = `<strong><i class="fa-solid fa-circle-xmark mr-1"></i> Resposta Incorreta!</strong><p class="mt-1 text-gray-300 text-[11px]">${q.explanation}</p>`;
+      }
+
+      document.getElementById('quiz-next-btn').classList.remove('hidden');
+    }
+
+    function nextQuizQuestion() {
+      if (currentQuizIdx < quizData.length - 1) {
+        currentQuizIdx++;
+        loadQuizQuestion();
+      } else {
+        // Quiz Complete
+        document.getElementById('quiz-container').innerHTML = `
+          <div class="text-center py-6 space-y-3">
+            <i class="fa-solid fa-trophy text-4xl text-cyberAmber"></i>
+            <h3 class="text-lg font-bold text-white">Simulado CCDV-F Concluído!</h3>
+            <p class="text-xs font-mono text-cyberCyan">Sua Pontuação Final: ${quizScore} / 3 (${Math.round((quizScore/3)*100)}%)</p>
+            <button onclick="resetQuiz()" class="px-4 py-1.5 bg-cyberBlue hover:bg-blue-600 text-white rounded font-mono text-xs font-bold transition">
+              Refazer Simulado
+            </button>
+          </div>
+        `;
+        document.getElementById('quiz-next-btn').classList.add('hidden');
+      }
+    }
+
+    function resetQuiz() {
+      currentQuizIdx = 0;
+      quizScore = 0;
+      document.getElementById('quiz-score-display').innerText = `Score: 0/3`;
+      loadQuizQuestion();
+    }
+  </script>
+</body>
+</html>

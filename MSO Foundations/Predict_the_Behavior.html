@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="h-full bg-slate-950">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CCDV-F Ep. 02: Predict the Behavior Interativo</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Fontes Google -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome para Ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cyber: {
+                            bg: '#0B0F19',
+                            surface: '#111827',
+                            card: '#1F2937',
+                            border: '#374151',
+                            blue: '#3B82F6',
+                            cyan: '#06B6D4',
+                            amber: '#F59E0B',
+                            red: '#EF4444',
+                            green: '#10B981'
+                        }
+                    },
+                    fontFamily: {
+                        mono: ['"Fira Code"', 'monospace'],
+                        sans: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Estilos e Efeitos Cyberpunk Terminal */
+        body {
+            background-color: #0B0F19;
+            color: #E5E7EB;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        .font-mono {
+            font-family: 'Fira Code', monospace;
+        }
+
+        .terminal-glow-cyan {
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.15);
+        }
+
+        .terminal-glow-blue {
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.2);
+        }
+
+        .scanline {
+            background: linear-gradient(
+                to bottom,
+                rgba(255,255,255,0),
+                rgba(255,255,255,0) 50%,
+                rgba(0, 0, 0, 0.25) 50%,
+                rgba(0, 0, 0, 0.25)
+            );
+            background-size: 100% 4px;
+            pointer-events: none;
+        }
+
+        /* Animação de transição dos slides */
+        .slide-container {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .slide-container.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        /* Custom Scrollbar no código/listas */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #111827;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #374151;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #06B6D4;
+        }
+    </style>
+</head>
+<body class="h-full flex flex-col justify-center items-center p-2 sm:p-4 md:p-6 select-none">
+
+    <!-- Container Principal do Slide (Aspect Ratio 16:9 Responsivo) -->
+    <div id="deck-viewport" class="relative w-full max-w-[1280px] aspect-[16/9] bg-cyber-bg border border-slate-800 rounded-xl overflow-hidden shadow-2xl flex flex-col justify-between terminal-glow-blue">
+        
+        <!-- Efeito visual de Scanline (Cyberpunk Grid) -->
+        <div class="absolute inset-0 scanline z-50 opacity-30 pointer-events-none"></div>
+
+        <!-- Cabeçalho do Terminal (Status & Nav Header) -->
+        <header class="relative z-20 bg-cyber-surface border-b border-slate-800 px-4 py-2.5 flex items-center justify-between text-xs font-mono">
+            <div class="flex items-center gap-3">
+                <div class="flex gap-1.5">
+                    <span class="w-3 h-3 rounded-full bg-red-500/80 inline-block"></span>
+                    <span class="w-3 h-3 rounded-full bg-amber-500/80 inline-block"></span>
+                    <span class="w-3 h-3 rounded-full bg-emerald-500/80 inline-block"></span>
+                </div>
+                <a href="../index.html" class="text-xs font-mono text-gray-300 hover:text-cyber-cyan transition flex items-center gap-1.5 px-2 py-1 rounded bg-slate-900 border border-slate-700 hover:border-cyber-cyan/50" title="Return to Curriculum Hub">
+                    <span class="text-[10px]">←</span>
+                    <span class="font-semibold">CURRICULUM HUB</span>
+                </a>
+                <span class="text-slate-400 border-l border-slate-700 pl-3">
+                    <i class="fa-solid fa-terminal text-cyber-cyan mr-1.5"></i>CCDV-F // EPISODE 02: PREDICT THE BEHAVIOR
+                </span>
+            </div>
+            <div class="flex items-center gap-4 text-slate-400">
+                <span id="system-status" class="flex items-center gap-1.5 text-emerald-400">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> SYSTEM ONLINE
+                </span>
+                <span id="slide-number-display" class="bg-slate-800 text-cyber-cyan px-2.5 py-1 rounded border border-slate-700">
+                    SLIDE 01 / 08
+                </span>
+            </div>
+        </header>
+
+        <!-- ÁREA DOS SLIDES (CONTEÚDO DINÂMICO) -->
+        <main class="relative z-10 flex-1 overflow-y-auto p-6 md:p-8 flex flex-col justify-center">
+
+            <!-- SLIDE 1: CAPA DA MISSAO -->
+            <section id="slide-1" class="slide-container active flex-col justify-between h-full">
+                <div class="flex flex-col justify-center h-full max-w-4xl mx-auto space-y-6">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyber-cyan/10 border border-cyber-cyan/30 text-cyber-cyan text-xs font-mono w-fit">
+                        <i class="fa-solid fa-microchip"></i> CLAUDE CERTIFIED DEVELOPER FOUNDATIONS (CCDV-F)
+                    </div>
+                    
+                    <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight text-white leading-tight">
+                        Predict the Behavior: <br>
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyber-cyan via-cyber-blue to-purple-500">
+                            Sampling, Prompting Mode, Request Shape & Context Budget
+                        </span>
+                    </h1>
+
+                    <p class="text-slate-300 text-base md:text-lg leading-relaxed">
+                        Investigue e resolva falhas críticas no pipeline de IA da CyberCore Corp. Entenda como configurar Parâmetros de Amostragem, Modos de Prompt, Formatos de Requisição e Janelas de Contexto para aprovação no Exame Oficial Anthropic CCDV-F.
+                    </p>
+
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 py-2 font-mono text-xs">
+                        <div class="bg-cyber-surface border border-slate-800 p-3 rounded-lg">
+                            <span class="text-slate-500 block">FOUNDATION 1</span>
+                            <span class="text-cyber-cyan font-semibold">Temperature & Sampling</span>
+                        </div>
+                        <div class="bg-cyber-surface border border-slate-800 p-3 rounded-lg">
+                            <span class="text-slate-500 block">FOUNDATION 2</span>
+                            <span class="text-cyber-cyan font-semibold">Zero-shot vs Multi-shot</span>
+                        </div>
+                        <div class="bg-cyber-surface border border-slate-800 p-3 rounded-lg">
+                            <span class="text-slate-500 block">FOUNDATION 3</span>
+                            <span class="text-cyber-cyan font-semibold">Request Shape (Batches)</span>
+                        </div>
+                        <div class="bg-cyber-surface border border-slate-800 p-3 rounded-lg">
+                            <span class="text-slate-500 block">FOUNDATION 4</span>
+                            <span class="text-cyber-cyan font-semibold">Context Ceiling & Error</span>
+                        </div>
+                    </div>
+
+                    <div class="pt-2">
+                        <button onclick="goToSlide(2)" class="px-6 py-3 bg-cyber-blue hover:bg-blue-600 text-white font-mono font-semibold rounded-lg shadow-lg shadow-blue-500/20 flex items-center gap-2 transition-all">
+                            <i class="fa-solid fa-play text-sm"></i> INICIAR INVESTIGAÇÃO DO INCIDENTE
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 2: O INCIDENTE EM PRODUÇÃO -->
+            <section id="slide-2" class="slide-container flex-col justify-center h-full space-y-6">
+                <div>
+                    <span class="text-cyber-amber font-mono text-xs tracking-wider uppercase block mb-1">
+                        <i class="fa-solid fa-triangle-exclamation mr-1"></i> INCIDENT LOG #2026-042
+                    </span>
+                    <h2 class="text-2xl md:text-3xl font-bold text-white">System Breakdown: Pipeline da CyberCore Corp</h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Cards de Sintomas do Problema Real -->
+                    <div class="bg-cyber-surface border border-red-500/30 p-4 rounded-xl space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-red-400 font-mono text-xs font-bold">FLAW 1: Classification Variance</span>
+                            <span class="text-xs bg-red-500/10 text-red-400 border border-red-500/20 px-2 py-0.5 rounded font-mono">Temp Bug</span>
+                        </div>
+                        <p class="text-sm text-slate-300">
+                            Classificador de suporte retornando labels diferentes para a mesma mensagem do usuário em chamadas repetidas, quebrando o roteamento de tickets.
+                        </p>
+                    </div>
+
+                    <div class="bg-cyber-surface border border-red-500/30 p-4 rounded-xl space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-red-400 font-mono text-xs font-bold">FLAW 2: Malformed Output Shape</span>
+                            <span class="text-xs bg-red-500/10 text-red-400 border border-red-500/20 px-2 py-0.5 rounded font-mono">Zero-shot Failure</span>
+                        </div>
+                        <p class="text-sm text-slate-300">
+                            Prompt em zero-shot insistindo em ignorar a estrutura JSON esperada, falhando no parser downstream mesmo com instruções verbais detalhadas.
+                        </p>
+                    </div>
+
+                    <div class="bg-cyber-surface border border-red-500/30 p-4 rounded-xl space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-red-400 font-mono text-xs font-bold">FLAW 3: Overnight Pipeline Blockage</span>
+                            <span class="text-xs bg-red-500/10 text-red-400 border border-red-500/20 px-2 py-0.5 rounded font-mono">Request Shape</span>
+                        </div>
+                        <p class="text-sm text-slate-300">
+                            Processamento síncrono noturno de 50.000 documentos estourando limites de Rate Limit (429) e gerando custo exorbitante na API.
+                        </p>
+                    </div>
+
+                    <div class="bg-cyber-surface border border-red-500/30 p-4 rounded-xl space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-red-400 font-mono text-xs font-bold">FLAW 4: Mid-Generation Crashes</span>
+                            <span class="text-xs bg-red-500/10 text-red-400 border border-red-500/20 px-2 py-0.5 rounded font-mono">Context Ceiling</span>
+                        </div>
+                        <p class="text-sm text-slate-300">
+                            Agentes de chat de sessões longas caindo durante a geração de resposta devido ao atingimento do teto máximo de tokens de contexto.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="bg-cyber-blue/10 border border-cyber-blue/30 p-3 rounded-lg flex items-center gap-3">
+                    <i class="fa-solid fa-circle-info text-cyber-blue text-lg"></i>
+                    <p class="text-xs text-slate-300">
+                        <strong class="text-white">Missão do Desenvolvedor:</strong> Corrigir cada uma das 4 falhas aplicando os princípios corretos de arquitetura exigidos no exame CCDV-F.
+                    </p>
+                </div>
+            </section>
+
+            <!-- SLIDE 3: FOUNDATION 1 - SAMPLING & TEMPERATURE -->
+            <section id="slide-3" class="slide-container flex-col justify-center h-full space-y-5">
+                <div>
+                    <span class="text-cyber-cyan font-mono text-xs uppercase tracking-wider block">Foundation 01 // Sampling & Probability</span>
+                    <h2 class="text-2xl font-bold text-white">Temperature Scaling & Determinism</h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <!-- Temperatura 0 -->
+                    <div class="bg-cyber-surface border border-slate-700 p-4 rounded-xl space-y-3">
+                        <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+                            <span class="font-mono text-cyber-cyan text-sm font-bold">Temperature = 0.0 (Classifier Mode)</span>
+                            <span class="text-xs bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded font-mono">High Precision</span>
+                        </div>
+                        <p class="text-xs text-slate-300">
+                            Concentra a probabilidade estritamente nos tokens mais prováveis. Ideal para classificação, extração e tarefas estruturadas.
+                        </p>
+                        <!-- Probabilidade simulada -->
+                        <div class="space-y-1.5 font-mono text-xs">
+                            <div class="flex justify-between text-slate-400"><span>Label "SPAM":</span> <span class="text-emerald-400">98.2%</span></div>
+                            <div class="w-full bg-slate-800 h-2 rounded"><div class="bg-emerald-400 h-2 rounded" style="width: 98.2%"></div></div>
+                            <div class="flex justify-between text-slate-400"><span>Label "NOT_SPAM":</span> <span>1.8%</span></div>
+                            <div class="w-full bg-slate-800 h-2 rounded"><div class="bg-slate-600 h-2 rounded" style="width: 1.8%"></div></div>
+                        </div>
+                    </div>
+
+                    <!-- Temperatura Alta -->
+                    <div class="bg-cyber-surface border border-slate-700 p-4 rounded-xl space-y-3">
+                        <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+                            <span class="font-mono text-cyber-amber text-sm font-bold">High Temperature = 1.0 (Creative Mode)</span>
+                            <span class="text-xs bg-amber-500/10 text-amber-400 px-2 py-0.5 rounded font-mono">Spread Distribution</span>
+                        </div>
+                        <p class="text-xs text-slate-300">
+                            Espalha a distribuição de probabilidade. Aumenta a variedade do texto e formulações, mas reduz a consistência de rótulos.
+                        </p>
+                        <!-- Probabilidade simulada -->
+                        <div class="space-y-1.5 font-mono text-xs">
+                            <div class="flex justify-between text-slate-400"><span>Label "SPAM":</span> <span class="text-amber-400">55.0%</span></div>
+                            <div class="w-full bg-slate-800 h-2 rounded"><div class="bg-amber-400 h-2 rounded" style="width: 55%"></div></div>
+                            <div class="flex justify-between text-slate-400"><span>Label "NOT_SPAM":</span> <span class="text-amber-400">45.0%</span></div>
+                            <div class="w-full bg-slate-800 h-2 rounded"><div class="bg-amber-400 h-2 rounded" style="width: 45%"></div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Callout Pegadinha de Prova -->
+                <div class="bg-amber-500/10 border border-amber-500/30 p-3.5 rounded-xl space-y-1">
+                    <span class="text-cyber-amber font-mono text-xs font-bold flex items-center gap-1.5">
+                        <i class="fa-solid fa-triangle-exclamation"></i> PEGADINHA DE PROVA (CCDV-F EXAM TRICK)
+                    </span>
+                    <p class="text-xs text-slate-200">
+                        <strong>Temperature 0 NÃO garante determinismo absoluto em APIs de LLM!</strong> Embora minimize a variação ao concentrar probabilidade, otimizações de hardware (GPU floating point ops) e clusters de inferência distribuída ainda podem gerar pequenas variações ocasionais. Nunca responda na prova que `temp=0` traz garantia determinística de 100%.
+                    </p>
+                </div>
+            </section>
+
+            <!-- SLIDE 4: FOUNDATION 2 - PROMPTING MODE (ZERO-SHOT VS MULTI-SHOT) -->
+            <section id="slide-4" class="slide-container flex-col justify-center h-full space-y-5">
+                <div>
+                    <span class="text-cyber-cyan font-mono text-xs uppercase tracking-wider block">Foundation 02 // Prompting Strategy</span>
+                    <h2 class="text-2xl font-bold text-white">Zero-Shot vs. Multi-Shot Structural Enforcement</h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <!-- Zero-shot -->
+                    <div class="bg-cyber-surface border border-slate-800 p-4 rounded-xl space-y-2">
+                        <div class="flex justify-between items-center text-xs font-mono">
+                            <span class="text-red-400 font-bold">Zero-Shot Prompt</span>
+                            <span class="text-slate-500">Instructions Only</span>
+                        </div>
+                        <div class="bg-slate-950 p-3 rounded font-mono text-xs text-slate-300 border border-slate-800">
+                            <code>"Extract user data. Respond strictly in JSON format with keys: name, email, role."</code>
+                        </div>
+                        <p class="text-xs text-slate-400">
+                            <strong>Sintoma:</strong> O modelo frequentemente inclui markdown extra (` ```json `) ou comentários explicativos antes do JSON, quebrando parsers estritos.
+                        </p>
+                    </div>
+
+                    <!-- Multi-shot -->
+                    <div class="bg-cyber-surface border border-emerald-500/30 p-4 rounded-xl space-y-2">
+                        <div class="flex justify-between items-center text-xs font-mono">
+                            <span class="text-emerald-400 font-bold">Multi-Shot (2-3 Examples)</span>
+                            <span class="text-emerald-400">Structure Lock</span>
+                        </div>
+                        <div class="bg-slate-950 p-3 rounded font-mono text-xs text-slate-300 border border-slate-800 space-y-1">
+                            <div class="text-slate-500">// User provides 2-3 input/output pairs</div>
+                            <div>Input: "John (Admin) - j@cyber.com"</div>
+                            <div class="text-emerald-400">Output: {"name":"John", "email":"j@cyber.com", "role":"Admin"}</div>
+                        </div>
+                        <p class="text-xs text-slate-300">
+                            <strong>Solução:</strong> Exemplos práticos demonstram o padrão exato de saída. É a técnica mais eficaz para forçar formatação rígida.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Callout do Custo vs Reagendamento -->
+                <div class="bg-cyber-surface border border-cyber-blue/30 p-3 rounded-lg text-xs space-y-1 font-sans">
+                    <span class="text-cyber-blue font-mono font-bold block">Trade-off & Mito de Treinamento da Prova:</span>
+                    <p class="text-slate-300">
+                        • <strong>Não há re-treinamento:</strong> Multi-shot NÃO re-treina o modelo de forma permanente. Cada chamada envia os exemplos novamente na janela de contexto.<br>
+                        • <strong>Custo de Token:</strong> O custo por chamada aumenta na proporção dos exemplos enviados. Adicione apenas a quantidade mínima necessária (2-3 exemplos).
+                    </p>
+                </div>
+            </section>
+
+            <!-- SLIDE 5: FOUNDATION 3 - REQUEST SHAPE (SYNC VS BATCHES) -->
+            <section id="slide-5" class="slide-container flex-col justify-center h-full space-y-5">
+                <div>
+                    <span class="text-cyber-cyan font-mono text-xs uppercase tracking-wider block">Foundation 03 // Request Architecture</span>
+                    <h2 class="text-2xl font-bold text-white">Choosing the Right Request Shape</h2>
+                </div>
+
+                <!-- Tabela Comparativa de Request Shapes -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left font-mono text-xs border-collapse">
+                        <thead>
+                            <tr class="bg-cyber-surface text-cyber-cyan border-b border-slate-700">
+                                <th class="p-3">Pattern</th>
+                                <th class="p-3">Latency Target</th>
+                                <th class="p-3">Cost / Rate Limit</th>
+                                <th class="p-3">Best Fit Scenario</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-800 text-slate-300 bg-cyber-surface/50">
+                            <tr>
+                                <td class="p-3 font-bold text-white">Synchronous API</td>
+                                <td class="p-3 text-amber-400">Immediate response required</td>
+                                <td class="p-3 text-red-400">Standard cost / Strict Rate Limits</td>
+                                <td class="p-3">Real-time user actions, single queries</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-bold text-white">Streaming API</td>
+                                <td class="p-3 text-emerald-400">Low Time-To-First-Token (TTFT)</td>
+                                <td class="p-3 text-slate-400">Standard cost / Real-time UI</td>
+                                <td class="p-3">Interactive chats with human-in-the-loop</td>
+                            </tr>
+                            <tr class="bg-cyber-blue/10 border-l-4 border-cyber-cyan">
+                                <td class="p-3 font-bold text-cyber-cyan">Message Batches API</td>
+                                <td class="p-3 text-amber-400">Asynchronous (up to 24h)</td>
+                                <td class="p-3 text-emerald-400">50% Discount / High Volume Limit</td>
+                                <td class="p-3 text-white font-bold">50,000+ overnight docs, offline pipelines</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Análise da Premissa do Exercício -->
+                <div class="bg-cyber-surface border border-slate-800 p-4 rounded-xl space-y-2">
+                    <span class="text-slate-400 font-mono text-xs font-bold block uppercase">Análise para o Exame CCDV-F:</span>
+                    <p class="text-xs text-slate-300">
+                        Em pipelines de batch offline (ex: 50.000 documentos à noite sem usuário aguardando), utilizar um <strong>loop síncrono</strong> causa estouro de Rate Limits (HTTP 429) e bloqueia a aplicação. O padrão <strong>Streaming</strong> é inútil pois nenhum humano está assistindo. A <strong>Message Batches API</strong> é a arquitetura ideal por oferecer 50% de desconto e evitar gargalos de concorrência.
+                    </p>
+                </div>
+            </section>
+
+            <!-- SLIDE 6: FOUNDATION 4 - CONTEXT BUDGET & TRUNCATION -->
+            <section id="slide-6" class="slide-container flex-col justify-center h-full space-y-5">
+                <div>
+                    <span class="text-cyber-cyan font-mono text-xs uppercase tracking-wider block">Foundation 04 // Context Mechanics</span>
+                    <h2 class="text-2xl font-bold text-white">Context Window Ceiling & Error Handling</h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <!-- Scenario A: Oversized Input -->
+                    <div class="bg-cyber-surface border border-slate-800 p-4 rounded-xl space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-red-400 font-mono text-xs font-bold">Caso 1: Input Oversized</span>
+                            <span class="text-xs bg-red-500/10 text-red-400 border border-red-500/20 px-2 py-0.5 rounded font-mono">Immediate Error</span>
+                        </div>
+                        <p class="text-xs text-slate-300">
+                            Se o prompt enviado (histórico + mensagens + contexto) <strong>já excede</strong> o teto da janela de contexto antes do processamento começar:
+                        </p>
+                        <div class="bg-slate-950 p-2.5 rounded font-mono text-xs text-red-400 border border-red-900/50">
+                            HTTP 400: invalid_request_error <br>
+                            (Rejeição imediata pré-geração)
+                        </div>
+                    </div>
+
+                    <!-- Scenario B: Mid-Generation Ceil -->
+                    <div class="bg-cyber-surface border border-amber-500/30 p-4 rounded-xl space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-amber-400 font-mono text-xs font-bold">Caso 2: Ceiling Reached Mid-Gen</span>
+                            <span class="text-xs bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2 py-0.5 rounded font-mono">Truncated Output</span>
+                        </div>
+                        <p class="text-xs text-slate-300">
+                            Se o prompt cabe na entrada, mas a geração atinge o teto no meio da resposta, o modelo retorna o texto gerado até o momento e sinaliza:
+                        </p>
+                        <div class="bg-slate-950 p-2.5 rounded font-mono text-xs text-amber-400 border border-amber-900/50">
+                            stop_reason: "model_context_window_exceeded"
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Visualizador de Orçamento -->
+                <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2 font-mono text-xs">
+                    <div class="flex justify-between text-slate-400">
+                        <span>Multi-turn Chat Session Accumulation</span>
+                        <span class="text-red-400 font-bold">200k / 200k Tokens (100% Ceiling)</span>
+                    </div>
+                    <div class="w-full bg-slate-800 h-3 rounded-full overflow-hidden flex">
+                        <div class="bg-cyber-blue h-full" style="width: 40%" title="System Prompt & Tools"></div>
+                        <div class="bg-purple-500 h-full" style="width: 45%" title="Conversation History"></div>
+                        <div class="bg-amber-500 h-full animate-pulse" style="width: 15%" title="Truncated Output"></div>
+                    </div>
+                    <div class="flex justify-between text-[10px] text-slate-500">
+                        <span>System + Tools (40%)</span>
+                        <span>History (45%)</span>
+                        <span class="text-amber-400">Truncated Response (15%)</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 7: EXAME DE SIMULAÇÃO (QUIZ INTERATIVO COM OS 4 CENÁRIOS) -->
+            <section id="slide-7" class="slide-container flex-col justify-center h-full space-y-4">
+                <div class="flex justify-between items-end border-b border-slate-800 pb-2">
+                    <div>
+                        <span class="text-cyber-amber font-mono text-xs uppercase tracking-wider block">
+                            <i class="fa-solid fa-graduation-cap mr-1"></i> CCDV-F Official Practice Scenarios
+                        </span>
+                        <h2 class="text-xl md:text-2xl font-bold text-white">Simulado Interativo de Certificação</h2>
+                    </div>
+                    <div id="quiz-score" class="font-mono text-xs text-cyber-cyan bg-cyber-surface border border-slate-700 px-3 py-1 rounded">
+                        SCORE: 0/4
+                    </div>
+                </div>
+
+                <!-- Tabs dos Cenários -->
+                <div class="flex gap-2 font-mono text-xs border-b border-slate-800 pb-2 overflow-x-auto">
+                    <button onclick="switchScenario(1)" id="tab-sc1" class="px-3 py-1.5 rounded bg-cyber-blue text-white font-bold transition-all">Scenario 1: Temp</button>
+                    <button onclick="switchScenario(2)" id="tab-sc2" class="px-3 py-1.5 rounded bg-cyber-surface text-slate-400 hover:text-white transition-all">Scenario 2: Multi-shot</button>
+                    <button onclick="switchScenario(3)" id="tab-sc3" class="px-3 py-1.5 rounded bg-cyber-surface text-slate-400 hover:text-white transition-all">Scenario 3: Batches</button>
+                    <button onclick="switchScenario(4)" id="tab-sc4" class="px-3 py-1.5 rounded bg-cyber-surface text-slate-400 hover:text-white transition-all">Scenario 4: Context</button>
+                </div>
+
+                <!-- Container do Pergunta / Opções (Renderizado via JS) -->
+                <div id="scenario-card-container" class="bg-cyber-surface border border-slate-800 p-5 rounded-xl space-y-4">
+                    <!-- Conteúdo Dinâmico do Quiz -->
+                </div>
+            </section>
+
+            <!-- SLIDE 8: RESUMO DE ELITE & KEY TAKEAWAYS -->
+            <section id="slide-8" class="slide-container flex-col justify-center h-full space-y-5">
+                <div>
+                    <span class="text-cyber-cyan font-mono text-xs uppercase tracking-wider block">Mission Debrief // CCDV-F Exam Day Checklist</span>
+                    <h2 class="text-2xl font-bold text-white">Elite Summary: Do's & Don'ts</h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5 font-sans">
+                    <!-- Table DOs -->
+                    <div class="bg-cyber-surface border border-emerald-500/30 p-4 rounded-xl space-y-3">
+                        <div class="flex items-center gap-2 text-emerald-400 font-mono text-sm font-bold border-b border-slate-800 pb-2">
+                            <i class="fa-solid fa-circle-check"></i> DO'S (Práticas Corretas)
+                        </div>
+                        <ul class="text-xs text-slate-300 space-y-2">
+                            <li class="flex items-start gap-2">
+                                <i class="fa-solid fa-check text-emerald-400 mt-0.5"></i>
+                                <span>Use <strong>Temperature = 0</strong> para classificadores e rótulos previsíveis, sabendo que diminui mas não zera variações de hardware.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fa-solid fa-check text-emerald-400 mt-0.5"></i>
+                                <span>Aplique <strong>Multi-shot (2-3 exemplos)</strong> para garantir estrutura JSON rígida que instruções textuais não conseguiram fixar.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fa-solid fa-check text-emerald-400 mt-0.5"></i>
+                                <span>Selecione a <strong>Message Batches API</strong> para jobs offline volumosos (ex: 50k docs) para reduzir custos em 50% e evitar rate limits.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fa-solid fa-check text-emerald-400 mt-0.5"></i>
+                                <span>Implemente poda e sumarização de histórico em agentes longos para prevenir o erro <code>model_context_window_exceeded</code>.</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Table DONTs -->
+                    <div class="bg-cyber-surface border border-red-500/30 p-4 rounded-xl space-y-3">
+                        <div class="flex items-center gap-2 text-red-400 font-mono text-sm font-bold border-b border-slate-800 pb-2">
+                            <i class="fa-solid fa-circle-xmark"></i> DON'TS (Pegadinhas do Exame)
+                        </div>
+                        <ul class="text-xs text-slate-300 space-y-2">
+                            <li class="flex items-start gap-2">
+                                <i class="fa-solid fa-xmark text-red-400 mt-0.5"></i>
+                                <span><strong>NÃO</strong> assuma que Temperature só altera o tamanho da resposta e que o output é 100% determinístico a temp 0.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fa-solid fa-xmark text-red-400 mt-0.5"></i>
+                                <span><strong>NÃO</strong> confunda multi-shot com re-treinamento permanente do modelo. É apenas in-context learning que consome tokens a cada call.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fa-solid fa-xmark text-red-400 mt-0.5"></i>
+                                <span><strong>NÃO</strong> use loops síncronos ou Streaming para processamento noturno sem interface de usuário ao vivo.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fa-solid fa-xmark text-red-400 mt-0.5"></i>
+                                <span><strong>NÃO</strong> espere que a janela de contexto se expanda automaticamente ou descarte turnos antigos silenciosamente sem tratamento na aplicação.</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="bg-cyber-cyan/10 border border-cyber-cyan/30 p-3 rounded-lg flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left font-mono text-xs text-cyber-cyan">
+                    <div>
+                        <i class="fa-solid fa-trophy mr-1"></i> PARABÉNS! VOCÊ CONCLUIU O REVISOR DO MÓDULO 02 DA CERTIFICAÇÃO CCDV-F!
+                    </div>
+                    <a href="../index.html" class="px-3.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-white rounded font-mono text-xs border border-cyber-cyan/40 transition-all flex items-center gap-1.5 shrink-0">
+                        <i class="fa-solid fa-arrow-left text-[10px]"></i> Voltar ao Hub
+                    </a>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Rodapé do Terminal (Navegação Interativa) -->
+        <footer class="relative z-20 bg-cyber-surface border-t border-slate-800 px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <button onclick="prevSlide()" id="btn-prev" class="px-3.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded font-mono text-xs border border-slate-700 transition-all flex items-center gap-1.5">
+                    <i class="fa-solid fa-chevron-left text-[10px]"></i> PREV
+                </button>
+                <button onclick="nextSlide()" id="btn-next" class="px-3.5 py-1.5 bg-cyber-blue hover:bg-blue-600 text-white rounded font-mono text-xs font-semibold shadow transition-all flex items-center gap-1.5">
+                    NEXT <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                </button>
+            </div>
+
+            <!-- Indicadores de Progresso (Dots) -->
+            <div class="hidden sm:flex items-center gap-1.5" id="slide-dots">
+                <!-- Gerado Dinamicamente em JS -->
+            </div>
+
+            <div class="text-slate-500 font-mono text-[11px] hidden md:block">
+                Use <kbd class="px-1.5 py-0.5 bg-slate-800 text-slate-300 border border-slate-700 rounded text-[10px]">←</kbd> <kbd class="px-1.5 py-0.5 bg-slate-800 text-slate-300 border border-slate-700 rounded text-[10px]">→</kbd> para navegar
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- SCRIPT DE LÓGICA E INTERATIVIDADE DO DECK E QUIZ -->
+    <script>
+        // Dados do Exame Oficial CCDV-F
+        const scenariosData = [
+            {
+                id: 1,
+                title: "Scenario 1: Classification & Temperature",
+                question: "Consider a classification task run at temperature 0 versus the same task run at a high temperature. Predict how the outputs differ across repeated runs.",
+                options: [
+                    {
+                        key: "A",
+                        text: "At a low temperature, the model concentrates probability on the most likely tokens, so repeated runs return the same label far more consistently, though never with guaranteed determinism, even at temperature 0. At a high temperature, the distribution spreads out, so wording and even the chosen label can vary. For a classifier you want the low-temperature, repeatable behavior.",
+                        correct: true
+                    },
+                    {
+                        key: "B",
+                        text: "Both configurations return identical output every run, because temperature only affects response length, not which tokens are chosen.",
+                        correct: false
+                    },
+                    {
+                        key: "C",
+                        text: "The high-temperature run is more accurate, because spreading the distribution lets the model consider more of the correct answers.",
+                        correct: false
+                    },
+                    {
+                        key: "D",
+                        text: "Temperature has no effect on a classification task, because classification always returns a fixed label regardless of sampling.",
+                        correct: false
+                    }
+                ],
+                explanation: "<strong>RESPOSTA CORRETA: A</strong><br>A temperatura altera como a distribuição de probabilidades de tokens é amostrada. Temp 0 concentra a probabilidade no token do topo. No entanto, lembre-se da <em>pegadinha de prova</em>: mesmo a temp 0, determinismo absoluto não é garantido em APIs de produção devido a variações de computação em GPU de ponto flutuante."
+            },
+            {
+                id: 2,
+                title: "Scenario 2: Zero-shot vs Multi-shot Structure",
+                question: "Consider a task that keeps returning output in the wrong structure under a zero-shot prompt. Predict what changes if you switch to multi-shot.",
+                options: [
+                    {
+                        key: "A",
+                        text: "Switching to multi-shot retrains the model on the new structure, so the change is permanent across every future call once the examples are sent.",
+                        correct: false
+                    },
+                    {
+                        key: "B",
+                        text: "Adding two or three correct input-output examples shows the model the exact structure to match, which usually fixes a structure problem that more instruction text did not. The cost is extra tokens on every call, so add the fewest examples that make the output reliable.",
+                        correct: true
+                    },
+                    {
+                        key: "C",
+                        text: "Multi-shot will not help a structure problem; only raising the temperature changes the shape of the output.",
+                        correct: false
+                    },
+                    {
+                        key: "D",
+                        text: "Multi-shot lowers the token cost per call, because examples let the model produce shorter responses.",
+                        correct: false
+                    }
+                ],
+                explanation: "<strong>RESPOSTA CORRETA: B</strong><br>Multi-shot envia exemplos reais dentro do contexto, 'mostrando' o formato visual esperado para o modelo. Não há re-treinamento permanente (pegadinha da alternativa A) e aumenta o custo de input em tokens a cada chamada."
+            },
+            {
+                id: 3,
+                title: "Scenario 3: Offline Pipeline Request Shape",
+                question: "Consider a pipeline that must process 50,000 documents overnight with no user waiting. Predict which request shape fits and why.",
+                options: [
+                    {
+                        key: "A",
+                        text: "A synchronous loop fits best, because calling the API once per document is the simplest pattern and avoids the overhead of submitting a batch.",
+                        correct: false
+                    },
+                    {
+                        key: "B",
+                        text: "Streaming fits best, because sending the response in pieces lets the pipeline start processing each document sooner.",
+                        correct: false
+                    },
+                    {
+                        key: "C",
+                        text: "The batch pattern fits: submit the requests in a batch and poll for completion, accepting longer latency for a lower per-token cost. A synchronous loop would hit rate limits and tie up the application, and streaming buys nothing because no user is watching.",
+                        correct: true
+                    },
+                    {
+                        key: "D",
+                        text: "A larger context window fits best, because fitting all 50,000 documents into one request avoids making repeated calls.",
+                        correct: false
+                    }
+                ],
+                explanation: "<strong>RESPOSTA CORRETA: C</strong><br>O padrão Batch é feito sob medida para alta volumetria assíncrona (como processar arquivos de madrugada). Ele elimina bloqueios por Rate Limit e reduz os custos por token pela metade em relação a requisições síncronas."
+            },
+            {
+                id: 4,
+                title: "Scenario 4: Context Window Ceiling Symptoms",
+                question: "Consider a long multi-turn agent session whose context window keeps filling. Predict the symptoms and name the budget at fault.",
+                options: [
+                    {
+                        key: "A",
+                        text: "The model silently drops the oldest turns to make room, so the session continues but quietly loses early context without any error.",
+                        correct: false
+                    },
+                    {
+                        key: "B",
+                        text: "The context window is a fixed token budget; as history and tool results accumulate it fills. An input that is already oversized is rejected with an error before generation, while a request that fits on input but reaches the ceiling mid-generation comes back with truncated output and a model_context_window_exceeded stop reason. The symptom is a session that ran fine in testing failing once inputs grow, which is why the application must trim or summarize history.",
+                        correct: true
+                    },
+                    {
+                        key: "C",
+                        text: "The symptom is slower sampling, and the budget at fault is the temperature setting, which must be lowered as the session grows.",
+                        correct: false
+                    },
+                    {
+                        key: "D",
+                        text: "There is no fixed budget; the window expands automatically to hold whatever history accumulates, so a long session never fails for this reason.",
+                        correct: false
+                    }
+                ],
+                explanation: "<strong>RESPOSTA CORRETA: B</strong><br>O modelo nunca estende a janela automaticamente nem descarta contextos sozinho em silêncio. A aplicação precisa gerenciar a memória. Se estourar durante a geração, retorna <code>model_context_window_exceeded</code> e o texto vem truncado."
+            }
+        ];
+
+        // Estado da Aplicação
+        let currentSlide = 1;
+        const totalSlides = 8;
+        let currentScenario = 1;
+        let userAnswers = { 1: null, 2: null, 3: null, 4: null };
+
+        // Inicialização ao carregar a página
+        window.onload = function() {
+            renderDots();
+            updateSlideView();
+            renderScenario(currentScenario);
+
+            // Ouvinte de teclado para navegação
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'ArrowRight') {
+                    nextSlide();
+                } else if (e.key === 'ArrowLeft') {
+                    prevSlide();
+                }
+            });
+        };
+
+        // Renderiza os pontos de progresso no footer
+        function renderDots() {
+            const dotsContainer = document.getElementById('slide-dots');
+            dotsContainer.innerHTML = '';
+            for (let i = 1; i <= totalSlides; i++) {
+                const dot = document.createElement('button');
+                dot.onclick = () => goToSlide(i);
+                dot.className = `w-2.5 h-2.5 rounded-full transition-all ${i === currentSlide ? 'bg-cyber-cyan w-6' : 'bg-slate-700 hover:bg-slate-500'}`;
+                dotsContainer.appendChild(dot);
+            }
+        }
+
+        // Navega para um slide específico
+        function goToSlide(slideIndex) {
+            if (slideIndex < 1 || slideIndex > totalSlides) return;
+            
+            // Oculta slide atual
+            document.getElementById(`slide-${currentSlide}`).classList.remove('active');
+            
+            currentSlide = slideIndex;
+            
+            // Exibe novo slide
+            document.getElementById(`slide-${currentSlide}`).classList.add('active');
+            
+            // Atualiza UI de cabeçalho e footer
+            document.getElementById('slide-number-display').innerText = `SLIDE 0${currentSlide} / 0${totalSlides}`;
+            
+            // Desabilita/Habilita botões
+            document.getElementById('btn-prev').disabled = (currentSlide === 1);
+            document.getElementById('btn-prev').style.opacity = (currentSlide === 1) ? '0.5' : '1';
+            
+            document.getElementById('btn-next').disabled = (currentSlide === totalSlides);
+            document.getElementById('btn-next').style.opacity = (currentSlide === totalSlides) ? '0.5' : '1';
+
+            renderDots();
+        }
+
+        function nextSlide() {
+            goToSlide(currentSlide + 1);
+        }
+
+        function prevSlide() {
+            goToSlide(currentSlide - 1);
+        }
+
+        function updateSlideView() {
+            goToSlide(currentSlide);
+        }
+
+        // --- LÓGICA DO SIMULADOR / QUIZ ---
+
+        function switchScenario(scenarioId) {
+            currentScenario = scenarioId;
+            // Atualiza abas
+            for (let i = 1; i <= 4; i++) {
+                const tab = document.getElementById(`tab-sc${i}`);
+                if (i === scenarioId) {
+                    tab.className = "px-3 py-1.5 rounded bg-cyber-blue text-white font-bold transition-all";
+                } else {
+                    tab.className = "px-3 py-1.5 rounded bg-cyber-surface text-slate-400 hover:text-white transition-all";
+                }
+            }
+            renderScenario(scenarioId);
+        }
+
+        function renderScenario(scenarioId) {
+            const container = document.getElementById('scenario-card-container');
+            const scenario = scenariosData.find(s => s.id === scenarioId);
+            const selectedKey = userAnswers[scenarioId];
+
+            let html = `
+                <div class="space-y-2">
+                    <h3 class="text-sm font-mono text-cyber-cyan font-bold">${scenario.title}</h3>
+                    <p class="text-xs text-slate-200 leading-relaxed font-sans bg-slate-950 p-3 rounded border border-slate-800">
+                        "${scenario.question}"
+                    </p>
+                </div>
+
+                <div class="space-y-2 pt-1 font-sans text-xs">
+            `;
+
+            scenario.options.forEach(opt => {
+                let btnStyle = "bg-slate-900 border-slate-800 hover:border-slate-600 text-slate-300";
+                let badge = `<span class="font-mono text-slate-500 font-bold">${opt.key}</span>`;
+
+                if (selectedKey) {
+                    if (opt.correct) {
+                        btnStyle = "bg-emerald-950/40 border-emerald-500/80 text-emerald-200";
+                        badge = `<span class="font-mono text-emerald-400 font-bold"><i class="fa-solid fa-check mr-1"></i>${opt.key}</span>`;
+                    } else if (selectedKey === opt.key && !opt.correct) {
+                        btnStyle = "bg-red-950/40 border-red-500/80 text-red-200";
+                        badge = `<span class="font-mono text-red-400 font-bold"><i class="fa-solid fa-xmark mr-1"></i>${opt.key}</span>`;
+                    }
+                }
+
+                html += `
+                    <button onclick="selectOption(${scenarioId}, '${opt.key}')" 
+                            class="w-full text-left p-3 rounded-lg border ${btnStyle} transition-all flex items-start gap-2.5">
+                        <div class="mt-0.5">${badge}</div>
+                        <div class="leading-normal">${opt.text}</div>
+                    </button>
+                `;
+            });
+
+            html += `</div>`;
+
+            // Exibe explicação se já respondeu
+            if (selectedKey) {
+                html += `
+                    <div class="mt-3 p-3 bg-cyber-surface border border-cyber-cyan/30 rounded-lg text-xs text-slate-300 font-sans leading-relaxed animate-fadeIn">
+                        ${scenario.explanation}
+                    </div>
+                `;
+            }
+
+            container.innerHTML = html;
+            updateScoreDisplay();
+        }
+
+        function selectOption(scenarioId, key) {
+            userAnswers[scenarioId] = key;
+            renderScenario(scenarioId);
+        }
+
+        function updateScoreDisplay() {
+            let correctCount = 0;
+            scenariosData.forEach(s => {
+                if (userAnswers[s.id]) {
+                    const opt = s.options.find(o => o.key === userAnswers[s.id]);
+                    if (opt && opt.correct) correctCount++;
+                }
+            });
+            document.getElementById('quiz-score').innerText = `SCORE: ${correctCount}/4`;
+        }
+    </script>
+</body>
+</html>
