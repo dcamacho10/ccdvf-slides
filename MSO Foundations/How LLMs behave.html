@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>CCDV-F Ep 02: How LLMs Behave - Interactive Slide Deck</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -71,6 +71,36 @@
             flex-direction: column;
             position: relative;
             overflow: hidden;
+        }
+
+        /* Mobile Adaptive Layout */
+        @media (max-width: 768px), (orientation: portrait) {
+            body {
+                overflow-y: auto !important;
+                user-select: text !important;
+            }
+            .aspect-16-9-container {
+                width: 100% !important;
+                height: auto !important;
+                min-height: 100dvh !important;
+                padding: 0 !important;
+                display: block !important;
+            }
+            .slide-deck-frame {
+                width: 100% !important;
+                max-width: 100% !important;
+                min-height: 100dvh !important;
+                height: auto !important;
+                aspect-ratio: auto !important;
+                max-height: none !important;
+                border-radius: 0 !important;
+                border: none !important;
+            }
+            .slide-content {
+                min-height: calc(100dvh - 120px) !important;
+                height: auto !important;
+                padding-bottom: 2rem !important;
+            }
         }
 
         /* Custom Scrollbar */
@@ -764,11 +794,11 @@
             </main>
 
             <!-- FOOTER COM NAVEGAÇÃO INTERATIVA -->
-            <footer class="h-14 border-t border-cyber-border bg-gray-950 px-4 flex items-center justify-between shrink-0 z-10">
+            <footer class="h-14 border-t border-cyber-border bg-gray-950 px-3 sm:px-4 flex items-center justify-between shrink-0 z-20 sticky bottom-0" style="padding-bottom: max(0.25rem, env(safe-area-inset-bottom));">
                 <!-- Status Slide Counter -->
-                <div class="flex items-center space-x-3 text-xs font-mono">
-                    <span class="text-gray-400">SLIDE:</span>
-                    <span id="slide-indicator" class="text-cyber-cyan font-bold bg-gray-900 px-2 py-1 rounded border border-gray-800">01 / 09</span>
+                <div class="flex items-center space-x-2 sm:space-x-3 text-xs font-mono">
+                    <span class="text-gray-400 hidden sm:inline">SLIDE:</span>
+                    <span id="slide-indicator" class="text-cyber-cyan font-bold bg-gray-900 px-2 py-1 rounded border border-gray-800 text-[11px] sm:text-xs">01 / 09</span>
                 </div>
 
                 <!-- Barra de Progresso Visual -->
@@ -780,12 +810,12 @@
 
                 <!-- Botões de Navegação -->
                 <div class="flex items-center space-x-2">
-                    <button id="prev-btn" onclick="prevSlide()" class="bg-gray-900 hover:bg-gray-800 text-gray-300 border border-gray-700 px-3 py-1.5 rounded text-xs font-mono transition flex items-center space-x-1 disabled:opacity-40 disabled:cursor-not-allowed">
+                    <button id="prev-btn" onclick="prevSlide()" class="bg-gray-900 hover:bg-gray-800 text-gray-300 border border-gray-700 px-3.5 py-2 sm:px-3 sm:py-1.5 rounded text-xs font-mono transition flex items-center space-x-1 min-h-[44px] sm:min-h-0 disabled:opacity-40 disabled:cursor-not-allowed">
                         <i class="fa-solid fa-chevron-left text-[10px]"></i>
-                        <span class="hidden sm:inline">PREV</span>
+                        <span>PREV</span>
                     </button>
-                    <button id="next-btn" onclick="nextSlide()" class="bg-cyber-accent hover:bg-blue-600 text-white px-3 py-1.5 rounded text-xs font-mono transition flex items-center space-x-1 glow-blue">
-                        <span class="hidden sm:inline">NEXT</span>
+                    <button id="next-btn" onclick="nextSlide()" class="bg-cyber-accent hover:bg-blue-600 text-white px-4 py-2 sm:px-3 sm:py-1.5 rounded text-xs font-mono transition flex items-center space-x-1 min-h-[44px] sm:min-h-0 glow-blue font-bold">
+                        <span>NEXT</span>
                         <i class="fa-solid fa-chevron-right text-[10px]"></i>
                     </button>
                 </div>
@@ -1041,6 +1071,34 @@
             updateSlideUI();
             renderQuestion();
         }
+
+        // Native Touch Swipe Handler for Mobile Phones
+        (function initTouchNavigation() {
+            let touchStartX = 0;
+            let touchStartY = 0;
+            const threshold = 45;
+            const restraint = 80;
+
+            document.addEventListener('touchstart', (e) => {
+                const touch = e.changedTouches[0];
+                touchStartX = touch.pageX;
+                touchStartY = touch.pageY;
+            }, { passive: true });
+
+            document.addEventListener('touchend', (e) => {
+                const touch = e.changedTouches[0];
+                const distX = touch.pageX - touchStartX;
+                const distY = touch.pageY - touchStartY;
+
+                if (Math.abs(distX) >= threshold && Math.abs(distY) <= restraint) {
+                    if (distX < 0) {
+                        nextSlide();
+                    } else {
+                        prevSlide();
+                    }
+                }
+            }, { passive: true });
+        })();
     </script>
 </body>
 </html>

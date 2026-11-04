@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CCDV-F Episode 02: Prompting Craft & Output Structuring</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <style>
+    /* CSS Reset & Variables */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+    
+    :root {
+      --bg-dark: #0B0F19;
+      --surface-navy: #111827;
+      --surface-card: #1F2937;
+      --border-cyan: rgba(6, 182, 212, 0.3);
+      --accent-blue: #3B82F6;
+      --accent-cyan: #06B6D4;
+      --alert-amber: #F59E0B;
+      --alert-red: #EF4444;
+      --success-green: #10B981;
+      --text-main: #F3F4F6;
+      --text-muted: #9CA3AF;
+      --font-mono: 'Fira Code', monospace;
+      --font-sans: 'Inter', sans-serif;
+    }
+    
+    body {
+      background-color: #030712;
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+    
+    /* Presentation Frame (16:9 1280x720 base) */
+    .viewport {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    
+    .deck-container {
+      width: 1280px;
+      height: 720px;
+      background-color: var(--bg-dark);
+      border: 1px solid var(--border-cyan);
+      box-shadow: 0 0 35px rgba(6, 182, 212, 0.15), inset 0 0 15px rgba(0, 0, 0, 0.8);
+      border-radius: 12px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    /* Header Bar */
+    .deck-header {
+      height: 48px;
+      background-color: rgba(17, 24, 39, 0.8);
+      border-bottom: 1px solid rgba(6, 182, 212, 0.2);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+    }
+    
+    .deck-header .brand {
+      color: var(--accent-cyan);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+    }
+    
+    .deck-header .status {
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .badge-exam {
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid var(--alert-amber);
+      color: var(--alert-amber);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    
+    /* Slides Container */
+    .slides-wrapper {
+      flex: 1;
+      position: relative;
+    }
+    
+    .slide-container {
+      width: 1280px;
+      height: 616px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      transform: scale(0.98);
+      padding: 40px 60px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .slide-container.active {
+      opacity: 1;
+      visibility: visible;
+      transform: scale(1);
+    }
+    
+    /* Footer Navigation */
+    .deck-footer {
+      height: 56px;
+      background-color: var(--surface-navy);
+      border-top: 1px solid rgba(6, 182, 212, 0.2);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 30px;
+      z-index: 10;
+    }
+    
+    .nav-controls {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    
+    .btn-nav {
+      background: var(--surface-card);
+      border: 1px solid var(--border-cyan);
+      color: var(--text-main);
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+    
+    .btn-nav:hover:not(:disabled) {
+      background: var(--accent-blue);
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 10px rgba(59, 130, 246, 0.4);
+    }
+
+    .btn-nav:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+    
+    .slide-counter {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--accent-cyan);
+      background: rgba(6, 182, 212, 0.1);
+      padding: 4px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(6, 182, 212, 0.3);
+    }
+
+    /* Common Slide Elements */
+    .slide-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--accent-cyan);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 8px;
+    }
+
+    .slide-title {
+      font-size: 28px;
+      font-weight: 800;
+      color: #FFFFFF;
+      margin-bottom: 24px;
+      line-height: 1.2;
+    }
+
+    .grid-2col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      flex: 1;
+    }
+
+    .card {
+      background: var(--surface-navy);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card.accent-border {
+      border-left: 4px solid var(--accent-cyan);
+    }
+
+    .card.alert-border {
+      border-left: 4px solid var(--alert-amber);
+    }
+
+    .card.danger-border {
+      border-left: 4px solid var(--alert-red);
+    }
+
+    .code-block {
+      background: #060911;
+      border: 1px solid rgba(6, 182, 212, 0.2);
+      border-radius: 6px;
+      padding: 14px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      line-height: 1.5;
+      color: #A7F3D0;
+      white-space: pre-wrap;
+      overflow-x: auto;
+    }
+
+    /* Interactive Element Styles */
+    .interactive-btn {
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .interactive-btn:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.2);
+    }
+
+    /* Tab Content Component */
+    .tab-bar {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .tab-btn {
+      background: var(--surface-card);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-muted);
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .tab-btn.active {
+      background: var(--accent-blue);
+      color: #fff;
+      border-color: var(--accent-cyan);
+    }
+
+    .tab-content {
+      display: none;
+      flex: 1;
+    }
+
+    .tab-content.active {
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Slide Specific Layouts */
+    /* Slide 1: Cover */
+    .cover-layout {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      background: radial-gradient(circle at 80% 20%, rgba(6, 182, 212, 0.15) 0%, transparent 50%);
+    }
+
+    .cover-title {
+      font-size: 48px;
+      font-weight: 800;
+      color: #FFFFFF;
+      line-height: 1.1;
+      margin: 16px 0;
+    }
+
+    .mission-box {
+      background: rgba(17, 24, 39, 0.9);
+      border: 1px solid var(--accent-cyan);
+      border-radius: 8px;
+      padding: 20px;
+      margin-top: 24px;
+      max-width: 800px;
+      box-shadow: 0 0 20px rgba(6, 182, 212, 0.2);
+    }
+
+    /* Do's and Don'ts visual */
+    .comparison-box {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 12px;
+    }
+
+    .dos-card {
+      background: rgba(16, 185, 129, 0.05);
+      border: 1px solid var(--success-green);
+      border-radius: 6px;
+      padding: 16px;
+    }
+
+    .donts-card {
+      background: rgba(239, 68, 68, 0.05);
+      border: 1px solid var(--alert-red);
+      border-radius: 6px;
+      padding: 16px;
+    }
+
+    /* Custom Table Style */
+    .diag-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    
+    .diag-table th {
+      background: var(--surface-card);
+      color: var(--accent-cyan);
+      text-align: left;
+      padding: 10px 14px;
+      font-family: var(--font-mono);
+      border-bottom: 2px solid rgba(6, 182, 212, 0.3);
+    }
+
+    .diag-table td {
+      padding: 10px 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      color: var(--text-main);
+    }
+
+    .diag-table tr:hover {
+      background: rgba(59, 130, 246, 0.05);
+    }
+
+    /* Quiz Option Custom Rules */
+    .quiz-option {
+      background: var(--surface-card);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 12px 16px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: all 0.2s;
+    }
+
+    .quiz-option:hover {
+      border-color: var(--accent-cyan);
+      background: rgba(6, 182, 212, 0.05);
+    }
+
+    .quiz-option.selected-correct {
+      background: rgba(16, 185, 129, 0.15);
+      border-color: var(--success-green);
+      color: #A7F3D0;
+    }
+
+    .quiz-option.selected-wrong {
+      background: rgba(239, 68, 68, 0.15);
+      border-color: var(--alert-red);
+      color: #FCA5A5;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="viewport">
+    <div class="deck-container">
+      
+      <!-- Top Terminal Header -->
+      <header class="deck-header">
+        <div class="brand">
+          <i class="fa-solid fa-terminal"></i>
+          <span>CCDV-F // MODULE 02: PROMPTING CRAFT</span>
+        </div>
+        <div class="status">
+          <span class="badge-exam"><i class="fa-solid fa-shield-halved"></i> EXAM FOCUS</span>
+          <span><i class="fa-solid fa-microchip"></i> CLAUDE 3.5 SONNET / HARBOR PIPELINE</span>
+        </div>
+      </header>
+
+      <!-- Slides Content Area -->
+      <main class="slides-wrapper">
+
+        <!-- SLIDE 1: Cover / Mission Premise -->
+        <section class="slide-container active" id="slide-1">
+          <div class="cover-layout">
+            <div class="slide-eyebrow">// MISSION INCIDENT REPORT #4092</div>
+            <h1 class="cover-title">Prompting Craft & Output Structuring</h1>
+            <p style="color: var(--text-muted); font-size: 16px; max-width: 700px;">
+              Moving from interactive prompt engineering to deterministic production pipelines in Claude API.
+            </p>
+
+            <div class="mission-box">
+              <div style="font-family: var(--font-mono); color: var(--alert-amber); font-size: 13px; margin-bottom: 8px; font-weight: 700;">
+                <i class="fa-solid fa-triangle-exclamation"></i> PRODUCTION ALERT: CLASSIFIER_SERVICE_DOWN
+              </div>
+              <p style="font-size: 14px; line-height: 1.5; color: var(--text-main);">
+                <strong>Mission Objective:</strong> The customer support triage bot broke after receiving untruncated user inputs. Downstream JSON parsers are throwing HTTP 500 errors. You must diagnose prompt structure failures and apply the 4 Anthropic Prompting Techniques to fix the pipeline before exam deployment.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 2: Production Incident Context -->
+        <section class="slide-container" id="slide-2">
+          <div class="slide-eyebrow">// INCIDENT DIAGNOSIS</div>
+          <h2 class="slide-title">The "Works in Playground, Breaks in Prod" Pattern</h2>
+          
+          <div class="grid-2col">
+            <div class="card danger-border">
+              <h3 style="color: var(--alert-red); font-size: 16px; margin-bottom: 12px;">
+                <i class="fa-solid fa-bug"></i> Failed Production Output
+              </h3>
+              <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">
+                Code expected standard string label (<code>BILLING</code>), but received full prose:
+              </p>
+              <div class="code-block" style="color: #FCA5A5;">
+// Raw Response from Claude:
+"This looks like a billing issue because the user mentions double charging on April."
+
+// Python Parser Result:
+KeyError: 'BILLING' -> Pipeline Crashed!</div>
+              <p style="font-size: 12px; color: var(--text-muted); margin-top: 12px;">
+                <strong>Instinctive Reaction (WRONG):</strong> Add more words ("Please please return ONLY the label, I really mean it!").
+              </p>
+            </div>
+
+            <div class="card accent-border">
+              <h3 style="color: var(--accent-cyan); font-size: 16px; margin-bottom: 12px;">
+                <i class="fa-solid fa-stethoscope"></i> Anthropic Core Rule
+              </h3>
+              <p style="font-size: 14px; line-height: 1.5; margin-bottom: 16px;">
+                Rewording changes <em>how</em> you say something, but <strong>does not add the missing structural piece</strong>.
+              </p>
+              <div style="background: rgba(6, 182, 212, 0.1); border: 1px solid var(--accent-cyan); padding: 14px; border-radius: 6px;">
+                <span style="font-family: var(--font-mono); color: var(--accent-cyan); font-weight: 700; font-size: 13px;">
+                  DIAGNOSIS RULE:
+                </span>
+                <p style="font-size: 13px; color: var(--text-main); margin-top: 6px;">
+                  Identify the specific failure mode first. Then apply the exact missing technique. Don't inflate prompt token length with redundant instructions.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 3: Diagnostic Matrix -->
+        <section class="slide-container" id="slide-3">
+          <div class="slide-eyebrow">// EXAM ESSENTIALS</div>
+          <h2 class="slide-title">The 4 Failure Modes & Missing Techniques</h2>
+          
+          <div style="flex: 1; overflow-y: auto;">
+            <table class="diag-table">
+              <thead>
+                <tr>
+                  <th>Observed Failure</th>
+                  <th>Missing Technique</th>
+                  <th>Why it Fixes the Issue</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong style="color: var(--alert-amber);">Wrong Shape</strong> (prose instead of JSON)</td>
+                  <td><span class="badge-exam">Output Constraints</span></td>
+                  <td>Forces structural boundaries independent of task content.</td>
+                </tr>
+                <tr>
+                  <td><strong style="color: var(--alert-amber);">Scope Drift / Tone Shift</strong> over long turns</td>
+                  <td><span class="badge-exam">System Prompt</span></td>
+                  <td>Holds persistent rules across turns despite conversation noise.</td>
+                </tr>
+                <tr>
+                  <td><strong style="color: var(--alert-amber);">Invented Structure</strong> (unknown format)</td>
+                  <td><span class="badge-exam">Few-shot Examples</span></td>
+                  <td>Shows exact pattern/casing that text instructions fail to pin down.</td>
+                </tr>
+                <tr>
+                  <td><strong style="color: var(--alert-amber);">Edge-Case Breaks</strong> on variant inputs</td>
+                  <td><span class="badge-exam">Variant Constraint / Example</span></td>
+                  <td>Explicitly closes parsing gaps not exposed in happy-path testing.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div style="margin-top: 16px; background: rgba(245, 158, 11, 0.08); border: 1px solid var(--alert-amber); padding: 12px; border-radius: 6px; font-size: 12px; font-family: var(--font-mono);">
+            <i class="fa-solid fa-lightbulb" style="color: var(--alert-amber);"></i> <strong>CCDV-F Exam Trick:</strong> If a prompt has been re-prompted 5 times and still fails, do NOT add more adjectives. Stop and diagnose the missing structural technique!
+          </div>
+        </section>
+
+        <!-- SLIDE 4: Worked Example (Before vs After) -->
+        <section class="slide-container" id="slide-4">
+          <div class="slide-eyebrow">// APPLIED CRAFT</div>
+          <h2 class="slide-title">Classification Prompt: Before vs After</h2>
+
+          <div class="tab-bar">
+            <button class="tab-btn active" onclick="switchTab('before')">Naive Prompt (Unconstrained)</button>
+            <button class="tab-btn" onclick="switchTab('after')">Constrained Stack (Production Ready)</button>
+          </div>
+
+          <div class="tab-content active" id="tab-before">
+            <div class="card danger-border" style="flex: 1;">
+              <div style="font-family: var(--font-mono); color: var(--alert-red); font-size: 12px; margin-bottom: 8px;">
+                UNSTRUCTURED INPUT (High failure rate in parser)
+              </div>
+              <div class="code-block" style="flex: 1;">
+System: "You are a support classifier. Classify the ticket."
+
+User: <ticket>I was charged twice for the same month.</ticket>
+
+// Output Flakiness:
+Run 1 -> "Billing"
+Run 2 -> "billing"
+Run 3 -> "This looks like a billing issue."</div>
+            </div>
+          </div>
+
+          <div class="tab-content" id="tab-after">
+            <div class="card accent-border" style="flex: 1;">
+              <div style="font-family: var(--font-mono); color: var(--accent-cyan); font-size: 12px; margin-bottom: 8px;">
+                STACKED TECHNIQUES (System + Output Constraint + Few-Shot + XML)
+              </div>
+              <div class="code-block" style="flex: 1;">
+System: "You are a support classifier. Classify each ticket into exactly one of: BILLING, TECHNICAL, ESCALATION. Return only the label. No other text."
+
+<sample_input>My account shows two charges for April.</sample_input>
+<ideal_output>BILLING</ideal_output>
+
+<sample_input>The API keeps returning a 429 error.</sample_input>
+<ideal_output>TECHNICAL</ideal_output>
+
+User: <ticket>I was charged twice for the same month.</ticket></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 5: Deep Dive into 4 Techniques -->
+        <section class="slide-container" id="slide-5">
+          <div class="slide-eyebrow">// ARCHITECTURE SPECIFICATION</div>
+          <h2 class="slide-title">When to Reach for Each Technique</h2>
+
+          <div class="grid-2col">
+            <div class="card">
+              <h3 style="color: var(--accent-cyan); font-size: 15px; margin-bottom: 8px;">
+                <i class="fa-solid fa-layer-group"></i> 1. System Prompts
+              </h3>
+              <p style="font-size: 12px; color: var(--text-muted); line-height: 1.4;">
+                Persistent behavioral contract layer. Sets role, scope, context rules, and system constraints across multi-turn sessions.
+              </p>
+
+              <h3 style="color: var(--accent-cyan); font-size: 15px; margin: 16px 0 8px 0;">
+                <i class="fa-solid fa-code"></i> 2. XML Tags
+              </h3>
+              <p style="font-size: 12px; color: var(--text-muted); line-height: 1.4;">
+                Enforces boundaries between instructions, contexts, and few-shot examples. Prevents Claude from treating content as instructions.
+              </p>
+            </div>
+
+            <div class="card">
+              <h3 style="color: var(--accent-cyan); font-size: 15px; margin-bottom: 8px;">
+                <i class="fa-solid fa-vial"></i> 3. Few-Shot Examples
+              </h3>
+              <p style="font-size: 12px; color: var(--text-muted); line-height: 1.4;">
+                Demonstrates output patterns directly. Crucial for exact casing, date formatting, or custom structural representations.
+              </p>
+
+              <h3 style="color: var(--accent-cyan); font-size: 15px; margin: 16px 0 8px 0;">
+                <i class="fa-solid fa-lock"></i> 4. Output Constraints
+              </h3>
+              <p style="font-size: 12px; color: var(--text-muted); line-height: 1.4;">
+                Controls exact format shape (JSON schema, label sets, stop tokens) independent of message content.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 6: Stacking vs Simplifying (Do's & Don'ts) -->
+        <section class="slide-container" id="slide-6">
+          <div class="slide-eyebrow">// ANTHROPIC BEST PRACTICES</div>
+          <h2 class="slide-title">Stacking vs. Simplifying Prompts</h2>
+
+          <div class="comparison-box">
+            <div class="dos-card">
+              <h3 style="color: var(--success-green); font-size: 15px; margin-bottom: 8px;">
+                <i class="fa-solid fa-circle-check"></i> Stack All 4 Techniques When:
+              </h3>
+              <ul style="font-size: 12px; line-height: 1.6; color: var(--text-main); padding-left: 16px;">
+                <li>Handling strict downstream API/database parsers.</li>
+                <li>Complex multi-class routing with high ambiguity.</li>
+                <li>Production pipelines processing untested user inputs.</li>
+                <li>Edge cases requiring structural isolation via XML.</li>
+              </ul>
+            </div>
+
+            <div class="donts-card">
+              <h3 style="color: var(--alert-red); font-size: 15px; margin-bottom: 8px;">
+                <i class="fa-solid fa-circle-xmark"></i> Simplify / Avoid Over-Engineering:
+              </h3>
+              <ul style="font-size: 12px; line-height: 1.6; color: var(--text-main); padding-left: 16px;">
+                <li>Single-pass simple tasks (e.g., "Summarize this paragraph").</li>
+                <li>Don't add JSON output schemas + few-shots for basic text ops.</li>
+                <li>Adding more text without prior diagnosis.</li>
+                <li>Writing massive prompts when 1 explicit XML example suffices.</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 7: API Structured Outputs & Constrained Decoding -->
+        <section class="slide-container" id="slide-7">
+          <div class="slide-eyebrow">// API LEVEL ENFORCEMENT</div>
+          <h2 class="slide-title">Structured Outputs (Constrained Decoding)</h2>
+
+          <div class="grid-2col">
+            <div class="card accent-border">
+              <h3 style="color: var(--accent-cyan); font-size: 15px; margin-bottom: 8px;">
+                Prompting vs. Constrained Decoding
+              </h3>
+              <p style="font-size: 13px; color: var(--text-muted); line-height: 1.4; margin-bottom: 12px;">
+                Prompt instructions are <em>requests</em>. Structured Outputs force constraint at <strong>generation time token-by-token</strong> via API JSON Schema.
+              </p>
+              <div class="code-block">
+// API Request with JSON Schema
+"output_config": {
+  "format": {
+    "type": "json_schema",
+    "schema": { ... }
+  }
+}</div>
+            </div>
+
+            <div class="card">
+              <h3 style="color: var(--accent-cyan); font-size: 15px; margin-bottom: 8px;">
+                Two API Use-Cases
+              </h3>
+              <ul style="font-size: 12px; color: var(--text-main); line-height: 1.6; padding-left: 16px;">
+                <li>
+                  <strong>JSON Outputs:</strong> Constrains final assistant response text (e.g., extracting ticket metadata directly).
+                </li>
+                <li style="margin-top: 8px;">
+                  <strong>Strict Tool Use:</strong> Sets <code>strict: true</code> on tool definitions to validate input parameters before execution in agentic loops.
+                </li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 8: Trade-offs of Structured Outputs -->
+        <section class="slide-container" id="slide-8">
+          <div class="slide-eyebrow">// ARCHITECTURAL TRADEOFFS</div>
+          <h2 class="slide-title">Costs & Limits of API Structured Outputs</h2>
+
+          <div class="grid-2col">
+            <div class="card alert-border">
+              <h3 style="color: var(--alert-amber); font-size: 15px; margin-bottom: 8px;">
+                <i class="fa-solid fa-clock-rotate-left"></i> Latency & Cost Impact
+              </h3>
+              <ul style="font-size: 12px; line-height: 1.5; color: var(--text-main); padding-left: 16px;">
+                <li><strong>First Request Latency:</strong> Schema compilation adds initial latency. (Compiled grammars are cached 24h).</li>
+                <li><strong>Token Cost:</strong> API injects a system prompt describing the schema (billed as input tokens).</li>
+              </ul>
+            </div>
+
+            <div class="card alert-border">
+              <h3 style="color: var(--alert-amber); font-size: 15px; margin-bottom: 8px;">
+                <i class="fa-solid fa-triangle-exclamation"></i> Edge Cases & Incompatibilities
+              </h3>
+              <ul style="font-size: 12px; line-height: 1.5; color: var(--text-main); padding-left: 16px;">
+                <li><strong>Refusal / Truncation:</strong> <code>stop_reason</code> can be <code>refusal</code> or <code>max_tokens</code> (broken mid-structure). Must still check stop reason!</li>
+                <li><strong>Incompatible with Prefilling:</strong> JSON Output Schema cannot be combined with assistant message prefilling.</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 9: Exam Trick Checklist (Interactive Sim) -->
+        <section class="slide-container" id="slide-9">
+          <div class="slide-eyebrow">// INTERACTIVE ARCHITECTURE SIMULATOR</div>
+          <h2 class="slide-title">Interactive Audit: Production Readiness</h2>
+
+          <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 14px;">
+            Click the checks required to validate a reliable Claude pipeline before shipping:
+          </p>
+
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <div class="quiz-option" onclick="toggleAudit(this)">
+              <i class="fa-regular fa-square" style="color: var(--accent-cyan);"></i>
+              <span>Separate User Data from Instructions using distinct XML tags (e.g. <code>&lt;ticket&gt;</code>).</span>
+            </div>
+
+            <div class="quiz-option" onclick="toggleAudit(this)">
+              <i class="fa-regular fa-square" style="color: var(--accent-cyan);"></i>
+              <span>Ensure code handles <code>stop_reason == "max_tokens"</code> even with JSON Outputs enabled.</span>
+            </div>
+
+            <div class="quiz-option" onclick="toggleAudit(this)">
+              <i class="fa-regular fa-square" style="color: var(--accent-cyan);"></i>
+              <span>Avoid combining Assistant Message Prefilling with API JSON Schema Output constraints.</span>
+            </div>
+          </div>
+
+          <div id="audit-result" style="margin-top: 14px; font-family: var(--font-mono); font-size: 12px; color: var(--success-green); opacity: 0; transition: opacity 0.3s;">
+            <i class="fa-solid fa-circle-check"></i> ALL ARCHITECTURAL CHECKS VERIFIED! READY FOR PRODUCTION DEPLOYMENT.
+          </div>
+        </section>
+
+        <!-- SLIDE 10: CCDV-F Exam Challenge (Quiz Slide) -->
+        <section class="slide-container" id="slide-10">
+          <div class="slide-eyebrow">// CCDV-F EXAM SIMULATION</div>
+          <h2 class="slide-title">Exam Practice Question</h2>
+
+          <div class="card" style="flex: 1;">
+            <p style="font-size: 14px; color: var(--text-main); margin-bottom: 16px; font-weight: 600;">
+              Q: A developer uses API Structured Outputs (JSON Schema) for a critical workflow. What must the production code STILL check to prevent runtime JSON parsing errors?
+            </p>
+
+            <div class="quiz-option" onclick="checkAnswer(this, false)">
+              <span>A) Verify if Claude returned raw XML tags instead of JSON.</span>
+            </div>
+            
+            <div class="quiz-option" onclick="checkAnswer(this, true)">
+              <span>B) Check <code>stop_reason</code> for <code>max_tokens</code> (truncation) or <code>refusal</code>.</span>
+            </div>
+
+            <div class="quiz-option" onclick="checkAnswer(this, false)">
+              <span>C) Inspect response latency to verify grammar compilation cache hit.</span>
+            </div>
+
+            <div id="quiz-explanation" style="display: none; margin-top: 12px; font-size: 12px; padding: 10px; background: rgba(16, 185, 129, 0.1); border: 1px solid var(--success-green); border-radius: 4px; color: #A7F3D0;">
+              <strong>Correct!</strong> Guaranteed schema generation does NOT guarantee that execution wasn't truncated mid-response due to token limits or safety refusal.
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 11: Elite Summary / Key Takeaways -->
+        <section class="slide-container" id="slide-11">
+          <div class="slide-eyebrow">// CERTIFICATION CHEAT SHEET</div>
+          <h2 class="slide-title">Key Takeaways for CCDV-F Exam</h2>
+
+          <div class="grid-2col">
+            <div class="card accent-border">
+              <h3 style="color: var(--accent-cyan); font-size: 14px; margin-bottom: 8px;">
+                Prompting Principles
+              </h3>
+              <ul style="font-size: 12px; color: var(--text-muted); line-height: 1.6; padding-left: 14px;">
+                <li>Diagnose the failure type BEFORE adding more prompt text.</li>
+                <li>Stack all 4 techniques for deterministic, parsed production outputs.</li>
+                <li>Use XML tags to isolate dynamic input data from instructions.</li>
+              </ul>
+            </div>
+
+            <div class="card accent-border">
+              <h3 style="color: var(--accent-cyan); font-size: 14px; margin-bottom: 8px;">
+                API Structured Outputs
+              </h3>
+              <ul style="font-size: 12px; color: var(--text-muted); line-height: 1.6; padding-left: 14px;">
+                <li>Constrained decoding happens at generation time token-by-token.</li>
+                <li>Compiling new schemas adds initial call latency (cached 24h).</li>
+                <li>Incompatible with message prefilling; requires stop_reason verification.</li>
+              </ul>
+            </div>
+          </div>
+
+          <div style="text-align: center; margin-top: 24px; font-family: var(--font-mono); font-size: 14px; color: var(--accent-cyan);">
+            <i class="fa-solid fa-award"></i> MODULE 02 COMPLETED. READY FOR EPISODE 03.
+          </div>
+        </section>
+
+      </main>
+
+      <!-- Bottom Navigation Bar -->
+      <footer class="deck-footer">
+        <div class="nav-controls">
+          <button class="btn-nav" id="btn-prev" onclick="prevSlide()">
+            <i class="fa-solid fa-arrow-left"></i> PREV
+          </button>
+          <button class="btn-nav" id="btn-next" onclick="nextSlide()">
+            NEXT <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>
+
+        <div class="slide-counter">
+          SLIDE <span id="current-slide-num">1</span> / <span id="total-slides-num">11</span>
+        </div>
+      </footer>
+
+    </div>
+  </div>
+
+  <script>
+    // Deck State Management
+    let currentSlide = 1;
+    const totalSlides = 11;
+
+    function updateDeckState() {
+      // Hide all slides
+      document.querySelectorAll('.slide-container').forEach(slide => {
+        slide.classList.remove('active');
+      });
+
+      // Show current slide
+      const activeSlide = document.getElementById(`slide-${currentSlide}`);
+      if (activeSlide) {
+        activeSlide.classList.add('active');
+      }
+
+      // Update UI elements
+      document.getElementById('current-slide-num').innerText = currentSlide;
+      document.getElementById('btn-prev').disabled = (currentSlide === 1);
+      document.getElementById('btn-next').disabled = (currentSlide === totalSlides);
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides) {
+        currentSlide++;
+        updateDeckState();
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 1) {
+        currentSlide--;
+        updateDeckState();
+      }
+    }
+
+    // Keyboard Navigation Listener
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') {
+        nextSlide();
+      } else if (e.key === 'ArrowLeft') {
+        prevSlide();
+      }
+    });
+
+    // Interactive Tab Controller (Slide 4)
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+      if (tabName === 'before') {
+        document.querySelectorAll('.tab-btn')[0].classList.add('active');
+        document.getElementById('tab-before').classList.add('active');
+      } else {
+        document.querySelectorAll('.tab-btn')[1].classList.add('active');
+        document.getElementById('tab-after').classList.add('active');
+      }
+    }
+
+    // Interactive Audit Checkbox Handler (Slide 9)
+    let checkedCount = 0;
+    function toggleAudit(el) {
+      const icon = el.querySelector('i');
+      if (icon.classList.contains('fa-square')) {
+        icon.classList.remove('fa-square', 'fa-regular');
+        icon.classList.add('fa-square-check', 'fa-solid');
+        icon.style.color = 'var(--success-green)';
+        el.style.borderColor = 'var(--success-green)';
+        checkedCount++;
+      } else {
+        icon.classList.remove('fa-square-check', 'fa-solid');
+        icon.classList.add('fa-square', 'fa-regular');
+        icon.style.color = 'var(--accent-cyan)';
+        el.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+        checkedCount--;
+      }
+
+      if (checkedCount === 3) {
+        document.getElementById('audit-result').style.opacity = '1';
+      } else {
+        document.getElementById('audit-result').style.opacity = '0';
+      }
+    }
+
+    // Quiz Option Checker (Slide 10)
+    function checkAnswer(el, isCorrect) {
+      document.querySelectorAll('#slide-10 .quiz-option').forEach(opt => {
+        opt.classList.remove('selected-correct', 'selected-wrong');
+      });
+
+      if (isCorrect) {
+        el.classList.add('selected-correct');
+        document.getElementById('quiz-explanation').style.display = 'block';
+      } else {
+        el.classList.add('selected-wrong');
+        document.getElementById('quiz-explanation').style.display = 'none';
+      }
+    }
+
+    // Initialize Deck
+    updateDeckState();
+  </script>
+</body>
+</html>

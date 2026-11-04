@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>CCDV-F Episode 02: Slide Deck Launcher</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -50,7 +50,7 @@
         }
     </style>
 </head>
-<body class="flex items-center justify-center p-4 antialiased">
+<body class="flex items-center justify-center p-4 sm:p-6 min-h-screen antialiased" style="padding-top: max(1rem, env(safe-area-inset-top)); padding-bottom: max(1rem, env(safe-area-inset-bottom));">
     <div class="max-w-2xl w-full bg-cyber-panel border border-cyber-border rounded-2xl p-6 sm:p-8 space-y-6 shadow-2xl relative overflow-hidden">
         <!-- Accent Glow -->
         <div class="absolute -right-20 -top-20 w-56 h-56 bg-cyber-cyan/10 rounded-full blur-3xl pointer-events-none"></div>

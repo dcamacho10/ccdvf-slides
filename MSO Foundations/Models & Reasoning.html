@@ -2,7 +2,7 @@
 <html lang="pt-BR" class="h-full bg-slate-950">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>CCDV-F Episode 02: Model Options & Reasoning Modes</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -71,6 +71,50 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
+        }
+
+        /* Mobile Adaptive Layout */
+        @media (max-width: 768px), (orientation: portrait) {
+            body {
+                overflow-y: auto !important;
+                user-select: text !important;
+                height: auto !important;
+                min-height: 100dvh !important;
+            }
+            .stage-container {
+                width: 100% !important;
+                height: auto !important;
+                min-height: 100dvh !important;
+                padding: 0 !important;
+                display: block !important;
+            }
+            .slide-deck {
+                width: 100% !important;
+                max-width: 100% !important;
+                min-height: 100dvh !important;
+                height: auto !important;
+                aspect-ratio: auto !important;
+                border-radius: 0 !important;
+                border: none !important;
+                display: flex !important;
+                flex-direction: column !important;
+            }
+            .slide {
+                position: relative !important;
+                inset: auto !important;
+                top: auto !important;
+                bottom: auto !important;
+                padding: 16px !important;
+                min-height: calc(100dvh - 120px) !important;
+                flex: 1 0 auto !important;
+            }
+            .slide:not(.active) {
+                display: none !important;
+            }
+            .slide.active {
+                display: flex !important;
+                flex-direction: column !important;
+            }
         }
 
         /* Glowing borders & terminal visual accents */
@@ -916,17 +960,17 @@
             </section>
 
             <!-- FOOTER CONTROLS -->
-            <footer class="h-12 bg-cyber-surface/90 border-t border-cyber-border px-6 flex items-center justify-between z-30 backdrop-blur">
+            <footer class="h-14 bg-cyber-surface/95 border-t border-cyber-border px-4 sm:px-6 flex items-center justify-between z-30 backdrop-blur sticky bottom-0" style="padding-bottom: max(0.25rem, env(safe-area-inset-bottom));">
                 <!-- Slide Progress / Nav -->
                 <div class="flex items-center gap-3">
-                    <button onclick="prevSlide()" class="p-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors">
-                        <i class="fa-solid fa-chevron-left w-4 h-4 flex items-center justify-center"></i>
+                    <button onclick="prevSlide()" class="p-2 sm:p-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 flex items-center justify-center">
+                        <i class="fa-solid fa-chevron-left text-xs"></i>
                     </button>
                     <span class="font-mono text-xs text-slate-400">
                         SLIDE <span id="currentSlideNum" class="text-cyber-cyan font-bold">1</span> / 8
                     </span>
-                    <button onclick="nextSlide()" class="p-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors">
-                        <i class="fa-solid fa-chevron-right w-4 h-4 flex items-center justify-center"></i>
+                    <button onclick="nextSlide()" class="p-2 sm:p-1.5 rounded bg-cyber-blue hover:bg-blue-600 text-white transition-colors min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 flex items-center justify-center font-bold">
+                        <i class="fa-solid fa-chevron-right text-xs"></i>
                     </button>
                 </div>
 
@@ -1264,6 +1308,34 @@
         function resetQuiz() {
             initQuiz();
         }
+
+        // Native Touch Swipe Handler for Mobile Phones
+        (function initTouchNavigation() {
+            let touchStartX = 0;
+            let touchStartY = 0;
+            const threshold = 45;
+            const restraint = 80;
+
+            document.addEventListener('touchstart', (e) => {
+                const touch = e.changedTouches[0];
+                touchStartX = touch.pageX;
+                touchStartY = touch.pageY;
+            }, { passive: true });
+
+            document.addEventListener('touchend', (e) => {
+                const touch = e.changedTouches[0];
+                const distX = touch.pageX - touchStartX;
+                const distY = touch.pageY - touchStartY;
+
+                if (Math.abs(distX) >= threshold && Math.abs(distY) <= restraint) {
+                    if (distX < 0) {
+                        nextSlide();
+                    } else {
+                        prevSlide();
+                    }
+                }
+            }, { passive: true });
+        })();
     </script>
 </body>
 </html>

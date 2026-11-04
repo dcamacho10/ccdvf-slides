@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>CCDV-F Module 02: Prompting Modes</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -55,6 +55,33 @@
             height: calc(100vw * 9 / 16);
             max-height: 100vh;
             max-width: calc(100vh * 16 / 9);
+        }
+
+        /* Mobile Adaptive Layout */
+        @media (max-width: 768px), (orientation: portrait) {
+            body {
+                overflow-y: auto !important;
+                user-select: text !important;
+                height: auto !important;
+                min-height: 100dvh !important;
+                display: block !important;
+            }
+            .slide-aspect-ratio {
+                width: 100% !important;
+                max-width: 100% !important;
+                min-height: 100dvh !important;
+                height: auto !important;
+                max-height: none !important;
+                border-radius: 0 !important;
+                border: none !important;
+                padding: 12px 12px 0 12px !important;
+            }
+            .slide {
+                min-height: calc(100dvh - 140px) !important;
+                height: auto !important;
+                flex-direction: column !important;
+                padding-bottom: 2rem !important;
+            }
         }
 
         /* Custom Scrollbar for inner components */
@@ -638,9 +665,9 @@
         </main>
 
         <!-- FOOTER / NAVIGATION CONTROLS -->
-        <footer class="flex items-center justify-between z-40 pt-3 border-t border-gray-800/80">
+        <footer class="flex items-center justify-between z-40 pt-3 border-t border-gray-800/80 sticky bottom-0 bg-bgDark/95 backdrop-blur-md pb-2" style="padding-bottom: max(0.5rem, env(safe-area-inset-bottom));">
             <!-- Progress Bar Container -->
-            <div class="flex-1 max-w-xs mr-4">
+            <div class="hidden sm:block flex-1 max-w-xs mr-4">
                 <div class="flex justify-between text-[10px] font-mono text-gray-500 mb-1">
                     <span>PROGRESS</span>
                     <span id="progress-text">1 / 7</span>
@@ -652,17 +679,17 @@
 
             <!-- Slide Counter Display -->
             <div class="text-xs font-mono text-gray-400">
-                SLIDE <span id="current-slide-num" class="text-accentBlue font-bold">01</span> OF <span id="total-slides-num" class="text-gray-300">07</span>
+                SLIDE <span id="current-slide-num" class="text-accentBlue font-bold">01</span> / <span id="total-slides-num" class="text-gray-300">07</span>
             </div>
 
             <!-- Nav Buttons -->
             <div class="flex items-center space-x-2">
-                <button onclick="prevSlide()" id="btn-prev" class="px-3 py-1.5 bg-surface hover:bg-surfaceLight border border-gray-700 text-gray-300 rounded text-xs font-mono flex items-center space-x-1 transition disabled:opacity-30 disabled:cursor-not-allowed">
+                <button onclick="prevSlide()" id="btn-prev" class="px-3.5 py-2 sm:px-3 sm:py-1.5 bg-surface hover:bg-surfaceLight border border-gray-700 text-gray-300 rounded text-xs font-mono flex items-center space-x-1 min-h-[44px] sm:min-h-0 transition disabled:opacity-30 disabled:cursor-not-allowed">
                     <i class="fa-solid fa-chevron-left"></i>
-                    <span>ANTERIOR</span>
+                    <span>PREV</span>
                 </button>
-                <button onclick="nextSlide()" id="btn-next" class="px-4 py-1.5 bg-accentBlue hover:bg-blue-600 text-white rounded text-xs font-mono font-bold flex items-center space-x-1 transition glow-blue">
-                    <span>PRÓXIMO</span>
+                <button onclick="nextSlide()" id="btn-next" class="px-4 py-2 sm:px-4 sm:py-1.5 bg-accentBlue hover:bg-blue-600 text-white rounded text-xs font-mono font-bold flex items-center space-x-1 min-h-[44px] sm:min-h-0 transition glow-blue">
+                    <span>NEXT</span>
                     <i class="fa-solid fa-chevron-right"></i>
                 </button>
             </div>

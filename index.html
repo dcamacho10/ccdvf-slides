@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>CCDV-F Certification Portal | Claude Certified Developer Foundations</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -115,7 +115,7 @@
                 </span>
             </div>
 
-            <!-- Header Quick Stats -->
+            <!-- Header Quick Stats (Desktop) -->
             <div class="hidden md:flex items-center space-x-6 font-mono text-xs">
                 <div class="flex items-center space-x-2 text-gray-400">
                     <i class="fa-solid fa-clock text-cyber-amber"></i>
@@ -127,6 +127,14 @@
                 </div>
                 <a href="#readiness-section" class="bg-cyber-accent/10 border border-cyber-accent/40 text-cyber-accent px-3 py-1.5 rounded hover:bg-cyber-accent hover:text-white transition glow-accent">
                     <i class="fa-solid fa-gauge-high mr-1"></i> STATUS: READY
+                </a>
+            </div>
+
+            <!-- Mobile Quick Status Chip -->
+            <div class="flex md:hidden items-center space-x-2">
+                <a href="#readiness-section" class="bg-cyber-accent/10 border border-cyber-accent/40 text-cyber-accent px-2.5 py-1 rounded text-xs font-mono flex items-center gap-1.5 glow-accent" title="View Readiness Score">
+                    <i class="fa-solid fa-gauge-high text-[10px]"></i>
+                    <span id="mobile-header-score" class="font-bold">0%</span>
                 </a>
             </div>
         </div>
@@ -277,7 +285,8 @@
                         </div>
                     </div>
 
-                    <div class="flex flex-wrap items-center gap-2 self-start sm:self-center">
+                    <!-- Desktop Quick Actions -->
+                    <div class="hidden xl:flex flex-wrap items-center gap-2 self-start sm:self-center">
                         <a href="MSO%20Foundations/How%20LLMs%20behave.html" target="_blank" class="bg-cyber-cyan/10 hover:bg-cyber-cyan hover:text-black text-cyber-cyan border border-cyber-cyan/40 px-3 py-1.5 rounded text-xs font-mono transition flex items-center gap-1.5 glow-cyan" title="Launch Part 1: How LLMs Behave">
                             <i class="fa-solid fa-play text-[10px]"></i> Part 1: How LLMs Behave
                         </a>
@@ -298,6 +307,18 @@
                         </a>
                         <button onclick="toggleAccordion('acc-1')" class="bg-gray-800 hover:bg-gray-700 text-gray-300 p-2 rounded transition" title="Toggle Module Details">
                             <i id="icon-acc-1" class="fa-solid fa-chevron-down text-xs"></i>
+                        </button>
+                    </div>
+
+                    <!-- Mobile / Tablet Action Bar -->
+                    <div class="flex xl:hidden items-center gap-2 w-full sm:w-auto">
+                        <a href="ccdvf_episode02_slides.html" class="flex-1 sm:flex-initial bg-cyber-cyan/10 hover:bg-cyber-cyan hover:text-black text-cyber-cyan border border-cyber-cyan/40 px-3 py-2 rounded text-xs font-mono transition flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-layer-group text-[10px]"></i>
+                            <span>Decks Launcher</span>
+                        </a>
+                        <button onclick="toggleAccordion('acc-1')" class="flex-1 sm:flex-initial bg-gray-800 hover:bg-gray-700 text-gray-200 px-3 py-2 rounded text-xs font-mono transition flex items-center justify-center gap-2" title="Toggle Module Details">
+                            <span>Interactive Decks (6)</span>
+                            <i id="icon-acc-1-mob" class="fa-solid fa-chevron-down text-xs"></i>
                         </button>
                     </div>
                 </div>
@@ -784,6 +805,9 @@
             document.getElementById('readiness-score').innerText = `${percent}%`;
             document.getElementById('readiness-bar').style.width = `${percent}%`;
             document.getElementById('completed-count').innerText = `${completedCount} of 5 Macro Modules Completed`;
+
+            const mobScore = document.getElementById('mobile-header-score');
+            if (mobScore) mobScore.innerText = `${percent}%`;
         }
 
         // Reset All Progress
@@ -801,12 +825,15 @@
         function toggleAccordion(accId) {
             const content = document.getElementById(accId);
             const icon = document.getElementById(`icon-${accId}`);
+            const iconMob = document.getElementById(`icon-${accId}-mob`);
             if (content.classList.contains('hidden')) {
                 content.classList.remove('hidden');
-                icon.classList.replace('fa-chevron-down', 'fa-chevron-up');
+                if (icon) icon.classList.replace('fa-chevron-down', 'fa-chevron-up');
+                if (iconMob) iconMob.classList.replace('fa-chevron-down', 'fa-chevron-up');
             } else {
                 content.classList.add('hidden');
-                icon.classList.replace('fa-chevron-up', 'fa-chevron-down');
+                if (icon) icon.classList.replace('fa-chevron-up', 'fa-chevron-down');
+                if (iconMob) iconMob.classList.replace('fa-chevron-up', 'fa-chevron-down');
             }
         }
 
