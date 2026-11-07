@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CCDV-F Episode 02: Context Engineering & Memory Architecture</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+    
+    :root {
+      --bg-dark: #0B0F19;
+      --surface-navy: #111827;
+      --surface-card: #1F2937;
+      --border-cyan: rgba(6, 182, 212, 0.3);
+      --accent-blue: #3B82F6;
+      --accent-cyan: #06B6D4;
+      --alert-amber: #F59E0B;
+      --alert-red: #EF4444;
+      --success-green: #10B981;
+      --accent-purple: #8B5CF6;
+      --text-main: #F3F4F6;
+      --text-muted: #9CA3AF;
+      --font-mono: 'Fira Code', monospace;
+      --font-sans: 'Inter', sans-serif;
+    }
+    
+    body {
+      background-color: #030712;
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+    
+    .viewport {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    
+    .deck-container {
+      width: 1280px;
+      height: 720px;
+      background-color: var(--bg-dark);
+      border: 1px solid var(--border-cyan);
+      box-shadow: 0 0 35px rgba(16, 185, 129, 0.15), inset 0 0 15px rgba(0, 0, 0, 0.8);
+      border-radius: 12px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .deck-header {
+      height: 48px;
+      background-color: rgba(17, 24, 39, 0.85);
+      border-bottom: 1px solid rgba(16, 185, 129, 0.2);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+    }
+    
+    .deck-header .brand {
+      color: var(--success-green);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+    }
+    
+    .deck-header .status {
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .badge-exam {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: var(--success-green);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+    }
+
+    .slides-wrapper { flex: 1; position: relative; overflow: hidden; }
+    
+    .slide-container {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      padding: 36px 48px;
+      display: none;
+      flex-direction: column;
+      opacity: 0;
+      transition: opacity 0.2s ease-in-out;
+    }
+    
+    .slide-container.active { display: flex; opacity: 1; }
+
+    .slide-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--success-green);
+      letter-spacing: 1.5px;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+    
+    .slide-title {
+      font-size: 26px;
+      font-weight: 800;
+      color: #FFFFFF;
+      margin-bottom: 20px;
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .deck-footer {
+      height: 52px;
+      background-color: rgba(17, 24, 39, 0.9);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+    }
+    
+    .nav-btn {
+      background: var(--surface-card);
+      border: 1px solid var(--border-cyan);
+      color: var(--text-main);
+      padding: 6px 14px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+    
+    .nav-btn:hover:not(:disabled) {
+      background: var(--success-green);
+      color: #000;
+    }
+    
+    .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+    .code-box {
+      background: #060913;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 14px 18px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      line-height: 1.6;
+      color: #E2E8F0;
+      overflow-x: auto;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      height: 100%;
+    }
+
+    .feature-card {
+      background: var(--surface-card);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 16px 20px;
+    }
+
+    .quiz-option {
+      background: var(--surface-card);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 10px 14px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.2s;
+    }
+    .quiz-option:hover { border-color: var(--success-green); background: rgba(16, 185, 129, 0.05); }
+    .quiz-option.selected-correct { background: rgba(16, 185, 129, 0.15); border-color: var(--success-green); color: #A7F3D0; }
+    .quiz-option.selected-wrong { background: rgba(239, 68, 68, 0.15); border-color: var(--alert-red); color: #FCA5A5; }
+  </style>
+</head>
+<body>
+
+  <div class="viewport">
+    <div class="deck-container">
+      
+      <!-- Top Terminal Header -->
+      <header class="deck-header">
+        <div class="brand">
+          <i class="fa-solid fa-memory"></i>
+          <span>CCDV-F // MODULE 02: CONTEXT ENGINEERING &amp; MEMORY</span>
+        </div>
+        <div class="status">
+          <a href="../index.html" style="color: var(--text-muted); text-decoration: none; margin-right: 12px;">
+            <i class="fa-solid fa-arrow-left"></i> Hub
+          </a>
+          <span class="badge-exam"><i class="fa-solid fa-shield-halved"></i> EXAM FOCUS</span>
+          <span><i class="fa-solid fa-database"></i> COMPACTION &amp; PROMPT CACHING</span>
+        </div>
+      </header>
+
+      <!-- Slides Content Area -->
+      <main class="slides-wrapper">
+
+        <!-- SLIDE 1: Cover -->
+        <section class="slide-container active" id="slide-1">
+          <div style="margin: auto; text-align: center; max-width: 800px;">
+            <div class="slide-eyebrow">// EFFICIENCY &amp; PERSISTENCE</div>
+            <h1 style="font-size: 38px; font-weight: 800; color: #fff; margin: 12px 0 16px; font-family: var(--font-mono);">
+              Context Engineering &amp; Agent Memory
+            </h1>
+            <p style="color: var(--text-muted); font-size: 16px; line-height: 1.6; margin-bottom: 24px;">
+              Preventing token budget runaway, managing rolling compaction, leveraging prompt caching breakpoints, and designing scoped agent memory across sessions.
+            </p>
+            <div style="display: inline-flex; gap: 12px;">
+              <span class="badge-exam"><i class="fa-solid fa-clock"></i> ~18 MIN SESSION</span>
+              <span class="badge-exam" style="border-color: var(--success-green); color: var(--success-green);"><i class="fa-solid fa-sliders"></i> 8 SLIDES + CONTEXT BUDGET SIMULATOR</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 2: The Context Budget Problem -->
+        <section class="slide-container" id="slide-2">
+          <div class="slide-eyebrow">// PRODUCTION BOTTLENECK</div>
+          <h2 class="slide-title"><i class="fa-solid fa-chart-line text-green-400"></i> The Multi-Turn Token Explosion</h2>
+          <div class="grid-2">
+            <div style="font-size: 13px; line-height: 1.6; display: flex; flex-direction: column; gap: 12px;">
+              <p>
+                In interactive prototyping, conversations last 3 to 5 turns. In production agents, an autonomous loop can run 20+ turns with large tool payloads (DB schemas, file contents, API returns).
+              </p>
+              <div class="feature-card" style="border-left: 3px solid var(--alert-red);">
+                <strong style="color: var(--alert-red);">Quadratic Token Cost:</strong>
+                <p style="margin-top: 4px; color: var(--text-muted);">
+                  Every new turn re-sends the entire preceding message history as input tokens. A 20-turn agent with 4,000-token tool returns easily consumes 200,000+ billable input tokens!
+                </p>
+              </div>
+              <div class="feature-card" style="border-left: 3px solid var(--success-green);">
+                <strong style="color: var(--success-green);">The Four Engineering Fixes:</strong>
+                <p style="margin-top: 4px; color: var(--text-muted);">
+                  1) Truncation, 2) Rolling Compaction (Summarization), 3) Prompt Caching (90% discount on cache hits), 4) Subagent Handoffs.
+                </p>
+              </div>
+            </div>
+            <div class="code-box">
+              <span style="color: #6B7280;"># Mathematical Context Growth:</span><br>
+              Turn 01: [System + Prompt] = 2k in<br>
+              Turn 02: [T1 + Tool 1 (4k)] = 6k in<br>
+              Turn 03: [T1 + T2 + Tool 2 (4k)] = 10k in<br>
+              Turn 04: [T1..T3 + Tool 3 (4k)] = 14k in<br>
+              ...<br>
+              Turn 20: [Accumulated History] = ~80k in<br><br>
+              <span style="color: #EF4444;">Total Billed Tokens = Sum(T1..T20) &gt; 800,000 tokens!</span><br>
+              <span style="color: #10B981;">With Prompt Caching = 90% discount on static prefixes!</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 3: Compaction Strategies -->
+        <section class="slide-container" id="slide-3">
+          <div class="slide-eyebrow">// COMPACTION PATTERNS</div>
+          <h2 class="slide-title"><i class="fa-solid fa-compress text-cyan-400"></i> Rolling Compaction vs Truncation</h2>
+          <div class="grid-2">
+            <div class="feature-card" style="border-top: 3px solid var(--alert-amber); display: flex; flex-direction: column; gap: 8px; font-size: 13px;">
+              <strong style="color: var(--alert-amber);"><i class="fa-solid fa-scissors"></i> Naive Truncation (FIFO Drop)</strong>
+              <p style="color: var(--text-muted);">
+                Dropping the oldest turns when context exceeds a threshold (e.g. keep last 10 messages).
+              </p>
+              <div class="code-box" style="font-size: 11px;">
+                # Blind FIFO drops initial user requirements!<br>
+                messages = messages[-10:] # Dangerous
+              </div>
+              <p style="color: #FCA5A5; font-size: 12px;">
+                Risk: Drops original system constraints or user goals established at turn 1.
+              </p>
+            </div>
+            <div class="feature-card" style="border-top: 3px solid var(--success-green); display: flex; flex-direction: column; gap: 8px; font-size: 13px;">
+              <strong style="color: var(--success-green);"><i class="fa-solid fa-wand-magic-sparkles"></i> Structured Compaction</strong>
+              <p style="color: var(--text-muted);">
+                Compress middle turns into a concise structured XML summary: <code>&lt;conversation_summary&gt;</code>.
+              </p>
+              <div class="code-box" style="font-size: 11px;">
+                [Turn 1 (Original User Prompt)]<br>
+                [Structured State / Summary of Turns 2..15]<br>
+                [Recent 4 Active Turns with Tool Results]
+              </div>
+              <p style="color: #A7F3D0; font-size: 12px;">
+                Maintains goal continuity without blowing the token budget.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 4: Prompt Caching -->
+        <section class="slide-container" id="slide-4">
+          <div class="slide-eyebrow">// COST &amp; LATENCY OPTIMIZATION</div>
+          <h2 class="slide-title"><i class="fa-solid fa-bolt text-yellow-400"></i> Prompt Caching (cache_control)</h2>
+          <div class="grid-2">
+            <div style="font-size: 13px; line-height: 1.6; display: flex; flex-direction: column; gap: 12px;">
+              <p>
+                Anthropic's Prompt Caching allows you to designate up to 4 cache breakpoints in your prompt using <code>cache_control: {"type": "ephemeral"}</code>.
+              </p>
+              <div class="feature-card" style="border-left: 3px solid var(--success-green);">
+                <strong style="color: var(--success-green);">Cache Hit Benefits:</strong>
+                <ul style="margin: 4px 0 0 16px; color: var(--text-muted);">
+                  <li><strong>90% cost reduction</strong> on cached prompt input tokens.</li>
+                  <li><strong>Up to 80% latency reduction</strong> for large prompts.</li>
+                  <li>TTL: Cached for 5 minutes from last use (refreshed automatically).</li>
+                </ul>
+              </div>
+              <div class="feature-card" style="border-left: 3px solid var(--accent-cyan);">
+                <strong style="color: var(--accent-cyan);">Minimum Cache Threshold:</strong>
+                <p style="margin-top: 4px; color: var(--text-muted);">
+                  Requires at least 1,024 tokens for Sonnet/Opus (2,048 for Haiku).
+                </p>
+              </div>
+            </div>
+            <div class="code-box">
+              <span style="color: #6B7280;"># Placing a Cache Breakpoint in Python SDK</span><br>
+              response = client.messages.create(<br>
+              &nbsp;&nbsp;model=<span style="color: #10B981;">"claude-3-5-sonnet-20241022"</span>,<br>
+              &nbsp;&nbsp;max_tokens=1024,<br>
+              &nbsp;&nbsp;system=[<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;{<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #06B6D4;">"type"</span>: <span style="color: #10B981;">"text"</span>,<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #06B6D4;">"text"</span>: large_enterprise_guidelines,<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #06B6D4; font-weight: bold;">"cache_control"</span>: {<span style="color: #06B6D4;">"type"</span>: <span style="color: #10B981;">"ephemeral"</span>}<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+              &nbsp;&nbsp;],<br>
+              &nbsp;&nbsp;tools=tools_list,<br>
+              &nbsp;&nbsp;messages=messages<br>
+              )
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 5: Agent Memory Scopes -->
+        <section class="slide-container" id="slide-5">
+          <div class="slide-eyebrow">// MEMORY ARCHITECTURE</div>
+          <h2 class="slide-title"><i class="fa-solid fa-layer-group text-purple-400"></i> The Three Scopes of Agent Memory</h2>
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; font-size: 13px;">
+            <div class="feature-card" style="border-top: 3px solid var(--accent-cyan);">
+              <span class="badge-exam" style="color: var(--accent-cyan); border-color: var(--accent-cyan);">Scope 1: Ephemeral Session</span>
+              <h3 style="font-size: 14px; font-weight: bold; margin: 8px 0 4px; color: #fff;">In-Context Turn History</h3>
+              <p style="font-size: 12px; color: var(--text-muted);">
+                Lives only for the lifetime of the single task. Cleared immediately once the task is marked completed or user logs out.
+              </p>
+            </div>
+            <div class="feature-card" style="border-top: 3px solid var(--accent-purple);">
+              <span class="badge-exam" style="color: var(--accent-purple); border-color: var(--accent-purple);">Scope 2: User-Scoped State</span>
+              <h3 style="font-size: 14px; font-weight: bold; margin: 8px 0 4px; color: #fff;">Key-Value Profile Store</h3>
+              <p style="font-size: 12px; color: var(--text-muted);">
+                Stores verified facts (e.g. preferred language, account ID, company size). Injected concisely in system prompt.
+              </p>
+            </div>
+            <div class="feature-card" style="border-top: 3px solid var(--success-green);">
+              <span class="badge-exam" style="color: var(--success-green); border-color: var(--success-green);">Scope 3: Semantic Archive</span>
+              <h3 style="font-size: 14px; font-weight: bold; margin: 8px 0 4px; color: #fff;">RAG / Vector Retrieval</h3>
+              <p style="font-size: 12px; color: var(--text-muted);">
+                Stores past resolutions, tickets, and document embeddings. Retrieved dynamically on-demand, never dumped raw into context!
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 6: Subagent Handoffs -->
+        <section class="slide-container" id="slide-6">
+          <div class="slide-eyebrow">// ARCHITECTURAL ISOLATION</div>
+          <h2 class="slide-title"><i class="fa-solid fa-users text-cyan-400"></i> Subagent Handoffs: Context Isolation</h2>
+          <div class="grid-2">
+            <div style="font-size: 13px; line-height: 1.6; display: flex; flex-direction: column; gap: 12px;">
+              <p>
+                When an agent needs to perform deep multi-step exploration (e.g. searching 50 files or running 10 SQL queries), doing it in the main agent clutters the conversation with massive tool outputs.
+              </p>
+              <div class="feature-card" style="border-left: 3px solid var(--accent-cyan);">
+                <strong style="color: var(--accent-cyan);">Subagent Handoff Pattern:</strong>
+                <p style="margin-top: 4px; color: var(--text-muted);">
+                  The main orchestrator spins up a dedicated subagent with a clean context. The subagent performs 15 turns of exploratory tool use and returns <strong>only a 1-paragraph summary</strong> back to the orchestrator.
+                </p>
+              </div>
+            </div>
+            <div class="code-box">
+              <span style="color: #6B7280;"># Context Isolation in Action</span><br>
+              <span style="color: #6B7280;"># Main Agent Context: 1.2k tokens</span><br>
+              Orchestrator: "Investigate database latency spike."<br><br>
+              <span style="color: #6B7280;"># Subagent Context: Isolated &amp; Discarded</span><br>
+              Subagent Turn 1..12: Run 8 SQL queries, check logs...<br>
+              Subagent Final: "Root cause: Unindexed query on orders.user_id"<br><br>
+              <span style="color: #6B7280;"># Back to Main Agent: Zero context pollution!</span><br>
+              Orchestrator receives concise root cause and advises user.
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 7: Exam Practice Question -->
+        <section class="slide-container" id="slide-7">
+          <div class="slide-eyebrow">// CCDV-F EXAM SIMULATION</div>
+          <h2 class="slide-title"><i class="fa-solid fa-graduation-cap text-green-400"></i> Practice Exam Question</h2>
+          <div style="max-width: 900px; margin: 0 auto; width: 100%;">
+            <div style="font-size: 14px; font-weight: 600; color: #fff; margin-bottom: 14px; line-height: 1.5; font-family: var(--font-mono);">
+              A multi-session customer service assistant needs to remember the user's preferred delivery address and language across multiple distinct sessions over months. Which pattern best implements this without inflating token costs?
+            </div>
+            <div class="quiz-option" onclick="checkAnswer(this, false)">
+              <span style="font-weight: bold; color: var(--success-green);">A.</span> Concatenate all past conversation session transcripts directly into the messages array.
+            </div>
+            <div class="quiz-option" onclick="checkAnswer(this, true)">
+              <span style="font-weight: bold; color: var(--success-green);">B.</span> Persist key user attributes in an external database and inject a concise profile block into the system prompt.
+            </div>
+            <div class="quiz-option" onclick="checkAnswer(this, false)">
+              <span style="font-weight: bold; color: var(--success-green);">C.</span> Enable thinking: {"type": "enabled", "budget_tokens": 16384}.
+            </div>
+            <div class="quiz-option" onclick="checkAnswer(this, false)">
+              <span style="font-weight: bold; color: var(--success-green);">D.</span> Use temperature 0.0 with strict tool use enabled.
+            </div>
+
+            <div id="quiz-explanation" style="display: none; margin-top: 14px; padding: 12px 16px; background: rgba(16, 185, 129, 0.1); border: 1px solid var(--success-green); border-radius: 6px; font-size: 12px; color: #A7F3D0;">
+              <strong>Correct! Option B:</strong> Persisting key facts in a user profile store and concisely injecting them into the system prompt decouples memory from conversation history length, avoiding quadratic token cost runaway.
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 8: Summary -->
+        <section class="slide-container" id="slide-8">
+          <div class="slide-eyebrow">// CERTIFICATION CHEAT SHEET</div>
+          <h2 class="slide-title"><i class="fa-solid fa-award text-green-400"></i> Context &amp; Memory Rules for CCDV-F Exam</h2>
+          <div class="grid-2" style="font-size: 13px;">
+            <div class="feature-card" style="border-left: 3px solid var(--success-green); display: flex; flex-direction: column; gap: 8px;">
+              <strong style="color: var(--success-green);">1. Avoid Full Transcript Replay</strong>
+              <p style="color: var(--text-muted);">
+                Never append unbounded prior session message logs in-context. Use summaries or key-value storage.
+              </p>
+              <strong style="color: var(--success-green); margin-top: 6px;">2. Prompt Caching Breakpoints</strong>
+              <p style="color: var(--text-muted);">
+                Place <code>cache_control: {"type": "ephemeral"}</code> on static system prompts and tools for 90% cost savings.
+              </p>
+            </div>
+            <div class="feature-card" style="border-left: 3px solid var(--accent-cyan); display: flex; flex-direction: column; gap: 8px;">
+              <strong style="color: var(--accent-cyan);">3. Subagent Context Shields</strong>
+              <p style="color: var(--text-muted);">
+                Use subagents to isolate messy tool exploration from the main user-facing agent thread.
+              </p>
+              <strong style="color: var(--accent-cyan); margin-top: 6px;">4. Compaction vs FIFO Truncation</strong>
+              <p style="color: var(--text-muted);">
+                Always retain original instructions and summarize middle dialogue; do not blindly truncate turn 1.
+              </p>
+            </div>
+          </div>
+        </section>
+
+      </main>
+
+      <!-- Bottom Navigation Footer -->
+      <footer class="deck-footer">
+        <div style="color: var(--text-muted);">
+          CCDV-F EXAM PREPARATION &bull; LESSON 05 OF 08
+        </div>
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <span>SLIDE <strong id="current-slide-num" style="color: #fff;">1</strong> / 8</span>
+          <div style="display: flex; gap: 6px;">
+            <button id="btn-prev" class="nav-btn" onclick="prevSlide()"><i class="fa-solid fa-chevron-left"></i></button>
+            <button id="btn-next" class="nav-btn" onclick="nextSlide()"><i class="fa-solid fa-chevron-right"></i></button>
+          </div>
+        </div>
+      </footer>
+
+    </div>
+  </div>
+
+  <script>
+    let currentSlide = 1;
+    const totalSlides = 8;
+
+    function updateDeckState() {
+      document.querySelectorAll('.slide-container').forEach(s => s.classList.remove('active'));
+      const active = document.getElementById(`slide-${currentSlide}`);
+      if (active) active.classList.add('active');
+      document.getElementById('current-slide-num').innerText = currentSlide;
+      document.getElementById('btn-prev').disabled = (currentSlide === 1);
+      document.getElementById('btn-next').disabled = (currentSlide === totalSlides);
+    }
+
+    function nextSlide() { if (currentSlide < totalSlides) { currentSlide++; updateDeckState(); } }
+    function prevSlide() { if (currentSlide > 1) { currentSlide--; updateDeckState(); } }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
+      else if (e.key === 'ArrowLeft') prevSlide();
+    });
+
+    function checkAnswer(el, isCorrect) {
+      document.querySelectorAll('#slide-7 .quiz-option').forEach(opt => {
+        opt.classList.remove('selected-correct', 'selected-wrong');
+      });
+      if (isCorrect) {
+        el.classList.add('selected-correct');
+        document.getElementById('quiz-explanation').style.display = 'block';
+      } else {
+        el.classList.add('selected-wrong');
+        document.getElementById('quiz-explanation').style.display = 'none';
+      }
+    }
+
+    updateDeckState();
+  </script>
+</body>
+</html>

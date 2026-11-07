@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CCDV-F Episode 02: Technical Substrate (SDKs, REST, Streaming & Async)</title>
+    <title>CCDV-F Module 01 // Lesson 04: Technical Substrate & API Delivery Protocols</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script>
         tailwind.config = {
             theme: {
@@ -53,6 +54,7 @@
                 rgba(0, 0, 0, 0.3)
             );
             background-size: 100% 4px;
+            pointer-events: none;
         }
         .glow-blue {
             box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
@@ -64,12 +66,12 @@
             box-shadow: 0 0 15px rgba(245, 158, 11, 0.3);
         }
         .slide-enter {
-            animation: fadeInRight 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation: fadeInRight 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
         @keyframes fadeInRight {
             from {
                 opacity: 0;
-                transform: translateX(20px);
+                transform: translateX(12px);
             }
             to {
                 opacity: 1;
@@ -80,10 +82,10 @@
 </head>
 <body class="bg-darkBg text-gray-200 font-sans min-h-screen flex flex-col justify-center items-center p-2 sm:p-4 select-none overflow-x-hidden">
 
-    <!-- Container Principal 16:9 Aspect Ratio Simulation -->
+    <!-- 16:9 Screen Container Frame -->
     <div class="w-full max-w-6xl aspect-[16/9] bg-darkBg border border-gray-800 rounded-xl shadow-2xl flex flex-col overflow-hidden relative border-cyanGlow/20">
 
-        <!-- Header / Terminal Bar Top -->
+        <!-- Top Header & Terminal Status Bar -->
         <header class="bg-navyCard border-b border-navyBorder px-4 py-2.5 flex justify-between items-center z-10 shrink-0">
             <div class="flex items-center space-x-3">
                 <div class="flex space-x-1.5">
@@ -92,148 +94,138 @@
                     <span class="w-3 h-3 rounded-full bg-emeraldSuccess/80 inline-block"></span>
                 </div>
                 <a href="../index.html" class="text-xs font-mono text-gray-300 hover:text-cyanGlow transition flex items-center gap-1.5 px-2 py-1 rounded bg-darkBg border border-navyBorder hover:border-cyanGlow/50" title="Return to Curriculum Hub">
-                    <span class="text-[10px]">←</span>
+                    <i class="fa-solid fa-arrow-left text-[10px]"></i>
                     <span class="font-semibold">CURRICULUM HUB</span>
                 </a>
                 <div class="h-4 w-px bg-gray-700"></div>
                 <span class="font-mono text-xs text-cyanGlow flex items-center gap-2">
-                    <svg class="w-4 h-4 animate-pulse text-cyanGlow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                    CCDV-F // EPISODE 02: TECHNICAL SUBSTRATE
+                    <i class="fa-solid fa-terminal text-cyanGlow"></i>
+                    CCDV-F // MODULE 01: LESSON 04
                 </span>
             </div>
             
-            <div class="flex items-center space-x-4 font-mono text-xs">
-                <span class="bg-navyBorder px-2.5 py-1 rounded text-gray-400 border border-gray-700">
+            <div class="flex items-center space-x-3 font-mono text-xs">
+                <button onclick="toggleAudio()" id="audio-toggle-btn" class="bg-darkBg hover:bg-gray-800 text-gray-300 px-2 py-1 rounded border border-navyBorder hover:border-cyanGlow/50 transition flex items-center gap-1.5" title="Toggle Sound Effects">
+                    <i class="fa-solid fa-volume-high text-cyanGlow" id="audio-icon"></i>
+                    <span id="audio-label" class="hidden sm:inline">SFX: ON</span>
+                </button>
+                <span class="bg-navyBorder px-2.5 py-1 rounded text-gray-400 border border-gray-700 hidden sm:inline">
                     STATUS: <span class="text-amberAlert font-semibold">INCIDENT INVESTIGATION</span>
                 </span>
-                <span class="text-gray-400 hidden sm:inline" id="slide-count">SLIDE 1 DE 7</span>
+                <span class="text-gray-400" id="slide-count">SLIDE 1 OF 7</span>
             </div>
         </header>
 
-        <!-- Dynamic Content Area -->
+        <!-- Dynamic Content Presentation Stage -->
         <main class="flex-1 relative overflow-y-auto p-4 sm:p-6 bg-gradient-to-b from-darkBg to-navyCard/40" id="deck-container">
 
             <!-- SLIDE 1: COVER & MISSION BRIEFING -->
             <section class="slide-content h-full flex flex-col justify-between" id="slide-1">
                 <div class="space-y-4">
                     <div class="inline-flex items-center gap-2 px-3 py-1 bg-amberAlert/10 border border-amberAlert/30 rounded-full text-amberAlert text-xs font-mono">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                        CRITICAL SEVERITY-1 INCIDENT REPORT #4081
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <span>PRODUCTION INCIDENT BRIEFING #4081</span>
                     </div>
-                    <h1 class="text-2xl sm:text-4xl font-bold text-white tracking-tight leading-tight">
-                        The Technical Substrate: <br/>
-                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-electricBlue via-cyanGlow to-emeraldSuccess">
-                            SDKs, REST, Streaming & Async Patterns
-                        </span>
-                    </h1>
-                    <p class="text-gray-400 text-sm sm:text-base max-w-3xl leading-relaxed">
-                        At <strong class="text-cyanGlow">CyberGrid Systems</strong>, the enterprise microservice pipeline collapsed during peak traffic. Automated background evaluators locked worker threads, client connections dropped stream chunks, and API bills skyrocketed. Your mission is to investigate the technical substrate, understand Claude API fundamentals, and remediate the architecture.
-                    </p>
+
+                    <div class="space-y-2">
+                        <h1 class="text-2xl sm:text-4xl font-extrabold text-white tracking-tight font-mono">
+                            Technical Substrate: <span class="text-cyanGlow">SDKs, REST, Streaming &amp; Async</span>
+                        </h1>
+                        <p class="text-gray-400 text-sm sm:text-base max-w-3xl leading-relaxed">
+                            ApexCorp's analytical gateway crashed in production during batch ingestion. Synchronous HTTP client threadpools hung waiting for long model responses, while downstream microservices triggered connection drops.
+                        </p>
+                    </div>
+
+                    <!-- 3 Incident Investigation Angles -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 my-auto">
+                        <div class="bg-navyCard border border-navyBorder p-4 rounded-lg space-y-1">
+                            <span class="text-xs font-mono text-cyanGlow font-bold">FAILURE 01: PROTOCOL MISMATCH</span>
+                            <h3 class="text-white font-bold text-sm">Blocking Synchronous Calls</h3>
+                            <p class="text-xs text-gray-400 leading-relaxed">FastAPI worker thread starved for 45s while waiting for full token completion, freezing concurrent requests.</p>
+                        </div>
+                        <div class="bg-navyCard border border-navyBorder p-4 rounded-lg space-y-1">
+                            <span class="text-xs font-mono text-amberAlert font-bold">FAILURE 02: REST HEADER ERROR</span>
+                            <h3 class="text-white font-bold text-sm">Missing anthropic-version</h3>
+                            <p class="text-xs text-gray-400 leading-relaxed">Raw HTTP cURL requests rejected by Anthropic edge proxies due to omitted mandatory API versioning headers.</p>
+                        </div>
+                        <div class="bg-navyCard border border-navyBorder p-4 rounded-lg space-y-1">
+                            <span class="text-xs font-mono text-electricBlue font-bold">FAILURE 03: BUDGET RUNAWAY</span>
+                            <h3 class="text-white font-bold text-sm">Loop-Based Ingestion</h3>
+                            <p class="text-xs text-gray-400 leading-relaxed">Processed 50,000 PDF evaluations via standard interactive API calls instead of the discounted Message Batches API.</p>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Incident Specs Box -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 my-4">
-                    <div class="bg-navyCard border border-navyBorder p-4 rounded-lg">
-                        <div class="text-xs font-mono text-gray-500 mb-1">PROD OUTAGE SYMPTOM 01</div>
-                        <div class="text-white font-semibold text-sm">Thread Starvation</div>
-                        <div class="text-xs text-gray-400 mt-1">Blocking sync HTTP calls in high-volume request queues.</div>
+                <div class="flex items-center justify-between border-t border-navyBorder pt-3 text-xs font-mono text-gray-400">
+                    <div>ROLE: Lead Backend Engineer // CCDV-F Architecture Stream</div>
+                    <div class="text-cyanGlow flex items-center gap-1">
+                        <span>Press</span>
+                        <kbd class="px-1.5 py-0.5 bg-darkBg border border-gray-700 rounded text-gray-300">→</kbd>
+                        <span>to inspect substrate architecture</span>
                     </div>
-                    <div class="bg-navyCard border border-navyBorder p-4 rounded-lg">
-                        <div class="text-xs font-mono text-gray-500 mb-1">PROD OUTAGE SYMPTOM 02</div>
-                        <div class="text-white font-semibold text-sm">Cost & Latency Spikes</div>
-                        <div class="text-xs text-gray-400 mt-1">Using real-time requests for 500k+ batch offline workloads.</div>
-                    </div>
-                    <div class="bg-navyCard border border-navyBorder p-4 rounded-lg">
-                        <div class="text-xs font-mono text-gray-500 mb-1">PROD OUTAGE SYMPTOM 03</div>
-                        <div class="text-white font-semibold text-sm">Interrupted SSE Streams</div>
-                        <div class="text-xs text-gray-400 mt-1">Uncaught stream termination handling in live chat terminals.</div>
-                    </div>
-                </div>
-
-                <div class="flex items-center justify-between pt-2 border-t border-navyBorder/50 font-mono text-xs text-gray-400">
-                    <span>Target Exam: Claude Certified Developer — Foundations (CCDV-F)</span>
-                    <span class="text-cyanGlow flex items-center gap-1">
-                        Pressione <kbd class="px-1.5 py-0.5 bg-navyBorder border border-gray-700 rounded text-white">→</kbd> para iniciar
-                    </span>
                 </div>
             </section>
 
-            <!-- SLIDE 2: INCIDENT CONTEXT & ARCHITECTURE DIAGRAM -->
+            <!-- SLIDE 2: SUBSTRATE ARCHITECTURAL FOUNDATION -->
             <section class="slide-content hidden h-full flex flex-col justify-between" id="slide-2">
-                <div class="space-y-2">
-                    <span class="text-xs font-mono text-electricBlue uppercase tracking-wider">Módulo 01 / Arquitetura Base</span>
-                    <h2 class="text-xl sm:text-2xl font-bold text-white">How a Developer Reaches Claude: Architecture Breakdown</h2>
+                <div class="space-y-1">
+                    <span class="text-xs font-mono text-cyanGlow uppercase tracking-wider">Lesson 04 / Architectural Mechanics</span>
+                    <h2 class="text-xl sm:text-2xl font-bold text-white">SDK Convenience Layer vs. Underlying REST Substrate</h2>
                 </div>
 
-                <!-- Interactive Diagram Area -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 my-auto">
-                    <!-- Left: Technical Diagram -->
-                    <div class="bg-navyCard border border-navyBorder rounded-lg p-4 flex flex-col justify-between relative overflow-hidden">
-                        <div class="text-xs font-mono text-cyanGlow mb-2 flex items-center justify-between">
-                            <span>HTTP REST FOUNDATION</span>
-                            <span class="text-gray-500 text-[10px]">Endpoint: api.anthropic.com/v1/messages</span>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5 my-auto">
+                    <!-- Layer 1: The Raw REST API -->
+                    <div class="bg-navyCard border border-navyBorder p-4 rounded-lg space-y-3 relative overflow-hidden">
+                        <div class="flex justify-between items-center">
+                            <span class="font-mono text-xs font-bold text-electricBlue">1. RAW HTTP / REST API (The Substrate)</span>
+                            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-darkBg text-gray-400 border border-gray-700">HTTP/1.1 or HTTP/2</span>
                         </div>
-
-                        <div class="space-y-3 relative z-10">
-                            <!-- Python / TS SDK Layer -->
-                            <div class="border border-electricBlue/40 bg-electricBlue/10 p-3 rounded-md flex items-center justify-between">
-                                <div>
-                                    <div class="text-xs font-bold text-white font-mono">Official SDK Layer (Python / TypeScript)</div>
-                                    <div class="text-[11px] text-gray-300">Thin convenience layer: Auto-auth, automatic retries, request assembly, typed response parsing.</div>
-                                </div>
-                                <span class="text-xs font-mono text-electricBlue bg-electricBlue/20 px-2 py-1 rounded">SDK</span>
-                            </div>
-
-                            <div class="text-center font-mono text-xs text-gray-500">↓ Compiles to raw HTTP REST POST request ↓</div>
-
-                            <!-- Raw REST Layer -->
-                            <div class="border border-cyanGlow/40 bg-cyanGlow/10 p-3 rounded-md flex items-center justify-between">
-                                <div>
-                                    <div class="text-xs font-bold text-white font-mono">Raw REST API Endpoint</div>
-                                    <div class="text-[11px] text-gray-300">Any HTTP Client (cURL, fetch, requests). Manual header construction & JSON body parsing.</div>
-                                </div>
-                                <span class="text-xs font-mono text-cyanGlow bg-cyanGlow/20 px-2 py-1 rounded">REST</span>
-                            </div>
-
-                            <div class="text-center font-mono text-xs text-gray-500">↓ Same HTTP connection / Same underlying model ↓</div>
-
-                            <!-- Claude Model -->
-                            <div class="border border-emeraldSuccess/40 bg-emeraldSuccess/10 p-3 rounded-md text-center">
-                                <div class="text-xs font-bold text-emeraldSuccess font-mono">Claude Models (3.5 Sonnet / Haiku / Opus)</div>
-                                <div class="text-[11px] text-gray-300">Processes prompt tokens & streams back raw JSON or Server-Sent Events (SSE).</div>
-                            </div>
+                        <p class="text-xs text-gray-300 leading-relaxed">
+                            The true interface to Anthropic services is standard HTTP POST to <code class="text-cyanGlow font-mono">https://api.anthropic.com/v1/messages</code>.
+                        </p>
+                        <div class="bg-darkBg p-3 rounded font-mono text-xs text-gray-300 space-y-1 border border-gray-800">
+                            <div class="text-roseDanger font-bold">POST /v1/messages HTTP/1.1</div>
+                            <div class="text-gray-400">Host: api.anthropic.com</div>
+                            <div class="text-amberAlert">x-api-key: sk-ant-api03-...</div>
+                            <div class="text-amberAlert font-bold">anthropic-version: 2023-06-01</div>
+                            <div class="text-gray-400">content-type: application/json</div>
                         </div>
+                        <p class="text-[11px] text-gray-400">
+                            * Exam Rule: The <code class="text-amberAlert font-mono">anthropic-version</code> header is <strong>strictly mandatory</strong> on all direct REST requests.
+                        </p>
                     </div>
 
-                    <!-- Right: Critical Core Takeaway -->
-                    <div class="bg-navyCard border border-navyBorder rounded-lg p-4 flex flex-col justify-between">
-                        <div class="text-xs font-mono text-amberAlert mb-2">CCDV-F EXAM CORE CONCEPT</div>
-                        <div class="space-y-3 text-sm text-gray-300">
-                            <p>
-                                <strong class="text-white"> SDK and Raw REST are functionally identical at the network layer.</strong> They hit the exact same HTTP REST endpoints and receive responses from the exact same models.
-                            </p>
-                            <div class="bg-darkBg/60 border-l-2 border-amberAlert p-3 rounded text-xs space-y-1">
-                                <span class="font-bold text-amberAlert block"> Structural Parity:</span>
-                                <span>The SDK does NOT have secret endpoints, higher priority queues, or exclusive model capabilities over cURL/REST calls. It is simply a convenience wrapper.</span>
-                            </div>
-                            <ul class="text-xs space-y-2 list-disc list-inside text-gray-400 font-mono">
-                                /> Retries automatically handled by SDK on 429/5xx
-                                /> API Key managed via `x-api-key` header automatically
-                                /> Messages API sits directly on top of this HTTP foundation
-                            </ul>
+                    <!-- Layer 2: The SDK Layer -->
+                    <div class="bg-navyCard border border-cyanGlow/40 p-4 rounded-lg space-y-3 relative overflow-hidden">
+                        <div class="flex justify-between items-center">
+                            <span class="font-mono text-xs font-bold text-cyanGlow">2. OFFICIAL SDK (Convenience Layer)</span>
+                            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-cyanGlow/10 text-cyanGlow border border-cyanGlow/30">Python / TypeScript</span>
                         </div>
+                        <p class="text-xs text-gray-300 leading-relaxed">
+                            Anthropic SDKs are lightweight, strongly typed abstractions over the HTTP REST substrate. They do not alter fundamental model behaviors or constraints.
+                        </p>
+                        <div class="bg-darkBg p-3 rounded font-mono text-xs text-gray-300 space-y-1.5 border border-gray-800">
+                            <div class="text-emeraldSuccess font-bold">// What the SDK provides automatically:</div>
+                            <div class="text-gray-300">✓ Injects <code class="text-amberAlert">anthropic-version</code> header</div>
+                            <div class="text-gray-300">✓ Reads <code class="text-cyanGlow">ANTHROPIC_API_KEY</code> from env</div>
+                            <div class="text-gray-300">✓ Automatic exponential backoff retries on HTTP 429/5xx</div>
+                            <div class="text-gray-300">✓ Pydantic / TypeScript type validations</div>
+                        </div>
+                        <p class="text-[11px] text-gray-400">
+                            * Core Concept: Choosing SDK vs raw REST changes client ergonomics, never server-side limits.
+                        </p>
                     </div>
                 </div>
 
                 <div class="text-xs font-mono text-gray-500 text-center">
-                    Dica de Estudo: A prova testa se você entende que usar o SDK não muda o comportamento subjacente da API de REST.
+                    CCDV-F Concept: The SDK is a thin convenience layer over REST HTTP; both adhere to identical rate limits and error codes.
                 </div>
             </section>
 
-            <!-- SLIDE 3: SDK VS RAW REST CODE COMPARISON & EXAM TRAPS -->
+            <!-- SLIDE 3: SDK VS RAW REST CODE COMPARISON -->
             <section class="slide-content hidden h-full flex flex-col justify-between" id="slide-3">
                 <div class="space-y-1">
-                    <span class="text-xs font-mono text-cyanGlow uppercase tracking-wider">Módulo 02 / Implementação Prática</span>
+                    <span class="text-xs font-mono text-cyanGlow uppercase tracking-wider">Lesson 04 / Implementation Craft</span>
                     <h2 class="text-xl sm:text-2xl font-bold text-white">SDK Convenience Layer vs Raw REST API</h2>
                 </div>
 
@@ -254,12 +246,12 @@
                         <div class="p-4 font-mono text-xs overflow-x-auto text-gray-300 flex-1 bg-darkBg/40">
                             <!-- Python Code -->
                             <div id="code-python" class="space-y-2">
-                                <div class="text-gray-500"># Instanciação direta com retry automático e validação de chave</div>
+                                <div class="text-gray-500"># Direct instantiation with automatic retries and env key validation</div>
                                 <div><span class="text-roseDanger">import</span> anthropic</div>
-                                <div>client = anthropic.Anthropic() <span class="text-gray-500"># Usa ANTHROPIC_API_KEY por padrão</span></div>
+                                <div>client = anthropic.Anthropic() <span class="text-gray-500"># Reads ANTHROPIC_API_KEY by default</span></div>
                                 <br/>
                                 <div>message = client.messages.create(</div>
-                                <div class="pl-4">model=<span class="text-emeraldSuccess">"claude-3-5-sonnet-2000"</span>,</div>
+                                <div class="pl-4">model=<span class="text-emeraldSuccess">"claude-3-5-sonnet-20241022"</span>,</div>
                                 <div class="pl-4">max_tokens=<span class="text-amberAlert">1024</span>,</div>
                                 <div class="pl-4">messages=[{<span class="text-emeraldSuccess">"role"</span>: <span class="text-emeraldSuccess">"user"</span>, <span class="text-emeraldSuccess">"content"</span>: <span class="text-emeraldSuccess">"Diagnose latency bug."</span>}]</div>
                                 <div>)</div>
@@ -268,68 +260,68 @@
 
                             <!-- TypeScript Code -->
                             <div id="code-typescript" class="space-y-2 hidden">
-                                <div class="text-gray-500">// TypeScript nativo baseado em Promises (Sem necessidade de cliente Async separado)</div>
+                                <div class="text-gray-500">// TypeScript SDK is natively Promise-based (No separate Async client required)</div>
                                 <div><span class="text-roseDanger">import</span> Anthropic <span class="text-roseDanger">from</span> <span class="text-emeraldSuccess">'@anthropic-ai/sdk'</span>;</div>
                                 <div><span class="text-roseDanger">const</span> anthropic = <span class="text-roseDanger">new</span> Anthropic();</div>
                                 <br/>
                                 <div><span class="text-roseDanger">async function</span> <span class="text-electricBlue font-bold">main</span>() {</div>
                                 <div class="pl-4"><span class="text-roseDanger">const</span> message = <span class="text-roseDanger">await</span> anthropic.messages.create({</div>
-                                <div class="pl-8">model: <span class="text-emeraldSuccess">'claude-3-5-sonnet-2000'</span>,</div>
+                                <div class="pl-8">model: <span class="text-emeraldSuccess">'claude-3-5-sonnet-20241022'</span>,</div>
                                 <div class="pl-8">max_tokens: <span class="text-amberAlert">1024</span>,</div>
-                                <div class="pl-8">messages: [{ role: <span class="text-emeraldSuccess">'user'</span>, content: <span class="text-emeraldSuccess">'Diagnose latency bug.'</span> }],</div>
+                                <div class="pl-8">messages: [{ role: <span class="text-emeraldSuccess">'user'</span>, content: <span class="text-emeraldSuccess">'Diagnose latency bug.'</span> }]</div>
                                 <div class="pl-4">});</div>
-                                <div class="pl-4">console.log(message.content[0].text);</div>
+                                <div class="pl-4">console.log(message.content[0]);</div>
                                 <div>}</div>
                             </div>
 
-                            <!-- cURL Raw REST Code -->
+                            <!-- cURL Code -->
                             <div id="code-curl" class="space-y-2 hidden">
-                                <div class="text-gray-500"># Requisição manual cURL - exatamente o que o SDK monta</div>
+                                <div class="text-gray-500"># Direct REST HTTP request requires mandatory anthropic-version header!</div>
                                 <div>curl https://api.anthropic.com/v1/messages \</div>
                                 <div class="pl-4">--header <span class="text-emeraldSuccess">"x-api-key: $ANTHROPIC_API_KEY"</span> \</div>
-                                <div class="pl-4">--header <span class="text-emeraldSuccess">"anthropic-version: 2023-06-01"</span> \</div>
+                                <div class="pl-4 font-bold text-amberAlert">--header "anthropic-version: 2023-06-01" \</div>
                                 <div class="pl-4">--header <span class="text-emeraldSuccess">"content-type: application/json"</span> \</div>
-                                <div class="pl-4">--data <span class="text-emeraldSuccess">'{</span></div>
-                                <div class="pl-8"><span class="text-emeraldSuccess">"model": "claude-3-5-sonnet-2000",</span></div>
-                                <div class="pl-8"><span class="text-emeraldSuccess">"max_tokens": 1024,</span></div>
-                                <div class="pl-8"><span class="text-emeraldSuccess">"messages": [{"role": "user", "content": "Diagnose latency bug."}]</span></div>
-                                <div class="pl-4"><span class="text-emeraldSuccess">}'</span></div>
+                                <div class="pl-4">--data <span class="text-cyanGlow">'{</span></div>
+                                <div class="pl-8 text-cyanGlow">"model": "claude-3-5-sonnet-20241022",</div>
+                                <div class="pl-8 text-cyanGlow">"max_tokens": 1024,</div>
+                                <div class="pl-8 text-cyanGlow">"messages": [{"role": "user", "content": "Diagnose latency bug."}]</div>
+                                <div class="pl-4 text-cyanGlow">}'</div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Right Col: Do's & Don'ts Card -->
-                    <div class="bg-navyCard border border-navyBorder rounded-lg p-4 flex flex-col justify-between">
-                        <div class="text-xs font-mono text-roseDanger mb-2 font-bold uppercase tracking-wide">CCDV-F Exam Traps (Do's & Don'ts)</div>
-                        
-                        <div class="space-y-3 text-xs">
-                            <div class="p-2.5 rounded bg-emeraldSuccess/10 border border-emeraldSuccess/30">
-                                <span class="text-emeraldSuccess font-bold block mb-1"> DO: Usar o SDK oficial</span>
-                                <span class="text-gray-300">Reduz boilerplate, lida com parses de JSON complexos e aplica Exponential Backoff em erros transitórios (429/5xx).</span>
-                            </div>
+                    <!-- Right Col: Callout Cards -->
+                    <div class="space-y-3 flex flex-col justify-between">
+                        <div class="bg-navyCard border border-navyBorder p-3 rounded-lg space-y-1 text-xs">
+                            <span class="text-cyanGlow font-mono font-bold block mb-1">ASYNCHRONOUS ASYMMETRY</span>
+                            <span class="text-gray-300">
+                                <strong>Python:</strong> Uses <code class="text-amberAlert font-mono">AsyncAnthropic</code> for async event loops.<br/>
+                                <strong>TypeScript:</strong> The default client is already Promise-based.
+                            </span>
+                        </div>
 
-                            <div class="p-2.5 rounded bg-roseDanger/10 border border-roseDanger/30">
-                                <span class="text-roseDanger font-bold block mb-1"> DON'T: Achar que REST e SDK operam diferente</span>
-                                <span class="text-gray-300">Pegadinha comum da prova: Afirmar que o SDK oferece endpoints mais rápidos. Falso! É apenas um wrapper HTTP.</span>
-                            </div>
+                        <div class="bg-navyCard border border-amberAlert/40 p-3 rounded-lg text-xs space-y-1">
+                            <span class="text-amberAlert font-bold block mb-1">EXAM WARNING: Mandatory Header</span>
+                            <span class="text-gray-300">
+                                Direct REST requests <strong>REQUIRE</strong> the header <code class="text-amberAlert font-mono">anthropic-version: 2023-06-01</code>. The SDK injects this automatically.
+                            </span>
+                        </div>
 
-                            <div class="p-2.5 rounded bg-amberAlert/10 border border-amberAlert/30">
-                                <span class="text-amberAlert font-bold block mb-1"> WARNING: Header Obrigatório</span>
-                                <span class="text-gray-300">Chamadas REST puras EXIGEM o header <code class="text-amberAlert">anthropic-version: 2023-06-01</code>. O SDK injeta isso automaticamente.</span>
-                            </div>
+                        <div class="bg-darkBg border border-gray-800 p-3 rounded text-[11px] font-mono text-gray-400">
+                            Tip: When testing APIs with raw cURL or custom HTTP libraries, omitting `anthropic-version` triggers an HTTP 400 error.
                         </div>
                     </div>
                 </div>
 
                 <div class="text-xs font-mono text-gray-500 text-center">
-                    Clique nas abas de código para comparar o equivalente REST x Python x TypeScript.
+                    Click the code tabs above to inspect identical requests across Python, TypeScript, and Raw REST.
                 </div>
             </section>
 
-            <!-- SLIDE 4: SYNCHRONOUS VS STREAMING INTERACTIVE SIMULATION -->
+            <!-- SLIDE 4: SYNCHRONOUS VS STREAMING INTERACTIVE SIMULATOR -->
             <section class="slide-content hidden h-full flex flex-col justify-between" id="slide-4">
                 <div class="space-y-1">
-                    <span class="text-xs font-mono text-emeraldSuccess uppercase tracking-wider">Módulo 03 / Experiência e Latência</span>
+                    <span class="text-xs font-mono text-emeraldSuccess uppercase tracking-wider">Lesson 04 / Latency &amp; UX</span>
                     <h2 class="text-xl sm:text-2xl font-bold text-white">Synchronous Blocking vs. SSE Streaming</h2>
                 </div>
 
@@ -340,19 +332,19 @@
                         <div>
                             <div class="flex justify-between items-center mb-2">
                                 <span class="text-xs font-mono font-bold text-white">1. SYNCHRONOUS REQUEST</span>
-                                <span class="text-[10px] font-mono text-gray-400 bg-darkBg px-2 py-0.5 rounded">Wait for complete payload</span>
+                                <span class="text-[10px] font-mono text-gray-400 bg-darkBg px-2 py-0.5 rounded">Wait for full payload</span>
                             </div>
-                            <p class="text-xs text-gray-400 mb-3">Ideal para jobs em background e payloads curtos. O cliente fica bloqueado sem feedback até a conclusão.</p>
+                            <p class="text-xs text-gray-400 mb-3">Ideal for background jobs and headless pipelines. Client blocks until 100% of tokens are generated.</p>
                             
                             <!-- Terminal Screen Sync -->
                             <div class="bg-darkBg border border-gray-800 rounded p-3 font-mono text-xs h-32 overflow-y-auto relative flex flex-col justify-center items-center" id="sync-screen">
-                                <span class="text-gray-600 text-center" id="sync-placeholder">Clique abaixo para testar chamada Síncrona</span>
+                                <span class="text-gray-600 text-center" id="sync-placeholder">Click below to test Synchronous blocking call</span>
                                 <div id="sync-spinner" class="hidden flex flex-col items-center gap-2">
                                     <div class="w-5 h-5 border-2 border-electricBlue border-t-transparent rounded-full animate-spin"></div>
-                                    <span class="text-amberAlert text-[11px]">Aguardando modelo gerar 100% da resposta (3.5s)...</span>
+                                    <span class="text-amberAlert text-[11px]">Waiting for model to complete 100% of tokens (2.5s)...</span>
                                 </div>
-                                <div id="sync-result" class="hidden text-emeraldSuccess text-left w-full">
-                                    {"id":"msg_01","type":"message","content":[{"type":"text","text":"System Incident Remediation Complete. All microservices healthy."}]}
+                                <div id="sync-result" class="hidden text-emeraldSuccess text-left w-full text-[11px]">
+                                    {"id":"msg_01","type":"message","content":[{"type":"text","text":"System Incident #4081 Resolved. Telemetry pipelines healthy."}]}
                                 </div>
                             </div>
                         </div>
@@ -369,116 +361,105 @@
                                 <span class="text-xs font-mono font-bold text-cyanGlow">2. SSE STREAMING (Server-Sent Events)</span>
                                 <span class="text-[10px] font-mono text-cyanGlow bg-cyanGlow/10 px-2 py-0.5 rounded">Token-by-token delivery</span>
                             </div>
-                            <p class="text-xs text-gray-400 mb-3">Ideal para UI interativa. Transmite pedaços (events) via conexão HTTP persistente.</p>
+                            <p class="text-xs text-gray-400 mb-3">Ideal for human-facing UIs. Streams chunks via persistent HTTP connection to achieve near-zero TTFT.</p>
                             
                             <!-- Terminal Screen Stream -->
                             <div class="bg-darkBg border border-gray-800 rounded p-3 font-mono text-xs h-32 overflow-y-auto text-left relative" id="stream-screen">
-                                <span class="text-gray-600 block text-center mt-8" id="stream-placeholder">Clique abaixo para testar SSE Streaming</span>
-                                <div id="stream-result" class="text-cyanGlow whitespace-pre-wrap"></div>
+                                <span class="text-gray-600 block text-center mt-8" id="stream-placeholder">Click below to test SSE Streaming</span>
+                                <div id="stream-result" class="text-cyanGlow whitespace-pre-wrap text-[11px]"></div>
                             </div>
                         </div>
 
-                        <button onclick="runStreamSim()" id="btn-stream-sim" class="mt-3 w-full py-2 bg-cyanGlow/20 hover:bg-cyanGlow/30 text-cyanGlow font-mono text-xs font-bold rounded border border-cyanGlow/40 transition">
-                            Test Stream Request (SSE)
+                        <button onclick="runStreamSim()" id="btn-stream-sim" class="mt-3 w-full py-2 bg-cyanGlow/20 hover:bg-cyanGlow/30 text-cyanGlow font-mono text-xs rounded border border-cyanGlow/40 transition">
+                            Test SSE Streaming Stream
                         </button>
                     </div>
                 </div>
 
-                <!-- Exam Recovery Note -->
-                <div class="bg-navyCard border border-navyBorder rounded p-3 text-xs flex items-center justify-between">
-                    <span class="text-gray-300 font-mono">
-                        <strong class="text-amberAlert">CCDV-F Stream Safety Rule:</strong> Se a conexão SSE for interrompida, o código cliente deve tratar a exceção e usar o último token acumulado para continuar a requisição com resiliência.
-                    </span>
+                <div class="text-xs font-mono text-gray-500 text-center">
+                    Notice the difference in Time-To-First-Token (TTFT) between blocking synchronous calls and event streaming.
                 </div>
             </section>
 
-            <!-- SLIDE 5: ASYNC CONCURRENCY VS MESSAGE BATCHES API & SDK ASYMMETRY -->
+            <!-- SLIDE 5: ASYNC CONCURRENCY VS MESSAGE BATCHES -->
             <section class="slide-content hidden h-full flex flex-col justify-between" id="slide-5">
                 <div class="space-y-1">
-                    <span class="text-xs font-mono text-amberAlert uppercase tracking-wider">Módulo 04 / Padrões de Alta Volumetria</span>
+                    <span class="text-xs font-mono text-electricBlue uppercase tracking-wider">Lesson 04 / Throughput &amp; Cost</span>
                     <h2 class="text-xl sm:text-2xl font-bold text-white">Async Concurrency vs. Message Batches API</h2>
                 </div>
 
-                <!-- Main Content Grid -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 my-auto">
-                    <!-- Left: Architectural Comparison Table -->
-                    <div class="bg-navyCard border border-navyBorder rounded-lg p-4 space-y-3">
-                        <div class="text-xs font-mono text-white font-bold border-b border-navyBorder pb-2">
-                            Padrões de Alta Carga: Qual escolher?
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-auto">
+                    <!-- Column 1: Async Concurrency -->
+                    <div class="bg-navyCard border border-navyBorder p-4 rounded-lg flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="font-mono text-xs font-bold text-electricBlue">1. ASYNC CONCURRENCY (Real-Time Batching)</span>
+                                <span class="text-[10px] font-mono bg-darkBg text-electricBlue px-2 py-0.5 rounded border border-electricBlue/30">Low Latency</span>
+                            </div>
+                            <p class="text-xs text-gray-300 mb-3">Uses async event loops (`asyncio` / Promises) to fire multiple parallel requests concurrently.</p>
+                            
+                            <ul class="text-xs space-y-2 text-gray-400 font-mono">
+                                <li class="flex items-start gap-1.5">
+                                    <span class="text-emeraldSuccess">✓</span> Immediate turnaround (seconds)
+                                </li>
+                                <li class="flex items-start gap-1.5">
+                                    <span class="text-roseDanger">✗</span> Subject to standard API rate limits (TPM / RPM)
+                                </li>
+                                <li class="flex items-start gap-1.5">
+                                    <span class="text-roseDanger">✗</span> Full standard token pricing applies
+                                </li>
+                            </ul>
                         </div>
 
-                        <div class="space-y-2 text-xs">
-                            <!-- Non-blocking Async -->
-                            <div class="bg-darkBg/60 p-3 rounded border border-electricBlue/30">
-                                <div class="flex justify-between font-mono text-electricBlue font-bold mb-1">
-                                    <span>Async Client (non-blocking)</span>
-                                    <span>Em Tempo Real</span>
-                                </div>
-                                <p class="text-gray-300 text-[11px] mb-2">Para requisições concorrentes onde a aplicação precisa continuar fazendo outro trabalho enquanto aguarda a API.</p>
-                                
-                                <!-- Python vs TS Asymmetry Alert -->
-                                <div class="bg-navyBorder/60 p-2 rounded text-[11px] font-mono text-amberAlert border-l-2 border-amberAlert">
-                                    <strong> SDK Asymmetry Exam Alert:</strong>
-                                    <ul class="list-disc list-inside mt-1 text-gray-300">
-                                        <li><strong>Python:</strong> Exige a classe explícita <code class="text-white">AsyncAnthropic</code>.</li>
-                                        <li><strong>TypeScript:</strong> O cliente padrão <code class="text-white">Anthropic</code> É nativamente baseado em Promises (Async). Não existe classe separada!</li>
-                                    </ul>
-                                </div>
-                            </div>
-
-                            <!-- Message Batches API -->
-                            <div class="bg-darkBg/60 p-3 rounded border border-emeraldSuccess/30">
-                                <div class="flex justify-between font-mono text-emeraldSuccess font-bold mb-1">
-                                    <span>Message Batches API</span>
-                                    <span>Até 24 Horas (Offline)</span>
-                                </div>
-                                <p class="text-gray-300 text-[11px]">Para processamento em lote gigantesco (Evals, ETLs, Migrações). Submete em uma chamada, recebe ID e faz polling do status.</p>
-                                <div class="mt-2 flex gap-2 font-mono text-[10px]">
-                                    <span class="bg-emeraldSuccess/20 text-emeraldSuccess px-2 py-0.5 rounded border border-emeraldSuccess/30">~50% Menor Custo por Token</span>
-                                    <span class="bg-navyBorder text-gray-300 px-2 py-0.5 rounded">Até 24h Latência</span>
-                                </div>
-                            </div>
+                        <div class="mt-3 p-2.5 rounded bg-darkBg border border-gray-800 text-[11px] font-mono text-gray-400">
+                            Best for: Parallel user queries, multi-agent workflows, real-time tool calls.
                         </div>
                     </div>
 
-                    <!-- Right: Interactive Pattern Selector Tool -->
-                    <div class="bg-navyCard border border-navyBorder rounded-lg p-4 flex flex-col justify-between">
+                    <!-- Column 2: Message Batches API -->
+                    <div class="bg-navyCard border border-cyanGlow/40 p-4 rounded-lg flex flex-col justify-between">
                         <div>
-                            <div class="text-xs font-mono text-cyanGlow font-bold mb-2">
-                                TOOL: RECOMMENDATION MATRIX
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="font-mono text-xs font-bold text-cyanGlow">2. MESSAGE BATCHES API (Offline Bulk)</span>
+                                <span class="text-[10px] font-mono bg-cyanGlow/10 text-cyanGlow px-2 py-0.5 rounded border border-cyanGlow/30">50% Cost Discount</span>
                             </div>
-                            <p class="text-xs text-gray-400 mb-3">Selecione o cenário do problema do CyberGrid para receber a recomendação arquitetural de exame:</p>
-
-                            <!-- Scenario Buttons -->
-                            <div class="space-y-2">
-                                <button onclick="selectScenario('chat')" id="scen-chat" class="w-full text-left p-2.5 rounded text-xs font-mono bg-darkBg border border-gray-700 text-gray-300 hover:border-cyanGlow transition">
-                                    A) Dashboard Interativo com Usuário esperando resposta no chat.
-                                </button>
-                                <button onclick="selectScenario('async')" id="scen-async" class="w-full text-left p-2.5 rounded text-xs font-mono bg-darkBg border border-gray-700 text-gray-300 hover:border-cyanGlow transition">
-                                    B) API Web processando 50 requisições simultâneas de clientes diferentes.
-                                </button>
-                                <button onclick="selectScenario('batch')" id="scen-batch" class="w-full text-left p-2.5 rounded text-xs font-mono bg-darkBg border border-gray-700 text-gray-300 hover:border-cyanGlow transition">
-                                    C) Execução diária de avaliação offline de 100.000 prompts de teste.
-                                </button>
-                            </div>
+                            <p class="text-xs text-gray-300 mb-3">Submits up to 10,000 requests per batch for asynchronous offline processing within 24 hours.</p>
+                            
+                            <ul class="text-xs space-y-2 text-gray-400 font-mono">
+                                <li class="flex items-start gap-1.5">
+                                    <span class="text-emeraldSuccess">✓</span> **50% Token Cost Discount** vs standard prices
+                                </li>
+                                <li class="flex items-start gap-1.5">
+                                    <span class="text-emeraldSuccess">✓</span> Separate batch rate limits (never blocks interactive users)
+                                </li>
+                                <li class="flex items-start gap-1.5">
+                                    <span class="text-amberAlert">!</span> Up to 24-hour turnaround SLA (polling retrieval)
+                                </li>
+                            </ul>
                         </div>
 
-                        <!-- Recommendation Result Box -->
-                        <div id="scenario-result" class="mt-3 p-3 bg-darkBg rounded border border-navyBorder text-xs text-gray-400 min-h-[90px] flex items-center justify-center text-center">
-                            Selecione um cenário acima para ver a arquitetura ideal e a regra de exame.
+                        <div class="mt-3 p-2.5 rounded bg-darkBg border border-gray-800 text-[11px] font-mono text-gray-400">
+                            Best for: Overnight evaluation runs, bulk document processing, data classification.
                         </div>
                     </div>
                 </div>
 
-                <div class="text-xs font-mono text-gray-500 text-center">
-                    Atenção para a prova: Lembre-se que Message Batches API é para custo reduzido em trabalhos sem espera do usuário!
+                <!-- Scenario Chooser Interactive Widget -->
+                <div class="bg-navyCard border border-navyBorder p-3 rounded-lg flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-mono">
+                    <span class="text-gray-300 font-bold">Select Architecture Scenario:</span>
+                    <div class="flex gap-2">
+                        <button onclick="selectScenario('chat')" id="scen-chat" class="px-2.5 py-1 rounded bg-darkBg border border-gray-700 hover:border-cyanGlow transition">Live Chat UI</button>
+                        <button onclick="selectScenario('async')" id="scen-async" class="px-2.5 py-1 rounded bg-darkBg border border-gray-700 hover:border-cyanGlow transition">FastAPI Microservice</button>
+                        <button onclick="selectScenario('batch')" id="scen-batch" class="px-2.5 py-1 rounded bg-darkBg border border-gray-700 hover:border-cyanGlow transition">100k Nightly Evals</button>
+                    </div>
+                    <div id="scenario-result" class="text-cyanGlow text-[11px]">Click a scenario above to inspect recommendation.</div>
                 </div>
             </section>
 
             <!-- SLIDE 6: INTERACTIVE CCDV-F EXAM SIMULATOR -->
             <section class="slide-content hidden h-full flex flex-col justify-between" id="slide-6">
                 <div class="space-y-1">
-                    <span class="text-xs font-mono text-roseDanger uppercase tracking-wider">Módulo 05 / Verificação de Conhecimento</span>
+                    <span class="text-xs font-mono text-roseDanger uppercase tracking-wider">Lesson 04 / Knowledge Check</span>
                     <h2 class="text-xl sm:text-2xl font-bold text-white">CCDV-F Exam Simulator: Practical Challenge</h2>
                 </div>
 
@@ -486,12 +467,12 @@
                 <div class="bg-navyCard border border-navyBorder rounded-lg p-5 my-auto flex flex-col justify-between">
                     <div>
                         <div class="flex justify-between items-center mb-3">
-                            <span class="text-xs font-mono text-amberAlert font-bold" id="quiz-question-num">QUESTÃO 1 DE 3</span>
-                            <span class="text-[10px] font-mono bg-roseDanger/20 text-roseDanger px-2 py-0.5 rounded border border-roseDanger/30">Dificuldade: Certificação Real</span>
+                            <span class="text-xs font-mono text-amberAlert font-bold" id="quiz-question-num">QUESTION 1 OF 3</span>
+                            <span class="text-[10px] font-mono bg-roseDanger/20 text-roseDanger px-2 py-0.5 rounded border border-roseDanger/30">Difficulty: Real Exam Standard</span>
                         </div>
 
                         <p class="text-sm font-semibold text-white mb-4 leading-relaxed" id="quiz-question-text">
-                            Uma equipe de engenharia Python está refatorando uma aplicação web para evitar o bloqueio de threads durante chamadas à API do Claude. Além disso, a empresa quer rodar um benchmark offline de 500.000 prompts economizando orçamento. Quais são as decisões corretas?
+                            Loading question...
                         </p>
 
                         <!-- Options List -->
@@ -507,18 +488,18 @@
                 </div>
 
                 <div class="flex justify-between items-center text-xs font-mono text-gray-500">
-                    <span>Responda a questão para validar sua permissão de remediar o incidente.</span>
+                    <span>Answer the challenge to validate your mastery of the technical substrate.</span>
                     <button onclick="nextQuizQuestion()" id="btn-next-quiz" class="hidden px-4 py-1.5 bg-electricBlue text-white rounded hover:bg-blue-600 font-bold transition">
-                        Próxima Questão →
+                        Next Question →
                     </button>
                 </div>
             </section>
 
-            <!-- SLIDE 7: ELITE CHEAT SHEET & MISSION COMPLETE -->
+            <!-- SLIDE 7: ELITE CHEAT SHEET & SUMMARY -->
             <section class="slide-content hidden h-full flex flex-col justify-between" id="slide-7">
                 <div class="space-y-1">
-                    <span class="text-xs font-mono text-emeraldSuccess uppercase tracking-wider">Módulo 06 / Resumo de Elite</span>
-                    <h2 class="text-xl sm:text-2xl font-bold text-white">CCDV-F Key Takeaways & Incident Remediation</h2>
+                    <span class="text-xs font-mono text-emeraldSuccess uppercase tracking-wider">Lesson 04 / Executive Summary</span>
+                    <h2 class="text-xl sm:text-2xl font-bold text-white">CCDV-F Key Takeaways &amp; Protocol Rules</h2>
                 </div>
 
                 <!-- Grid Summary Cards -->
@@ -528,7 +509,7 @@
                         <div class="p-2 bg-electricBlue/20 rounded text-electricBlue font-mono font-bold text-sm">01</div>
                         <div class="text-xs">
                             <strong class="text-white block font-mono text-sm mb-0.5">SDK vs REST Parity</strong>
-                            <p class="text-gray-400">O SDK é uma camada fina sobre o REST HTTP. Ambos acessam exatamente o mesmo endpoint, os mesmos modelos e possuem os mesmos limites.</p>
+                            <p class="text-gray-400">The SDK is a thin ergonomics wrapper over HTTP REST. Both hit the exact same endpoints, support the same parameters, and share identical rate limits.</p>
                         </div>
                     </div>
 
@@ -536,8 +517,8 @@
                     <div class="bg-navyCard border border-navyBorder p-3.5 rounded-lg flex items-start space-x-3">
                         <div class="p-2 bg-cyanGlow/20 rounded text-cyanGlow font-mono font-bold text-sm">02</div>
                         <div class="text-xs">
-                            <strong class="text-white block font-mono text-sm mb-0.5">Streaming (SSE) Behavior</strong>
-                            <p class="text-gray-400">Reduz tempo até o primeiro token (TTFT). O servidor envia eventos em pedaços e o cliente reconfigura os fragmentos em tempo real.</p>
+                            <strong class="text-white block font-mono text-sm mb-0.5">Streaming (SSE) Mechanics</strong>
+                            <p class="text-gray-400">Drastically cuts Time-To-First-Token (TTFT) for user interfaces. Delivers real-time delta chunks over persistent HTTP connections.</p>
                         </div>
                     </div>
 
@@ -546,7 +527,7 @@
                         <div class="p-2 bg-amberAlert/20 rounded text-amberAlert font-mono font-bold text-sm">03</div>
                         <div class="text-xs">
                             <strong class="text-white block font-mono text-sm mb-0.5">Async SDK Asymmetry</strong>
-                            <p class="text-gray-400">Python requer classe explícita <code class="text-amberAlert">AsyncAnthropic</code>. TypeScript é nativamente Promise-based sem classe async dedicada.</p>
+                            <p class="text-gray-400">Python requires the dedicated <code class="text-amberAlert">AsyncAnthropic</code> client for event loops. TypeScript is natively Promise-based without a separate class.</p>
                         </div>
                     </div>
 
@@ -555,7 +536,7 @@
                         <div class="p-2 bg-emeraldSuccess/20 rounded text-emeraldSuccess font-mono font-bold text-sm">04</div>
                         <div class="text-xs">
                             <strong class="text-white block font-mono text-sm mb-0.5">Message Batches API</strong>
-                            <p class="text-gray-400">Para tarefas offline/em lote. Latência de até 24 horas em troca de ~50% de redução no custo por token. Funciona via polling por Batch ID.</p>
+                            <p class="text-gray-400">Designed for offline bulk processing. Delivers up to 24h turnaround SLA in exchange for **50% token cost reduction** and separate rate limits.</p>
                         </div>
                     </div>
                 </div>
@@ -564,20 +545,20 @@
                 <div class="bg-gradient-to-r from-emeraldSuccess/20 via-cyanGlow/20 to-electricBlue/20 border border-emeraldSuccess/40 p-4 rounded-lg flex flex-col sm:flex-row justify-between items-center gap-3">
                     <div class="flex items-center space-x-3">
                         <div class="p-2 bg-emeraldSuccess text-darkBg font-bold rounded-full">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            <i class="fa-solid fa-check"></i>
                         </div>
                         <div>
-                            <div class="text-white font-bold text-sm font-mono">INCIDENT #4081 REMEDIATED - SYSTEM READY</div>
-                            <div class="text-xs text-gray-300">Você dominou os fundamentos do Substrato Técnico para o exame CCDV-F.</div>
+                            <div class="text-white font-bold text-sm font-mono">INCIDENT #4081 RESOLVED // SYSTEM READY</div>
+                            <div class="text-xs text-gray-300">You have completed Lesson 04: Technical Substrate &amp; Delivery Protocols.</div>
                         </div>
                     </div>
                     <div class="flex items-center gap-2">
                         <a href="../index.html" class="px-4 py-2 bg-navyBorder hover:bg-gray-700 text-cyanGlow border border-cyanGlow/40 font-mono text-xs rounded transition shrink-0 flex items-center gap-1">
-                            ← Voltar ao Hub
+                            <i class="fa-solid fa-table-cells"></i> Curriculum Hub
                         </a>
-                        <button onclick="goToSlide(1)" class="px-4 py-2 bg-emeraldSuccess hover:bg-emerald-600 text-darkBg font-bold font-mono text-xs rounded transition shrink-0">
-                            Reiniciar Estudo ↺
-                        </button>
+                        <a href="Predict_the_Behavior.html" class="px-4 py-2 bg-emeraldSuccess hover:bg-emerald-600 text-darkBg font-bold font-mono text-xs rounded transition shrink-0 flex items-center gap-1">
+                            Next: Behavior Sim <i class="fa-solid fa-arrow-right"></i>
+                        </a>
                     </div>
                 </div>
             </section>
@@ -596,62 +577,115 @@
 
             <!-- Keyboard Hint -->
             <div class="text-[11px] font-mono text-gray-500 hidden md:block">
-                Navegação: <kbd class="px-1 bg-darkBg border border-gray-700 rounded text-gray-300">←</kbd> <kbd class="px-1 bg-darkBg border border-gray-700 rounded text-gray-300">→</kbd> ou botões
+                Navigation: <kbd class="px-1 bg-darkBg border border-gray-700 rounded text-gray-300">←</kbd> <kbd class="px-1 bg-darkBg border border-gray-700 rounded text-gray-300">→</kbd> or [Space]
             </div>
 
-            <!-- Prev / Next Buttons -->
-            <div class="flex space-x-2 w-full sm:w-auto justify-end">
-                <button onclick="prevSlide()" id="btn-prev" disabled class="px-4 py-1.5 bg-darkBg hover:bg-navyBorder disabled:opacity-40 disabled:cursor-not-allowed text-gray-300 font-mono text-xs rounded border border-gray-700 transition flex items-center gap-1">
-                    ← Anterior
+            <!-- Buttons -->
+            <div class="flex items-center space-x-2">
+                <button onclick="prevSlide()" id="btn-prev" class="px-3.5 py-1.5 bg-darkBg hover:bg-gray-800 text-gray-300 text-xs font-mono rounded border border-navyBorder transition disabled:opacity-40 disabled:cursor-not-allowed">
+                    <i class="fa-solid fa-chevron-left text-[10px]"></i> PREV
                 </button>
-                <button onclick="nextSlide()" id="btn-next" class="px-4 py-1.5 bg-electricBlue hover:bg-blue-600 text-white font-mono text-xs rounded font-bold transition flex items-center gap-1 glow-blue">
-                    Próximo →
+                <button onclick="nextSlide()" id="btn-next" class="px-4 py-1.5 bg-electricBlue hover:bg-blue-600 text-white font-bold text-xs font-mono rounded transition flex items-center gap-1.5 glow-blue">
+                    NEXT <i class="fa-solid fa-chevron-right text-[10px]"></i>
                 </button>
             </div>
         </footer>
 
     </div>
 
-    <!-- SCRIPT DE LÓGICA E INTERATIVIDADE -->
+    <!-- SCRIPTING LOGIC & INTERACTIVE CONTROLLERS -->
     <script>
-        // Estado Global da Aplicação
+        // Web Audio Synthesizer (Zero external assets needed)
+        let audioCtx = null;
+        let soundEnabled = true;
+
+        function getAudioContext() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            return audioCtx;
+        }
+
+        function toggleAudio() {
+            soundEnabled = !soundEnabled;
+            document.getElementById('audio-label').innerText = soundEnabled ? 'SFX: ON' : 'SFX: OFF';
+            const icon = document.getElementById('audio-icon');
+            icon.className = soundEnabled ? 'fa-solid fa-volume-high text-cyanGlow' : 'fa-solid fa-volume-xmark text-gray-500';
+            if (soundEnabled) playBeep(600, 'sine', 0.08, 0.1);
+        }
+
+        function playBeep(freq = 440, type = 'sine', duration = 0.08, gainVal = 0.08) {
+            if (!soundEnabled) return;
+            try {
+                const ctx = getAudioContext();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, ctx.currentTime);
+                gain.gain.setValueAtTime(gainVal, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + duration);
+            } catch (e) {
+                console.warn(e);
+            }
+        }
+
+        function playSuccessJingle() {
+            if (!soundEnabled) return;
+            playBeep(523.25, 'triangle', 0.12, 0.15); // C5
+            setTimeout(() => playBeep(659.25, 'triangle', 0.12, 0.15), 100); // E5
+            setTimeout(() => playBeep(783.99, 'triangle', 0.15, 0.15), 200); // G5
+            setTimeout(() => playBeep(1046.50, 'triangle', 0.25, 0.15), 300); // C6
+        }
+
+        function playErrorBuzz() {
+            if (!soundEnabled) return;
+            playBeep(180, 'sawtooth', 0.15, 0.2);
+            setTimeout(() => playBeep(140, 'sawtooth', 0.2, 0.2), 120);
+        }
+
+        // Global Slide State
         let currentSlide = 1;
         const totalSlides = 7;
 
-        // Atualização de Slides
         function updateSlide() {
-            // Ocultar todos os slides
-            document.querySelectorAll('.slide-content').forEach(slide => {
-                slide.classList.add('hidden');
-            });
-
-            // Mostrar slide atual
-            const activeSlide = document.getElementById(`slide-${currentSlide}`);
-            if (activeSlide) {
-                activeSlide.classList.remove('hidden');
-                activeSlide.classList.add('slide-enter');
+            for (let i = 1; i <= totalSlides; i++) {
+                const el = document.getElementById(`slide-${i}`);
+                if (el) {
+                    if (i === currentSlide) {
+                        el.classList.remove('hidden');
+                        el.classList.add('slide-enter');
+                    } else {
+                        el.classList.add('hidden');
+                        el.classList.remove('slide-enter');
+                    }
+                }
             }
 
-            // Atualizar Contador e Barra de Progresso
-            document.getElementById('slide-count').textContent = `SLIDE ${currentSlide} DE ${totalSlides}`;
-            const percentage = Math.round((currentSlide / totalSlides) * 100);
-            document.getElementById('progress-bar').style.width = `${percentage}%`;
-            document.getElementById('progress-text').textContent = `${percentage}%`;
+            document.getElementById('slide-count').textContent = `SLIDE ${currentSlide} OF ${totalSlides}`;
+            const percent = Math.round((currentSlide / totalSlides) * 100);
+            document.getElementById('progress-bar').style.width = `${percent}%`;
+            document.getElementById('progress-text').textContent = `${percent}%`;
 
-            // Estado dos Botões de Navegação
             document.getElementById('btn-prev').disabled = (currentSlide === 1);
+            const btnNext = document.getElementById('btn-next');
             if (currentSlide === totalSlides) {
-                document.getElementById('btn-next').innerText = 'Concluir ✓';
-                document.getElementById('btn-next').disabled = true;
+                btnNext.innerHTML = `COMPLETE <i class="fa-solid fa-award text-[10px]"></i>`;
             } else {
-                document.getElementById('btn-next').innerText = 'Próximo →';
-                document.getElementById('btn-next').disabled = false;
+                btnNext.innerHTML = `NEXT <i class="fa-solid fa-chevron-right text-[10px]"></i>`;
             }
         }
 
         function nextSlide() {
             if (currentSlide < totalSlides) {
                 currentSlide++;
+                playBeep(480, 'sine', 0.05, 0.06);
                 updateSlide();
             }
         }
@@ -659,160 +693,176 @@
         function prevSlide() {
             if (currentSlide > 1) {
                 currentSlide--;
+                playBeep(380, 'sine', 0.05, 0.06);
                 updateSlide();
             }
         }
 
         function goToSlide(num) {
-            currentSlide = num;
-            updateSlide();
+            if (num >= 1 && num <= totalSlides) {
+                currentSlide = num;
+                playBeep(440, 'sine', 0.05, 0.06);
+                updateSlide();
+            }
         }
 
-        // Navegação via Teclado
+        // Keyboard Navigation (Arrows, Space, F)
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowRight') nextSlide();
-            if (e.key === 'ArrowLeft') prevSlide();
+            if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+                nextSlide();
+            } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+                prevSlide();
+            } else if (e.key.toLowerCase() === 'f') {
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen().catch(err => console.log(err));
+                } else {
+                    document.exitFullscreen().catch(err => console.log(err));
+                }
+            }
         });
 
-        // Alternador de Abas de Código (Slide 3)
-        function switchTab(lang) {
-            const tabs = ['python', 'typescript', 'curl'];
-            tabs.forEach(t => {
-                const btn = document.getElementById(`tab-${t}`);
-                const codeBlock = document.getElementById(`code-${t}`);
-                if (t === lang) {
-                    btn.className = 'px-3 py-1 rounded text-xs font-mono bg-electricBlue/20 text-electricBlue border border-electricBlue/40 font-bold';
-                    codeBlock.classList.remove('hidden');
-                } else {
-                    btn.className = 'px-3 py-1 rounded text-xs font-mono text-gray-400 hover:text-white';
-                    codeBlock.classList.add('hidden');
-                }
-            });
+        // Slide 3: Tab Switching
+        function switchTab(tab) {
+            playBeep(420, 'sine', 0.04, 0.06);
+            document.getElementById('code-python').classList.add('hidden');
+            document.getElementById('code-typescript').classList.add('hidden');
+            document.getElementById('code-curl').classList.add('hidden');
+
+            document.getElementById('tab-python').className = 'px-3 py-1 rounded text-xs font-mono text-gray-400 hover:text-white';
+            document.getElementById('tab-typescript').className = 'px-3 py-1 rounded text-xs font-mono text-gray-400 hover:text-white';
+            document.getElementById('tab-curl').className = 'px-3 py-1 rounded text-xs font-mono text-gray-400 hover:text-white';
+
+            if (tab === 'python') {
+                document.getElementById('code-python').classList.remove('hidden');
+                document.getElementById('tab-python').className = 'px-3 py-1 rounded text-xs font-mono bg-electricBlue/20 text-electricBlue border border-electricBlue/40';
+            } else if (tab === 'typescript') {
+                document.getElementById('code-typescript').classList.remove('hidden');
+                document.getElementById('tab-typescript').className = 'px-3 py-1 rounded text-xs font-mono bg-electricBlue/20 text-electricBlue border border-electricBlue/40';
+            } else if (tab === 'curl') {
+                document.getElementById('code-curl').classList.remove('hidden');
+                document.getElementById('tab-curl').className = 'px-3 py-1 rounded text-xs font-mono bg-electricBlue/20 text-electricBlue border border-electricBlue/40';
+            }
         }
 
-        // Simulação Síncrona vs Streaming (Slide 4)
+        // Slide 4: Synchronous Simulator
+        let syncRunning = false;
         function runSyncSim() {
+            if (syncRunning) return;
+            syncRunning = true;
+            playBeep(320, 'sawtooth', 0.1, 0.1);
+
             const placeholder = document.getElementById('sync-placeholder');
             const spinner = document.getElementById('sync-spinner');
             const result = document.getElementById('sync-result');
             const btn = document.getElementById('btn-sync-sim');
 
-            btn.disabled = true;
             placeholder.classList.add('hidden');
             result.classList.add('hidden');
             spinner.classList.remove('hidden');
+            btn.disabled = true;
+            btn.textContent = "Thread Blocked... Waiting for 100% completion";
 
             setTimeout(() => {
                 spinner.classList.add('hidden');
                 result.classList.remove('hidden');
                 btn.disabled = false;
-            }, 2500);
+                btn.textContent = "Test Synchronous Request";
+                syncRunning = false;
+                playSuccessJingle();
+            }, 2400);
         }
 
+        // Slide 4: Streaming Simulator
+        let streamRunning = false;
         function runStreamSim() {
+            if (streamRunning) return;
+            streamRunning = true;
+
             const placeholder = document.getElementById('stream-placeholder');
             const result = document.getElementById('stream-result');
             const btn = document.getElementById('btn-stream-sim');
 
-            btn.disabled = true;
             placeholder.classList.add('hidden');
             result.textContent = '';
+            btn.disabled = true;
+            btn.textContent = "Streaming in progress...";
 
             const tokens = [
-                'event: message_start\n',
-                'data: {"type": "content_block_start", "text": "Diagnóstico:"}\n\n',
-                'data: {"text": " Identificado"}\n\n',
-                'data: {"text": " erro"}\n\n',
-                'data: {"text": " de"}\n\n',
-                'data: {"text": " conexão"}\n\n',
-                'data: {"text": " SSE"}\n\n',
-                'data: {"text": " em"}\n\n',
-                'data: {"text": " tempo"}\n\n',
-                'data: {"text": " real."}\n\n',
-                'event: message_stop\n'
+                "event: message_start\n",
+                "data: {\"type\": \"message_start\"}\n\n",
+                "event: content_block_delta\n",
+                "data: \"System \"",
+                "data: \"Incident \"",
+                "data: \"#4081 \"",
+                "data: \"Resolved. \"",
+                "data: \"Telemetry \"",
+                "data: \"pipelines \"",
+                "data: \"healthy.\"\n\n",
+                "event: message_stop\n",
+                "data: {\"type\": \"message_stop\"}"
             ];
 
             let index = 0;
             const interval = setInterval(() => {
                 if (index < tokens.length) {
                     result.textContent += tokens[index];
+                    playBeep(400 + index * 40, 'triangle', 0.03, 0.04);
                     index++;
                 } else {
                     clearInterval(interval);
                     btn.disabled = false;
+                    btn.textContent = "Test SSE Streaming Stream";
+                    streamRunning = false;
+                    playSuccessJingle();
                 }
-            }, 200);
+            }, 180);
         }
 
-        // Seletor de Cenários de Carga (Slide 5)
+        // Slide 5: Scenario Recommendation
         function selectScenario(type) {
+            playBeep(520, 'sine', 0.04, 0.06);
             const box = document.getElementById('scenario-result');
-            const btns = ['chat', 'async', 'batch'];
-
-            btns.forEach(b => {
-                const btn = document.getElementById(`scen-${b}`);
-                if (b === type) {
-                    btn.classList.add('border-cyanGlow', 'bg-cyanGlow/10');
-                } else {
-                    btn.classList.remove('border-cyanGlow', 'bg-cyanGlow/10');
-                }
-            });
 
             if (type === 'chat') {
-                box.innerHTML = `
-                    <div class="text-left space-y-1">
-                        <span class="font-bold text-cyanGlow font-mono block">✓ Recomendação: Synchronous / SSE Streaming Request</span>
-                        <p class="text-gray-300">Como o usuário humano está esperando diretamente na tela, utilize **Streaming (SSE)** para reduzir a percepção de latência visual token a token.</p>
-                    </div>
-                `;
+                box.innerHTML = `<span class="text-cyanGlow font-bold">✓ Recommendation: SSE Streaming</span> — Direct human interaction requires minimum TTFT for perceived instant responsiveness.`;
             } else if (type === 'async') {
-                box.innerHTML = `
-                    <div class="text-left space-y-1">
-                        <span class="font-bold text-electricBlue font-mono block">✓ Recomendação: Non-blocking Async SDK Client</span>
-                        <p class="text-gray-300">Utilize <code class="text-amberAlert">AsyncAnthropic</code> (Python) ou o client nativo Promise (TypeScript) para não bloquear a thread da aplicação web enquanto aguarda as respostas HTTP.</p>
-                    </div>
-                `;
+                box.innerHTML = `<span class="text-electricBlue font-bold">✓ Recommendation: Non-blocking Async SDK Client</span> — Use <code class="text-amberAlert">AsyncAnthropic</code> in Python to prevent event loop thread starvation.`;
             } else if (type === 'batch') {
-                box.innerHTML = `
-                    <div class="text-left space-y-1">
-                        <span class="font-bold text-emeraldSuccess font-mono block">✓ Recomendação: Message Batches API</span>
-                        <p class="text-gray-300">Trabalho massivo offline sem espera em tempo real. O **Batches API** processa em até 24 horas oferecendo **~50% de desconto por token**.</p>
-                    </div>
-                `;
+                box.innerHTML = `<span class="text-emeraldSuccess font-bold">✓ Recommendation: Message Batches API</span> — High-volume offline evaluation jobs take advantage of the 50% token discount and separate rate limits.`;
             }
         }
 
-        // Simulador de Exame CCDV-F (Slide 6)
+        // Slide 6: Quiz Simulator
         const quizData = [
             {
-                question: "1. Um desenvolvedor Python quer processar 100 requisições simultâneas em um servidor FastAPI sem bloquear a loop de eventos. Qual a abordagem correta segundo a especificação oficial do SDK?",
+                question: "A Python engineer wants to handle 100 concurrent requests in a FastAPI application without blocking the event loop. According to the official Anthropic SDK specification, which is the correct approach?",
                 options: [
-                    { text: "Usar a classe Anthropic padrão dentro de um loop for.", correct: false },
-                    { text: "Instanciar a classe AsyncAnthropic e utilizar chamadas await com o cliente assíncrono.", correct: true },
-                    { text: "Alternar para chamadas raw cURL REST usando biblioteca subprocess.", correct: false },
-                    { text: "Criar uma classe AsyncAnthropicCustomizada pois o SDK não possui suporte assíncrono nativo.", correct: false }
+                    { text: "Use the standard Anthropic client inside a thread pool with for loops.", correct: false },
+                    { text: "Instantiate the dedicated AsyncAnthropic client and use await on message calls.", correct: true },
+                    { text: "Switch to raw cURL subprocess executions to bypass Python GIL.", correct: false },
+                    { text: "Create a custom threading wrapper because the SDK lacks native async support.", correct: false }
                 ],
-                explanation: "No SDK Python da Anthropic, chamadas não-bloqueantes exigem a classe dedicada `AsyncAnthropic`. No TypeScript, o próprio cliente standard já é Promise-based."
+                explanation: "In Anthropic's Python SDK, non-blocking concurrency requires the dedicated `AsyncAnthropic` client. In TypeScript, the standard client is natively Promise-based."
             },
             {
-                question: "2. Qual das afirmações a seguir sobre a Message Batches API é VERDADEIRA para o exame CCDV-F?",
+                question: "Which statement regarding the Message Batches API is TRUE for the CCDV-F examination?",
                 options: [
-                    { text: "Ela aceita apenas uma requisição por vez via streaming SSE.", correct: false },
-                    { text: "Ela garante resposta síncrona imediata com prioridade sobre requisições padrão.", correct: false },
-                    { text: "É ideal para jobs em lote offline, podendo levar até 24h para concluir, oferecendo token com custo reduzido (~50%).", correct: true },
-                    { text: "Ela altera o modelo underlying do Claude para uma versão reduzida exclusiva.", correct: false }
+                    { text: "It only accepts single-message requests delivered via SSE streaming.", correct: false },
+                    { text: "It guarantees instant synchronous priority execution over standard interactive calls.", correct: false },
+                    { text: "It is designed for bulk offline jobs with up to 24h turnaround, providing ~50% token cost reduction.", correct: true },
+                    { text: "It swaps the underlying model for a miniature proprietary architecture.", correct: false }
                 ],
-                explanation: "A Message Batches API foi projetada para trabalhos em massa offline (como benchmarks/evals), onde o tempo de entrega é flexível (até 24h) em troca de menor custo por token."
+                explanation: "The Message Batches API is engineered for offline batch workloads where completion within 24 hours is acceptable in exchange for 50% cost savings and independent rate limits."
             },
             {
-                question: "3. Uma aplicação faz chamadas HTTP REST puras (sem SDK). Qual header HTTP adicional é OBRIGATÓRIO incluir na requisição POST para a API do Claude?",
+                question: "An application makes raw HTTP REST calls directly to the Anthropic Messages API without the SDK. Which HTTP header is strictly MANDATORY?",
                 options: [
                     { text: "anthropic-version: 2023-06-01", correct: true },
                     { text: "x-sdk-tier: premium", correct: false },
                     { text: "content-encoding: sse-gzip", correct: false },
                     { text: "anthropic-model-priority: high", correct: false }
                 ],
-                explanation: "Requisições REST diretas exigem o header `anthropic-version: 2023-06-01` além da chave da API. O SDK oculta isso pois injeta o header de versão automaticamente."
+                explanation: "Raw REST requests require the `anthropic-version: 2023-06-01` header alongside authentication. The SDK injects this version header automatically."
             }
         ];
 
@@ -820,7 +870,7 @@
 
         function loadQuestion() {
             const q = quizData[currentQuestion];
-            document.getElementById('quiz-question-num').textContent = `QUESTÃO ${currentQuestion + 1} DE ${quizData.length}`;
+            document.getElementById('quiz-question-num').textContent = `QUESTION ${currentQuestion + 1} OF ${quizData.length}`;
             document.getElementById('quiz-question-text').textContent = q.question;
             
             const optionsContainer = document.getElementById('quiz-options');
@@ -843,7 +893,6 @@
             const feedback = document.getElementById('quiz-feedback');
             const q = quizData[currentQuestion];
 
-            // Desabilitar todas as opções
             const buttons = document.getElementById('quiz-options').querySelectorAll('button');
             buttons.forEach((btn, idx) => {
                 btn.disabled = true;
@@ -855,11 +904,13 @@
 
             feedback.classList.remove('hidden');
             if (isCorrect) {
+                playSuccessJingle();
                 feedback.className = 'mt-4 p-3 rounded text-xs bg-emeraldSuccess/10 border border-emeraldSuccess/30 text-emeraldSuccess font-mono';
-                feedback.innerHTML = `<strong> RESPOSTA CORRETA!</strong><br/>${q.explanation}`;
+                feedback.innerHTML = `<strong><i class="fa-solid fa-circle-check"></i> CORRECT ANSWER:</strong><br/>${q.explanation}`;
             } else {
+                playErrorBuzz();
                 feedback.className = 'mt-4 p-3 rounded text-xs bg-roseDanger/10 border border-roseDanger/30 text-roseDanger font-mono';
-                feedback.innerHTML = `<strong> RESPOSTA INCORRETA!</strong><br/>${q.explanation}`;
+                feedback.innerHTML = `<strong><i class="fa-solid fa-circle-xmark"></i> INCORRECT:</strong><br/>${q.explanation}`;
             }
 
             if (currentQuestion < quizData.length - 1) {
@@ -874,7 +925,7 @@
             }
         }
 
-        // Inicialização do App ao carregar
+        // Initialize on load
         window.onload = function() {
             updateSlide();
             loadQuestion();

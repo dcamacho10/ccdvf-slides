@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CCDV-F Episode 02: Tool-Use & Schema Design Dojo</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+    
+    :root {
+      --bg-dark: #0B0F19;
+      --surface-navy: #111827;
+      --surface-card: #1F2937;
+      --border-cyan: rgba(6, 182, 212, 0.3);
+      --accent-blue: #3B82F6;
+      --accent-cyan: #06B6D4;
+      --alert-amber: #F59E0B;
+      --alert-red: #EF4444;
+      --success-green: #10B981;
+      --accent-purple: #8B5CF6;
+      --text-main: #F3F4F6;
+      --text-muted: #9CA3AF;
+      --font-mono: 'Fira Code', monospace;
+      --font-sans: 'Inter', sans-serif;
+    }
+    
+    body {
+      background-color: #030712;
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+    
+    .viewport {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    
+    .deck-container {
+      width: 1280px;
+      height: 720px;
+      background-color: var(--bg-dark);
+      border: 1px solid var(--border-cyan);
+      box-shadow: 0 0 35px rgba(6, 182, 212, 0.15), inset 0 0 15px rgba(0, 0, 0, 0.8);
+      border-radius: 12px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .deck-header {
+      height: 48px;
+      background-color: rgba(17, 24, 39, 0.85);
+      border-bottom: 1px solid rgba(6, 182, 212, 0.2);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+    }
+    
+    .deck-header .brand {
+      color: var(--accent-cyan);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+    }
+    
+    .deck-header .status {
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .badge-exam {
+      background: rgba(139, 92, 246, 0.15);
+      border: 1px solid rgba(139, 92, 246, 0.4);
+      color: var(--accent-purple);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+    }
+
+    .slides-wrapper {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .slide-container {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      padding: 36px 48px;
+      display: none;
+      flex-direction: column;
+      opacity: 0;
+      transition: opacity 0.2s ease-in-out;
+    }
+    
+    .slide-container.active {
+      display: flex;
+      opacity: 1;
+    }
+
+    .slide-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--accent-cyan);
+      letter-spacing: 1.5px;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+    
+    .slide-title {
+      font-size: 26px;
+      font-weight: 800;
+      color: #FFFFFF;
+      margin-bottom: 20px;
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .deck-footer {
+      height: 52px;
+      background-color: rgba(17, 24, 39, 0.9);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+    }
+    
+    .nav-btn {
+      background: var(--surface-card);
+      border: 1px solid var(--border-cyan);
+      color: var(--text-main);
+      padding: 6px 14px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+    
+    .nav-btn:hover:not(:disabled) {
+      background: var(--accent-cyan);
+      color: #000;
+    }
+    
+    .nav-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    .code-box {
+      background: #060913;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 14px 18px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      line-height: 1.6;
+      color: #E2E8F0;
+      overflow-x: auto;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      height: 100%;
+    }
+
+    .feature-card {
+      background: var(--surface-card);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 16px 20px;
+    }
+
+    .quiz-option {
+      background: var(--surface-card);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 10px 14px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.2s;
+    }
+    .quiz-option:hover { border-color: var(--accent-cyan); background: rgba(6, 182, 212, 0.05); }
+    .quiz-option.selected-correct { background: rgba(16, 185, 129, 0.15); border-color: var(--success-green); color: #A7F3D0; }
+    .quiz-option.selected-wrong { background: rgba(239, 68, 68, 0.15); border-color: var(--alert-red); color: #FCA5A5; }
+  </style>
+</head>
+<body>
+
+  <div class="viewport">
+    <div class="deck-container">
+      
+      <!-- Top Terminal Header -->
+      <header class="deck-header">
+        <div class="brand">
+          <i class="fa-solid fa-terminal"></i>
+          <span>CCDV-F // MODULE 02: TOOL-USE &amp; SCHEMA DESIGN</span>
+        </div>
+        <div class="status">
+          <a href="../index.html" style="color: var(--text-muted); text-decoration: none; margin-right: 12px;">
+            <i class="fa-solid fa-arrow-left"></i> Hub
+          </a>
+          <span class="badge-exam"><i class="fa-solid fa-shield-halved"></i> EXAM FOCUS</span>
+          <span><i class="fa-solid fa-wrench"></i> JSON SCHEMA &amp; PARALLEL TOOLS</span>
+        </div>
+      </header>
+
+      <!-- Slides Content Area -->
+      <main class="slides-wrapper">
+
+        <!-- SLIDE 1: Cover -->
+        <section class="slide-container active" id="slide-1">
+          <div style="margin: auto; text-align: center; max-width: 800px;">
+            <div class="slide-eyebrow">// CORE COMPETENCY SPECIFICATION</div>
+            <h1 style="font-size: 38px; font-weight: 800; color: #fff; margin: 12px 0 16px; font-family: var(--font-mono);">
+              Tool-Use &amp; Schema Design Dojo
+            </h1>
+            <p style="color: var(--text-muted); font-size: 16px; line-height: 1.6; margin-bottom: 24px;">
+              Mastering JSON Schema contracts, strict parameter validation, parallel tool execution, and the mandatory single-turn message structure required by Anthropic's Messages API.
+            </p>
+            <div style="display: inline-flex; gap: 12px;">
+              <span class="badge-exam"><i class="fa-solid fa-clock"></i> ~25 MIN SESSION</span>
+              <span class="badge-exam" style="border-color: var(--accent-cyan); color: var(--accent-cyan);"><i class="fa-solid fa-microchip"></i> 10 SLIDES + LIVE SIMULATOR</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 2: Tool Anatomy -->
+        <section class="slide-container" id="slide-2">
+          <div class="slide-eyebrow">// TOOL ANATOMY</div>
+          <h2 class="slide-title"><i class="fa-solid fa-code text-cyan-400"></i> The Three Pillars of a Production Tool</h2>
+          <div class="grid-2">
+            <div class="code-box">
+              <span style="color: #6B7280;"># Production tool definition structure</span><br>
+              {<br>
+              &nbsp;&nbsp;<span style="color: #06B6D4;">"name"</span>: <span style="color: #10B981;">"lookup_order"</span>,<br>
+              &nbsp;&nbsp;<span style="color: #06B6D4;">"description"</span>: <span style="color: #FBBF24;">"Fetch order status, items, and tracking info. Use this when the customer provides an order ID like ORD-12345."</span>,<br>
+              &nbsp;&nbsp;<span style="color: #06B6D4;">"input_schema"</span>: {<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #06B6D4;">"type"</span>: <span style="color: #10B981;">"object"</span>,<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #06B6D4;">"properties"</span>: {<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #06B6D4;">"order_id"</span>: {<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #06B6D4;">"type"</span>: <span style="color: #10B981;">"string"</span>,<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #06B6D4;">"pattern"</span>: <span style="color: #10B981;">"^ORD-[0-9]{5}$"</span>,<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #06B6D4;">"description"</span>: <span style="color: #FBBF24;">"The 8-character uppercase identifier."</span><br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;},<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #06B6D4;">"required"</span>: [<span style="color: #10B981;">"order_id"</span>]<br>
+              &nbsp;&nbsp;}<br>
+              }
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 12px; font-size: 13px;">
+              <div class="feature-card" style="border-left: 3px solid var(--accent-cyan);">
+                <strong style="color: var(--accent-cyan); display: block; margin-bottom: 4px;">1. Tool Name</strong>
+                Must match regex <code>^[a-zA-Z0-9_-]{1,64}$</code>. Keep it concise, domain-specific, and snake_cased.
+              </div>
+              <div class="feature-card" style="border-left: 3px solid var(--alert-amber);">
+                <strong style="color: var(--alert-amber); display: block; margin-bottom: 4px;">2. Description (Crucial!)</strong>
+                Claude reads this like an API directory. It must state <em>what</em> it does, <em>when</em> to invoke it, and <em>what</em> edge cases exist. Vague descriptions lead to under-calling!
+              </div>
+              <div class="feature-card" style="border-left: 3px solid var(--success-green);">
+                <strong style="color: var(--success-green); display: block; margin-bottom: 4px;">3. input_schema (JSON Schema)</strong>
+                Root MUST be <code>"type": "object"</code>. Always define <code>"required"</code> array so mandatory fields aren't skipped.
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 3: Strict Tool Use -->
+        <section class="slide-container" id="slide-3">
+          <div class="slide-eyebrow">// API LEVEL ENFORCEMENT</div>
+          <h2 class="slide-title"><i class="fa-solid fa-lock text-emerald-400"></i> Strict Tool Use: Zero Hallucinated Types</h2>
+          <div class="grid-2">
+            <div style="font-size: 13px; line-height: 1.6; display: flex; flex-direction: column; gap: 14px;">
+              <p>
+                In standard tool use, Claude generates arguments as unconstrained tokens. While Claude adheres closely, unexpected inputs can produce subtle schema slips.
+              </p>
+              <div class="feature-card" style="background: rgba(16, 185, 129, 0.08); border-color: rgba(16, 185, 129, 0.3);">
+                <strong style="color: var(--success-green);"><i class="fa-solid fa-shield-check"></i> strict: true</strong>
+                <p style="margin-top: 6px; color: #D1D5DB;">
+                  Enables constrained decoding at the token level. The API physically prevents generation of any token that violates your JSON schema.
+                </p>
+              </div>
+              <div class="feature-card" style="background: rgba(245, 158, 11, 0.08); border-color: rgba(245, 158, 11, 0.3);">
+                <strong style="color: var(--alert-amber);"><i class="fa-solid fa-scale-unbalanced"></i> Tradeoffs to Remember:</strong>
+                <ul style="margin: 6px 0 0 16px; color: var(--text-muted); space-y-1;">
+                  <li>First request incurs small compilation latency (cached 24 hrs).</li>
+                  <li>Injected schema prompts consume input tokens.</li>
+                  <li>Must handle <code>stop_reason: "max_tokens"</code> (truncation breaks syntax).</li>
+                </ul>
+              </div>
+            </div>
+            <div class="code-box">
+              <span style="color: #6B7280;"># Enabling strict tool use in Python SDK</span><br>
+              tools = [<br>
+              &nbsp;&nbsp;{<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #06B6D4;">"name"</span>: <span style="color: #10B981;">"transfer_funds"</span>,<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #06B6D4;">"description"</span>: <span style="color: #FBBF24;">"Initiates an irreversible bank transfer."</span>,<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #10B981; font-weight: bold;">"strict": True</span>,<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #06B6D4;">"input_schema"</span>: {<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #06B6D4;">"type"</span>: <span style="color: #10B981;">"object"</span>,<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #06B6D4;">"properties"</span>: {<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #06B6D4;">"account_id"</span>: {<span style="color: #06B6D4;">"type"</span>: <span style="color: #10B981;">"string"</span>},<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #06B6D4;">"amount_cents"</span>: {<span style="color: #06B6D4;">"type"</span>: <span style="color: #10B981;">"integer"</span>, <span style="color: #06B6D4;">"minimum"</span>: 1}<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;},<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #06B6D4;">"required"</span>: [<span style="color: #10B981;">"account_id"</span>, <span style="color: #10B981;">"amount_cents"</span>],<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #06B6D4;">"additionalProperties"</span>: <span style="color: #EF4444;">False</span><br>
+              &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+              &nbsp;&nbsp;}<br>
+              ]
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 4: Parallel Tool Execution -->
+        <section class="slide-container" id="slide-4">
+          <div class="slide-eyebrow">// PARALLEL CONCURRENCY</div>
+          <h2 class="slide-title"><i class="fa-solid fa-arrows-split-up-and-left text-purple-400"></i> Parallel Tool Calls: Single Assistant Turn</h2>
+          <div class="grid-2">
+            <div style="font-size: 13px; line-height: 1.6; display: flex; flex-direction: column; gap: 12px;">
+              <p>
+                When a user asks: <em style="color: var(--accent-cyan);">"Check weather in Tokyo and Paris"</em>, Claude 3.5 Sonnet returns <strong>two <code>tool_use</code> content blocks</strong> in the same assistant turn.
+              </p>
+              <div class="feature-card" style="border-left: 3px solid var(--alert-red); background: rgba(239, 68, 68, 0.08);">
+                <strong style="color: var(--alert-red);">⚠️ The Golden Exam Rule:</strong>
+                <p style="margin-top: 4px; color: #FCA5A5;">
+                  You MUST return all tool results in a <strong>SINGLE user turn</strong>. Appending multiple user messages consecutively triggers an immediate API validation error!
+                </p>
+              </div>
+              <div class="feature-card" style="border-left: 3px solid var(--accent-cyan);">
+                <strong style="color: var(--accent-cyan);">Async Execution Pattern:</strong>
+                <p style="margin-top: 4px; color: var(--text-muted);">
+                  Dispatch the parallel calls concurrently with <code>asyncio.gather()</code> or thread pools to minimize end-to-end latency!
+                </p>
+              </div>
+            </div>
+            <div class="code-box">
+              <span style="color: #6B7280;"># 1. Assistant response contains 2 tool_use blocks:</span><br>
+              response.content = [<br>
+              &nbsp;&nbsp;ToolUseBlock(id=<span style="color: #10B981;">"toolu_01A"</span>, name=<span style="color: #06B6D4;">"get_weather"</span>, input={<span style="color: #FBBF24;">"city"</span>: <span style="color: #10B981;">"Tokyo"</span>}),<br>
+              &nbsp;&nbsp;ToolUseBlock(id=<span style="color: #10B981;">"toolu_02B"</span>, name=<span style="color: #06B6D4;">"get_weather"</span>, input={<span style="color: #FBBF24;">"city"</span>: <span style="color: #10B981;">"Paris"</span>})<br>
+              ]<br><br>
+              <span style="color: #6B7280;"># 2. CORRECT: One user turn with all tool_result blocks:</span><br>
+              messages.append({<br>
+              &nbsp;&nbsp;<span style="color: #06B6D4;">"role"</span>: <span style="color: #10B981;">"user"</span>,<br>
+              &nbsp;&nbsp;<span style="color: #06B6D4;">"content"</span>: [<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;{<span style="color: #06B6D4;">"type"</span>: <span style="color: #10B981;">"tool_result"</span>, <span style="color: #06B6D4;">"tool_use_id"</span>: <span style="color: #10B981;">"toolu_01A"</span>, <span style="color: #06B6D4;">"content"</span>: <span style="color: #10B981;">"22°C Clear"</span>},<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;{<span style="color: #06B6D4;">"type"</span>: <span style="color: #10B981;">"tool_result"</span>, <span style="color: #06B6D4;">"tool_use_id"</span>: <span style="color: #10B981;">"toolu_02B"</span>, <span style="color: #06B6D4;">"content"</span>: <span style="color: #10B981;">"18°C Rain"</span>}<br>
+              &nbsp;&nbsp;]<br>
+              })
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 5: Error Handling with is_error -->
+        <section class="slide-container" id="slide-5">
+          <div class="slide-eyebrow">// RESILIENCE &amp; ERROR RECOVERY</div>
+          <h2 class="slide-title"><i class="fa-solid fa-triangle-exclamation text-amber-400"></i> Error Handling: The is_error Flag</h2>
+          <div class="grid-2">
+            <div class="code-box">
+              <span style="color: #6B7280;"># Handling exceptions gracefully in tool execution</span><br>
+              <span style="color: #8B5CF6;">try</span>:<br>
+              &nbsp;&nbsp;output = run_database_query(block.input)<br>
+              &nbsp;&nbsp;result_block = {<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #06B6D4;">"type"</span>: <span style="color: #10B981;">"tool_result"</span>,<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #06B6D4;">"tool_use_id"</span>: block.id,<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #06B6D4;">"content"</span>: json.dumps(output)<br>
+              &nbsp;&nbsp;}<br>
+              <span style="color: #8B5CF6;">except</span> DatabaseTimeoutError <span style="color: #8B5CF6;">as</span> err:<br>
+              &nbsp;&nbsp;<span style="color: #6B7280;"># Inform Claude of the error so it can adapt</span><br>
+              &nbsp;&nbsp;result_block = {<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #06B6D4;">"type"</span>: <span style="color: #10B981;">"tool_result"</span>,<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #06B6D4;">"tool_use_id"</span>: block.id,<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #10B981; font-weight: bold;">"is_error": True</span>,<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #06B6D4;">"content"</span>: f<span style="color: #FBBF24;">"Query failed: {str(err)}. Try refining filters."</span><br>
+              &nbsp;&nbsp;}
+            </div>
+            <div style="font-size: 13px; line-height: 1.6; display: flex; flex-direction: column; gap: 12px;">
+              <div class="feature-card" style="border-left: 3px solid var(--alert-amber);">
+                <strong style="color: var(--alert-amber);">Why not crash the script?</strong>
+                <p style="margin-top: 4px; color: var(--text-muted);">
+                  Crashing crashes the user session. By returning <code>is_error: True</code>, Claude understands the tool execution failed, reads the error message, and can either try an alternate tool or apologize politely.
+                </p>
+              </div>
+              <div class="feature-card" style="border-left: 3px solid var(--accent-cyan);">
+                <strong style="color: var(--accent-cyan);">What stop_reason to watch for?</strong>
+                <p style="margin-top: 4px; color: var(--text-muted);">
+                  When Claude intends to invoke a tool, <code>response.stop_reason</code> is <strong><code>"tool_use"</code></strong>. When it has finished its final message, it is <strong><code>"end_turn"</code></strong>.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 6: tool_choice parameter -->
+        <section class="slide-container" id="slide-6">
+          <div class="slide-eyebrow">// FLOW CONTROL</div>
+          <h2 class="slide-title"><i class="fa-solid fa-sliders text-cyan-400"></i> Calibrating the tool_choice Parameter</h2>
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 10px;">
+            <div class="feature-card" style="border-top: 3px solid var(--accent-cyan);">
+              <span class="badge-exam" style="color: var(--accent-cyan); border-color: var(--accent-cyan);">tool_choice: {"type": "auto"}</span>
+              <h3 style="font-size: 15px; font-weight: bold; margin: 10px 0 6px; color: #fff;">Default Behavior</h3>
+              <p style="font-size: 12px; color: var(--text-muted); line-height: 1.5;">
+                Claude decides whether to answer directly with text or invoke one or more tools based on context.
+              </p>
+              <div class="code-box" style="margin-top: 10px; font-size: 11px;">
+                tool_choice={"type": "auto"}
+              </div>
+            </div>
+
+            <div class="feature-card" style="border-top: 3px solid var(--alert-amber);">
+              <span class="badge-exam" style="color: var(--alert-amber); border-color: var(--alert-amber);">tool_choice: {"type": "any"}</span>
+              <h3 style="font-size: 15px; font-weight: bold; margin: 10px 0 6px; color: #fff;">Forced Tool Call</h3>
+              <p style="font-size: 12px; color: var(--text-muted); line-height: 1.5;">
+                Forces Claude to call <em>at least one</em> tool from the provided list, rather than responding with text. Claude picks which tool.
+              </p>
+              <div class="code-box" style="margin-top: 10px; font-size: 11px;">
+                tool_choice={"type": "any"}
+              </div>
+            </div>
+
+            <div class="feature-card" style="border-top: 3px solid var(--success-green);">
+              <span class="badge-exam" style="color: var(--success-green); border-color: var(--success-green);">tool_choice: {"type": "tool", "name": ...}</span>
+              <h3 style="font-size: 15px; font-weight: bold; margin: 10px 0 6px; color: #fff;">Forced Specific Tool</h3>
+              <p style="font-size: 12px; color: var(--text-muted); line-height: 1.5;">
+                Forces Claude to call <em>that exact named tool</em>. Ideal for structured extraction workflows where you want guaranteed invocation.
+              </p>
+              <div class="code-box" style="margin-top: 10px; font-size: 11px;">
+                tool_choice={<br>
+                &nbsp;&nbsp;"type": "tool",<br>
+                &nbsp;&nbsp;"name": "record_event"<br>
+                }
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 7: Interactive Tool Choice Simulator -->
+        <section class="slide-container" id="slide-7">
+          <div class="slide-eyebrow">// INTERACTIVE LAB</div>
+          <h2 class="slide-title"><i class="fa-solid fa-gamepad text-cyan-400"></i> Interactive Dispatcher: Test tool_choice Modes</h2>
+          <div class="grid-2">
+            <div style="font-size: 13px; display: flex; flex-direction: column; gap: 12px;">
+              <p style="color: var(--text-muted);">
+                Simulate how Claude responds to the user prompt: <strong style="color: #fff;">"What is the capital of France?"</strong> under different <code>tool_choice</code> configurations with a <code>search_database</code> tool active.
+              </p>
+              <div style="display: flex; flex-direction: column; gap: 8px;">
+                <button onclick="simulateChoice('auto')" class="nav-btn" style="text-align: left; justify-content: flex-start;">
+                  <i class="fa-solid fa-play"></i> Mode: {"type": "auto"}
+                </button>
+                <button onclick="simulateChoice('any')" class="nav-btn" style="text-align: left; justify-content: flex-start;">
+                  <i class="fa-solid fa-play"></i> Mode: {"type": "any"}
+                </button>
+                <button onclick="simulateChoice('tool')" class="nav-btn" style="text-align: left; justify-content: flex-start;">
+                  <i class="fa-solid fa-play"></i> Mode: {"type": "tool", "name": "search_database"}
+                </button>
+              </div>
+            </div>
+            <div class="code-box" id="simulator-output" style="display: flex; flex-direction: column; justify-content: center; min-height: 200px;">
+              <span style="color: #6B7280;">// Select a tool_choice mode on the left to observe model dispatch behavior</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 8: The 3 Classic Schema Traps -->
+        <section class="slide-container" id="slide-8">
+          <div class="slide-eyebrow">// PRODUCTION PITFALLS</div>
+          <h2 class="slide-title"><i class="fa-solid fa-radiation text-red-400"></i> The Three Classic Schema Traps</h2>
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; font-size: 13px;">
+            <div class="feature-card" style="border-top: 3px solid var(--alert-red);">
+              <strong style="color: var(--alert-red);"><i class="fa-solid fa-circle-xmark"></i> 1. The Vague Description</strong>
+              <div class="code-box" style="margin: 8px 0; font-size: 11px;">"description": "Executes query."</div>
+              <p style="color: var(--text-muted); font-size: 12px;">
+                Claude cannot differentiate between multiple tools or know what arguments to supply. Always specify intent and examples.
+              </p>
+            </div>
+            <div class="feature-card" style="border-top: 3px solid var(--alert-red);">
+              <strong style="color: var(--alert-red);"><i class="fa-solid fa-circle-xmark"></i> 2. Missing "required" Array</strong>
+              <div class="code-box" style="margin: 8px 0; font-size: 11px;">// "required" omitted</div>
+              <p style="color: var(--text-muted); font-size: 12px;">
+                JSON Schema standard treats all fields as optional unless explicitly listed in <code>"required": [...]</code>. Claude may drop required fields!
+              </p>
+            </div>
+            <div class="feature-card" style="border-top: 3px solid var(--alert-red);">
+              <strong style="color: var(--alert-red);"><i class="fa-solid fa-circle-xmark"></i> 3. Schema Drift in Loops</strong>
+              <div class="code-box" style="margin: 8px 0; font-size: 11px;">strict: False</div>
+              <p style="color: var(--text-muted); font-size: 12px;">
+                In deep multi-turn loops, unconstrained parameters may morph types (e.g. integer becoming string "42"). Use <code>strict: true</code>.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 9: Exam Practice Question -->
+        <section class="slide-container" id="slide-9">
+          <div class="slide-eyebrow">// CCDV-F EXAM SIMULATION</div>
+          <h2 class="slide-title"><i class="fa-solid fa-graduation-cap text-cyan-400"></i> Practice Exam Question</h2>
+          <div style="max-width: 900px; margin: 0 auto; width: 100%;">
+            <div style="font-size: 14px; font-weight: 600; color: #fff; margin-bottom: 14px; line-height: 1.5; font-family: var(--font-mono);">
+              A developer configures an agent that executes tools. During testing, Claude calls a database tool, but the database connection times out. How should the developer handle this failure to maintain agent continuity?
+            </div>
+            <div class="quiz-option" onclick="checkAnswer(this, false)">
+              <span style="font-weight: bold; color: var(--accent-cyan);">A.</span> Raise a Python exception to crash the process so Kubernetes restarts the container.
+            </div>
+            <div class="quiz-option" onclick="checkAnswer(this, true)">
+              <span style="font-weight: bold; color: var(--accent-cyan);">B.</span> Append a user message with a tool_result block having "is_error": True and a descriptive error message.
+            </div>
+            <div class="quiz-option" onclick="checkAnswer(this, false)">
+              <span style="font-weight: bold; color: var(--accent-cyan);">C.</span> Re-prompt Claude from scratch with temperature set to 0.0 without the tool definition.
+            </div>
+            <div class="quiz-option" onclick="checkAnswer(this, false)">
+              <span style="font-weight: bold; color: var(--accent-cyan);">D.</span> Return an HTTP 400 Bad Request to the Anthropic Messages API.
+            </div>
+
+            <div id="quiz-explanation" style="display: none; margin-top: 14px; padding: 12px 16px; background: rgba(16, 185, 129, 0.1); border: 1px solid var(--success-green); border-radius: 6px; font-size: 12px; color: #A7F3D0;">
+              <strong>Correct! Option B:</strong> Returning <code>is_error: True</code> inside the <code>tool_result</code> content block allows Claude to observe the failure reason, self-correct, explain the issue to the user, or try a fallback tool.
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 10: Certification Summary -->
+        <section class="slide-container" id="slide-10">
+          <div class="slide-eyebrow">// CERTIFICATION CHEAT SHEET</div>
+          <h2 class="slide-title"><i class="fa-solid fa-award text-cyan-400"></i> Tool-Use Key Rules for CCDV-F Exam</h2>
+          <div class="grid-2" style="font-size: 13px;">
+            <div class="feature-card" style="border-left: 3px solid var(--accent-cyan); display: flex; flex-direction: column; gap: 8px;">
+              <strong style="color: var(--accent-cyan);">1. Tool Result Turn Structure</strong>
+              <p style="color: var(--text-muted);">
+                Single user message containing all parallel <code>tool_result</code> blocks matching each <code>tool_use_id</code>.
+              </p>
+              <strong style="color: var(--accent-cyan); margin-top: 6px;">2. Strict Mode Guarantee</strong>
+              <p style="color: var(--text-muted);">
+                <code>strict: true</code> enforces token-level JSON Schema adherence via constrained decoding.
+              </p>
+            </div>
+            <div class="feature-card" style="border-left: 3px solid var(--accent-purple); display: flex; flex-direction: column; gap: 8px;">
+              <strong style="color: var(--accent-purple);">3. stop_reason Signals</strong>
+              <p style="color: var(--text-muted);">
+                <code>"tool_use"</code> = Claude expects tool execution &amp; results.<br>
+                <code>"end_turn"</code> = Claude finished its conversational task.
+              </p>
+              <strong style="color: var(--accent-purple); margin-top: 6px;">4. Error Reporting</strong>
+              <p style="color: var(--text-muted);">
+                Use <code>is_error: true</code> in <code>tool_result</code> to let the agent adapt instead of crashing.
+              </p>
+            </div>
+          </div>
+        </section>
+
+      </main>
+
+      <!-- Bottom Navigation Footer -->
+      <footer class="deck-footer">
+        <div style="color: var(--text-muted);">
+          CCDV-F EXAM PREPARATION &bull; LESSON 02 OF 08
+        </div>
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <span>SLIDE <strong id="current-slide-num" style="color: #fff;">1</strong> / 10</span>
+          <div style="display: flex; gap: 6px;">
+            <button id="btn-prev" class="nav-btn" onclick="prevSlide()"><i class="fa-solid fa-chevron-left"></i></button>
+            <button id="btn-next" class="nav-btn" onclick="nextSlide()"><i class="fa-solid fa-chevron-right"></i></button>
+          </div>
+        </div>
+      </footer>
+
+    </div>
+  </div>
+
+  <script>
+    let currentSlide = 1;
+    const totalSlides = 10;
+
+    function updateDeckState() {
+      document.querySelectorAll('.slide-container').forEach(s => s.classList.remove('active'));
+      const active = document.getElementById(`slide-${currentSlide}`);
+      if (active) active.classList.add('active');
+      document.getElementById('current-slide-num').innerText = currentSlide;
+      document.getElementById('btn-prev').disabled = (currentSlide === 1);
+      document.getElementById('btn-next').disabled = (currentSlide === totalSlides);
+    }
+
+    function nextSlide() { if (currentSlide < totalSlides) { currentSlide++; updateDeckState(); } }
+    function prevSlide() { if (currentSlide > 1) { currentSlide--; updateDeckState(); } }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
+      else if (e.key === 'ArrowLeft') prevSlide();
+    });
+
+    function simulateChoice(mode) {
+      const box = document.getElementById('simulator-output');
+      if (mode === 'auto') {
+        box.innerHTML = `
+          <span style="color: #10B981;">[stop_reason: "end_turn"]</span><br>
+          <span style="color: #F3F4F6;">Claude answers directly: "The capital of France is Paris."</span><br><br>
+          <span style="color: #6B7280;">// In 'auto' mode, Claude knows this fact and does not need to call search_database.</span>
+        `;
+      } else if (mode === 'any') {
+        box.innerHTML = `
+          <span style="color: #F59E0B;">[stop_reason: "tool_use"]</span><br>
+          <span style="color: #06B6D4;">Claude is FORCED to pick a tool:</span><br>
+          Tool: search_database({ "query": "capital of France" })<br><br>
+          <span style="color: #6B7280;">// 'any' forces a tool call even if text generation was sufficient!</span>
+        `;
+      } else {
+        box.innerHTML = `
+          <span style="color: #8B5CF6;">[stop_reason: "tool_use"]</span><br>
+          <span style="color: #06B6D4;">Claude is FORCED to invoke SPECIFIC tool: search_database</span><br>
+          Tool: search_database({ "query": "capital of France" })<br><br>
+          <span style="color: #6B7280;">// 'tool' forces the exact named tool to run.</span>
+        `;
+      }
+    }
+
+    function checkAnswer(el, isCorrect) {
+      document.querySelectorAll('#slide-9 .quiz-option').forEach(opt => {
+        opt.classList.remove('selected-correct', 'selected-wrong');
+      });
+      if (isCorrect) {
+        el.classList.add('selected-correct');
+        document.getElementById('quiz-explanation').style.display = 'block';
+      } else {
+        el.classList.add('selected-wrong');
+        document.getElementById('quiz-explanation').style.display = 'none';
+      }
+    }
+
+    updateDeckState();
+  </script>
+</body>
+</html>

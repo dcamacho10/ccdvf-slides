@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="pt-BR" class="h-full bg-slate-950">
+<html lang="en" class="h-full bg-slate-950">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>CCDV-F Episode 02: Model Options & Reasoning Modes</title>
+    <title>CCDV-F Module 01 // Lesson 02: Model Matrix & Reasoning Calibration</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts: Inter & JetBrains Mono -->
@@ -118,115 +118,84 @@
         }
 
         /* Glowing borders & terminal visual accents */
-        .glow-border-cyan {
-            box-shadow: 0 0 15px rgba(6, 182, 212, 0.25);
-            border-color: #06B6D4;
-        }
-        .glow-border-amber {
-            box-shadow: 0 0 15px rgba(245, 158, 11, 0.25);
-            border-color: #F59E0B;
-        }
-        .glow-border-blue {
-            box-shadow: 0 0 15px rgba(59, 130, 246, 0.25);
-            border-color: #3B82F6;
-        }
+        .glow-cyan { box-shadow: 0 0 15px rgba(6, 182, 212, 0.3); }
+        .glow-amber { box-shadow: 0 0 15px rgba(245, 158, 11, 0.3); }
+        .glow-purple { box-shadow: 0 0 15px rgba(139, 92, 246, 0.3); }
+        .glow-green { box-shadow: 0 0 15px rgba(16, 185, 129, 0.3); }
 
-        /* Slide Transitions */
         .slide {
             position: absolute;
             inset: 0;
-            top: 56px; /* header offset */
-            bottom: 48px; /* footer offset */
-            padding: 24px 32px;
+            top: 50px;
+            bottom: 56px;
+            padding: 28px 40px;
             opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease, transform 0.3s ease;
-            transform: translateX(20px);
-            display: flex;
-            flex-direction: column;
+            visibility: hidden;
+            transition: opacity 0.25s ease-in-out, transform 0.25s ease-in-out;
+            transform: scale(0.99);
             overflow-y: auto;
         }
 
         .slide.active {
             opacity: 1;
-            pointer-events: auto;
-            transform: translateX(0);
+            visibility: visible;
+            transform: scale(1);
+            z-index: 10;
         }
 
-        /* Scrollbar Styling inside slides */
-        .slide::-webkit-scrollbar {
-            width: 6px;
-        }
-        .slide::-webkit-scrollbar-track {
-            background: #111827;
-        }
-        .slide::-webkit-scrollbar-thumb {
-            background: #374151;
-            border-radius: 3px;
-        }
-
-        /* Scanline effect */
-        .scanline {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0, 0, 0, 0.2) 50%, rgba(0, 0, 0, 0.2));
+        /* Scanline Texture Effect */
+        .scanlines {
+            background: linear-gradient(
+                to bottom,
+                rgba(255,255,255,0),
+                rgba(255,255,255,0) 50%,
+                rgba(0, 0, 0, 0.3) 50%,
+                rgba(0, 0, 0, 0.3)
+            );
             background-size: 100% 4px;
             pointer-events: none;
-            opacity: 0.3;
-            z-index: 40;
         }
 
-        /* Terminal Blink */
-        .cursor-blink {
-            animation: blink 1s infinite;
-        }
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0; }
-        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: #0B0F19; }
+        ::-webkit-scrollbar-thumb { background: #1F2937; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #06B6D4; }
     </style>
 </head>
-<body class="h-full flex items-center justify-center">
+<body class="h-full">
 
     <div class="stage-container">
-        <!-- Main Slide Deck Wrapper -->
         <div class="slide-deck" id="deck">
-            <div class="scanline"></div>
+            
+            <div class="absolute inset-0 scanlines opacity-25 z-40 pointer-events-none"></div>
 
-            <!-- TERMINAL HEADER -->
-            <header class="h-14 bg-cyber-surface/90 border-b border-cyber-border px-6 flex items-center justify-between z-30 backdrop-blur">
-                <div class="flex items-center gap-3">
-                    <div class="flex gap-1.5">
-                        <span class="w-3 h-3 rounded-full bg-cyber-red inline-block"></span>
-                        <span class="w-3 h-3 rounded-full bg-cyber-amber inline-block"></span>
-                        <span class="w-3 h-3 rounded-full bg-cyber-green inline-block"></span>
+            <!-- Header Terminal Bar -->
+            <header class="h-[50px] bg-cyber-surface border-b border-cyber-border px-4 md:px-6 flex items-center justify-between z-30 shrink-0">
+                <div class="flex items-center space-x-3">
+                    <div class="flex space-x-1.5">
+                        <span class="w-2.5 h-2.5 rounded-full bg-cyber-red/80 inline-block"></span>
+                        <span class="w-2.5 h-2.5 rounded-full bg-cyber-amber/80 inline-block"></span>
+                        <span class="w-2.5 h-2.5 rounded-full bg-cyber-green/80 inline-block"></span>
                     </div>
-                    <a href="../index.html" class="font-mono text-xs text-slate-300 hover:text-cyber-cyan transition-colors flex items-center gap-1.5 px-2.5 py-1 rounded bg-slate-900 border border-slate-700 hover:border-cyber-cyan/50" title="Return to Curriculum Hub">
+                    <a href="../index.html" class="text-xs font-mono text-slate-300 hover:text-cyber-cyan transition flex items-center gap-1.5 px-2 py-1 rounded bg-slate-900 border border-slate-700 hover:border-cyber-cyan/50" title="Return to Curriculum Hub">
                         <i class="fa-solid fa-arrow-left text-[10px]"></i>
                         <span class="font-semibold">CURRICULUM HUB</span>
                     </a>
-                    <span class="font-mono text-xs text-slate-400 border-l border-slate-700 pl-3 hidden lg:inline">
-                        <i class="fa-solid me-1 fa-terminal text-cyber-cyan"></i> CCDV-F_LABS // EPISODE_02.exe
+                    <span class="text-slate-600 font-mono text-xs">|</span>
+                    <span class="text-xs font-mono text-slate-300 font-bold tracking-wider flex items-center gap-2">
+                        <i class="fa-solid fa-terminal text-cyber-cyan"></i> CCDV-F // MODULE 01: LESSON 02
                     </span>
                 </div>
 
-                <!-- Central Status Badge -->
-                <div class="hidden xl:flex items-center gap-2 bg-slate-900 border border-slate-700 px-3 py-1 rounded-full text-xs font-mono">
-                    <span class="w-2 h-2 rounded-full bg-cyber-cyan animate-pulse"></span>
-                    <span class="text-slate-300">INCIDENT RESPONSE: ACTIVE</span>
-                </div>
-
-                <!-- Part 1 Switch & Fullscreen & Prep Toggle -->
-                <div class="flex items-center gap-3 text-xs font-mono text-slate-400">
-                    <a href="How%20LLMs%20behave.html" class="text-slate-400 hover:text-cyber-cyan transition-colors flex items-center gap-1.5 px-2.5 py-1 rounded bg-slate-900 border border-slate-700 hover:border-cyber-cyan/50" title="Switch to Part 1: How LLMs Behave">
-                        <i class="fa-solid fa-arrow-left text-[10px]"></i>
-                        <span class="hidden sm:inline">Part 1: How LLMs Behave</span>
-                    </a>
-                    <button id="fsBtn" onclick="toggleFullScreen()" class="hover:text-cyber-cyan transition-colors flex items-center gap-1">
-                        <i class="fa-solid fa-expand"></i> <span class="hidden md:inline">FULLSCREEN</span>
+                <div class="flex items-center space-x-4 text-xs font-mono">
+                    <button onclick="toggleAudio()" id="audio-toggle-btn" class="bg-slate-900 hover:bg-slate-800 text-slate-300 px-2.5 py-1 rounded border border-slate-700 hover:border-cyber-cyan/50 transition flex items-center gap-1.5" title="Toggle Sound Effects">
+                        <i class="fa-solid fa-volume-high text-cyber-cyan" id="audio-icon"></i>
+                        <span id="audio-label" class="hidden sm:inline">SFX: ON</span>
                     </button>
-                    <div class="bg-cyber-blue/10 text-cyber-blue border border-cyber-blue/30 px-2 py-0.5 rounded font-semibold text-[10px]">
-                        CCDV-F PREP
+                    <div class="hidden sm:flex items-center space-x-2 text-slate-400">
+                        <span class="w-2 h-2 rounded-full bg-cyber-green animate-pulse"></span>
+                        <span id="topic-badge" class="text-slate-300">CLAUDE MODEL FAMILY &amp; REASONING</span>
                     </div>
                 </div>
             </header>
@@ -239,39 +208,39 @@
                             <i class="fa-solid fa-shield-halved"></i> ANTHROPIC CERTIFIED DEVELOPER FOUNDATIONS
                         </div>
                         <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight text-white leading-tight">
-                            EPISODE 02: <br>
+                            LESSON 02: <br>
                             <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyber-cyan via-cyber-blue to-purple-400">
-                                MODEL OPTIONS & REASONING MODES
+                                MODEL MATRIX &amp; REASONING MODES
                             </span>
                         </h1>
                         <p class="text-slate-300 text-sm md:text-base leading-relaxed">
-                            Investigue o incidente no <span class="text-cyber-cyan font-mono">OmniCorp AI Gateway</span>. Domine a família Claude, a transição para <span class="text-cyber-amber font-mono">Adaptive Thinking</span> e evite as pegadinhas mais fatais do exame CCDV-F.
+                            Investigate the critical failure on the <span class="text-cyber-cyan font-mono">ApexCorp AI Gateway</span>. Master the Claude family matrix, the transition to <span class="text-cyber-amber font-mono">Adaptive Thinking</span>, and avoid fatal CCDV-F exam traps.
                         </p>
 
                         <!-- Mission Objectives list -->
                         <div class="bg-slate-900/80 border border-slate-800 rounded-lg p-4 space-y-2 text-xs font-mono">
                             <div class="text-slate-400 font-semibold mb-1 flex items-center gap-2">
-                                <i class="fa-solid fa-crosshairs text-cyber-amber"></i> OBJECTIVOS DA MISSÃO:
+                                <i class="fa-solid fa-crosshairs text-cyber-amber"></i> MISSION OBJECTIVES:
                             </div>
                             <div class="flex items-center gap-2 text-slate-300">
                                 <i class="fa-solid fa-check text-cyber-green text-[10px]"></i>
-                                Mapear Tiers de Modelos (Fable, Opus, Sonnet, Haiku) e regras de Eval.
+                                Map Model Tiers (Fable, Opus, Sonnet, Haiku) and quantitative eval rules.
                             </div>
                             <div class="flex items-center gap-2 text-slate-300">
                                 <i class="fa-solid fa-check text-cyber-green text-[10px]"></i>
-                                Diagnosticar o Erro HTTP 400 provocado pelo parâmetro legados (`budget_tokens`).
+                                Diagnose the HTTP 400 rejection caused by legacy deprecated parameters (`budget_tokens`).
                             </div>
                             <div class="flex items-center gap-2 text-slate-300">
                                 <i class="fa-solid fa-check text-cyber-green text-[10px]"></i>
-                                Configurar Reasoning Mode via parâmetro `effort` de forma independente.
+                                Calibrate Reasoning Modes via the modern per-call `effort` parameter.
                             </div>
                         </div>
 
                         <div class="pt-2 flex items-center gap-4">
                             <button onclick="goToSlide(2)" class="px-6 py-3 bg-cyber-cyan hover:bg-cyan-400 text-slate-950 font-bold font-mono text-sm rounded-lg transition-all shadow-lg shadow-cyan-500/20 flex items-center gap-2">
-                                INICIAR INVESTIGAÇÃO <i class="fa-solid fa-arrow-right"></i>
+                                START INVESTIGATION <i class="fa-solid fa-arrow-right"></i>
                             </button>
-                            <span class="text-xs text-slate-500 font-mono">Pressione [ → ] ou clique acima</span>
+                            <span class="text-xs text-slate-500 font-mono">Press [ → ] or click above</span>
                         </div>
                     </div>
 
@@ -285,7 +254,7 @@
                                     <span class="text-sm font-bold text-slate-200">CCDV-F (Foundations)</span>
                                 </div>
                                 <span class="bg-cyber-purple/20 text-cyber-purple text-[10px] font-mono px-2 py-1 rounded border border-cyber-purple/30">
-                                    CORE MODULE 2
+                                    CORE LESSON 02
                                 </span>
                             </div>
                             
@@ -318,21 +287,21 @@
 
                             <div class="text-[11px] font-mono text-slate-400 bg-slate-900/90 p-2.5 rounded border border-slate-800 text-center">
                                 <i class="fa-solid fa-triangle-exclamation text-cyber-amber me-1"></i>
-                                "Sonnet is your default. Prove you need Opus/Fable or Haiku with Evals."
+                                Golden Rule: Never assume model tier and reasoning are coupled!
                             </div>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- SLIDE 2: INCIDENT LOG / PRODUCTION EMERGENCY -->
+            <!-- SLIDE 2: INCIDENT REPORT (LATENCY & BUDGET DISRUPTION) -->
             <section class="slide" id="slide-2">
                 <div class="flex flex-col h-full space-y-4">
                     <div class="border-b border-slate-800 pb-2">
                         <span class="text-xs font-mono text-cyber-amber uppercase tracking-wider">
                             <i class="fa-solid fa-triangle-exclamation"></i> Production Incident Briefing #0409
                         </span>
-                        <h2 class="text-2xl font-bold text-white">The Latency & Budget Disruption</h2>
+                        <h2 class="text-2xl font-bold text-white">The Latency &amp; Budget Disruption</h2>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-12 gap-5 flex-1 min-h-0">
@@ -340,9 +309,9 @@
                         <div class="md:col-span-7 bg-slate-950 border border-cyber-red/40 rounded-xl p-4 font-mono text-xs overflow-y-auto flex flex-col justify-between shadow-lg">
                             <div class="space-y-2">
                                 <div class="flex justify-between items-center text-slate-500 border-b border-slate-800 pb-1 text-[11px]">
-                                    <span>/var/log/omnicorp/ai-gateway.log</span>
+                                    <span>/var/log/apexcorp/ai-gateway.log</span>
                                     <span class="text-cyber-red flex items-center gap-1">
-                                        <span class="w-2 h-2 rounded-full bg-cyber-red animate-ping"></span> HTTP 400 & LATENCY CRITICAL
+                                        <span class="w-2 h-2 rounded-full bg-cyber-red animate-ping"></span> HTTP 400 &amp; LATENCY CRITICAL
                                     </span>
                                 </div>
                                 <p class="text-slate-400">[2026-11-02T00:12:01Z] Request payload dispatched to latest model tier...</p>
@@ -357,10 +326,10 @@
                             </div>
 
                             <div class="mt-4 pt-3 border-t border-slate-800 text-slate-300 text-[11px] leading-relaxed">
-                                <span class="text-cyber-cyan font-bold">ANÁLISE DO INCIDENTE:</span> O gateway cometeu dois erros clássicos de arquitetura:
+                                <span class="text-cyber-cyan font-bold">INCIDENT ROOT CAUSE:</span> The gateway committed two classic architectural mistakes:
                                 <ol class="list-decimal list-inside mt-1 space-y-1 text-slate-400">
-                                    <li>Enviou o parâmetro legado <code class="text-cyber-amber">budget_tokens</code> para um modelo de nova geração.</li>
-                                    <li>Manteve o Reasoning Mode ativado para tarefas simples de lookup/classificação.</li>
+                                    <li>Sent the legacy parameter <code class="text-cyber-amber">budget_tokens</code> to a new generation model.</li>
+                                    <li>Kept reasoning mode active on trivial classification and lookup tasks.</li>
                                 </ol>
                             </div>
                         </div>
@@ -373,40 +342,40 @@
                                         <i class="fa-solid fa-bug text-lg"></i>
                                     </div>
                                     <div>
-                                        <h4 class="text-sm font-bold text-slate-200">Erro #1: Legacy Budget Trap</h4>
+                                        <h4 class="text-sm font-bold text-slate-200">Defect #1: Legacy Budget Trap</h4>
                                         <p class="text-xs text-slate-400 font-mono">Deprecated Parameter HTTP 400</p>
                                     </div>
                                 </div>
                                 <p class="text-xs text-slate-300 leading-relaxed">
-                                    Nas gerações mais recentes, <code class="text-cyber-amber bg-slate-900 px-1 py-0.5 rounded border border-slate-800">budget_tokens</code> <strong>NÃO</strong> é mais aceito e lança erro 400. A profundidade de raciocínio agora é ajustada via <code class="text-cyber-cyan bg-slate-900 px-1 py-0.5 rounded border border-slate-800">effort</code>.
+                                    On newer Claude models, <code class="text-cyber-amber bg-slate-900 px-1 py-0.5 rounded border border-slate-800">budget_tokens</code> is <strong>NO LONGER</strong> accepted and raises an HTTP 400 error. Reasoning depth is calibrated strictly via <code class="text-cyber-cyan bg-slate-900 px-1 py-0.5 rounded border border-slate-800">effort</code>.
                                 </p>
                             </div>
 
                             <div class="bg-cyber-surface border border-slate-800 rounded-xl p-4 flex-1 flex flex-col justify-center">
                                 <div class="flex items-center gap-3 mb-2">
                                     <div class="w-10 h-10 rounded-lg bg-cyber-amber/10 border border-cyber-amber/30 flex items-center justify-center text-cyber-amber">
-                                        <i class="fa-solid fa-hourglass-half text-lg"></i>
+                                        <i class="fa-solid fa-gauge-high text-lg"></i>
                                     </div>
                                     <div>
-                                        <h4 class="text-sm font-bold text-slate-200">Erro #2: Unnecessary Thinking</h4>
-                                        <p class="text-xs text-slate-400 font-mono">Reasoning Wasted on Simple Tasks</p>
+                                        <h4 class="text-sm font-bold text-slate-200">Defect #2: Reasoning Misallocation</h4>
+                                        <p class="text-xs text-slate-400 font-mono">Latency Inflation &amp; Budget Drain</p>
                                     </div>
                                 </div>
                                 <p class="text-xs text-slate-300 leading-relaxed">
-                                    Ativar reasoning em lookups e classificações gera gasto inútil de tokens e aumenta drasticamente a latência. O raciocínio deve ser reservado para problemas complexos de múltiplos passos.
+                                    Reasoning modes provide massive returns on multi-step reasoning, coding, and architecture design, but generate unnecessary overhead when applied to simple extractions.
                                 </p>
                             </div>
 
-                            <div class="bg-cyber-blue/10 border border-cyber-blue/30 rounded-xl p-3 flex items-center justify-between text-xs font-mono">
-                                <span class="text-slate-300"><i class="fa-solid fa-lightbulb text-cyber-cyan me-2"></i>Sua Missão:</span>
-                                <span class="text-cyber-cyan">Corrigir a arquitetura do Gateway</span>
+                            <div class="bg-slate-900 border border-slate-800 p-3 rounded-lg flex items-center justify-between text-xs font-mono">
+                                <span class="text-slate-300"><i class="fa-solid fa-lightbulb text-cyber-cyan me-2"></i>Mission Directive:</span>
+                                <span class="text-cyber-cyan font-bold">Fix the Gateway Architecture</span>
                             </div>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- SLIDE 3: THE MODEL FAMILY TIER BREAKDOWN -->
+            <!-- SLIDE 3: CLAUDE MODEL FAMILY BREAKDOWN -->
             <section class="slide" id="slide-3">
                 <div class="flex flex-col h-full space-y-3">
                     <div class="flex justify-between items-end border-b border-slate-800 pb-2">
@@ -427,7 +396,7 @@
                                 <span class="font-mono text-xs font-bold text-purple-400">FABLE</span>
                                 <span class="text-[10px] bg-purple-950/80 text-purple-300 px-1.5 py-0.5 rounded border border-purple-800/50">Max Frontier</span>
                             </div>
-                            <p class="text-[11px] text-slate-400 line-clamp-2">Built for most demanding reasoning, coding, and agentic work.</p>
+                            <p class="text-[11px] text-slate-400 line-clamp-2">Built for most demanding reasoning, coding, and agentic workflows.</p>
                             <div class="text-[10px] font-mono text-slate-500 pt-1 border-t border-slate-800">Capability: <span class="text-purple-400">Maximum</span></div>
                         </div>
 
@@ -437,20 +406,20 @@
                                 <span class="font-mono text-xs font-bold text-cyber-blue">OPUS</span>
                                 <span class="text-[10px] bg-blue-950/80 text-blue-300 px-1.5 py-0.5 rounded border border-blue-800/50">Deep Reasoning</span>
                             </div>
-                            <p class="text-[11px] text-slate-400 line-clamp-2">Handles demanding complex work above the Sonnet envelope.</p>
+                            <p class="text-[11px] text-slate-400 line-clamp-2">Excels at complex analysis and deep open-ended problem solving.</p>
                             <div class="text-[10px] font-mono text-slate-500 pt-1 border-t border-slate-800">Capability: <span class="text-cyber-blue">High</span></div>
                         </div>
 
                         <!-- Sonnet (DEFAULT) -->
                         <div onclick="selectModel('sonnet')" id="card-sonnet" class="model-card cursor-pointer bg-cyber-surface border-2 border-cyber-cyan p-3 rounded-xl transition-all space-y-2 relative shadow-lg shadow-cyan-900/20">
                             <div class="absolute -top-2.5 right-3 bg-cyber-cyan text-slate-950 font-bold font-mono text-[9px] px-2 py-0.5 rounded-full uppercase">
-                                Practical Default
+                                Production Default
                             </div>
                             <div class="flex justify-between items-center">
                                 <span class="font-mono text-xs font-bold text-cyber-cyan">SONNET</span>
                                 <span class="text-[10px] bg-cyan-950/80 text-cyan-300 px-1.5 py-0.5 rounded border border-cyan-800/50">Balanced</span>
                             </div>
-                            <p class="text-[11px] text-slate-300 line-clamp-2">Balanced default for most production workloads.</p>
+                            <p class="text-[11px] text-slate-300 line-clamp-2">Balanced default for the vast majority of enterprise production workloads.</p>
                             <div class="text-[10px] font-mono text-slate-400 pt-1 border-t border-slate-800">Capability/Cost: <span class="text-cyber-cyan">Optimal</span></div>
                         </div>
 
@@ -458,57 +427,51 @@
                         <div onclick="selectModel('haiku')" id="card-haiku" class="model-card cursor-pointer bg-cyber-surface border border-slate-800 hover:border-cyber-green p-3 rounded-xl transition-all space-y-2">
                             <div class="flex justify-between items-center">
                                 <span class="font-mono text-xs font-bold text-cyber-green">HAIKU</span>
-                                <span class="text-[10px] bg-green-950/80 text-green-300 px-1.5 py-0.5 rounded border border-green-800/50">Fast & Low Cost</span>
+                                <span class="text-[10px] bg-green-950/80 text-green-300 px-1.5 py-0.5 rounded border border-green-800/50">Near-Instant</span>
                             </div>
-                            <p class="text-[11px] text-slate-400 line-clamp-2">Speed and cost efficiency on tasks within capability envelope.</p>
-                            <div class="text-[10px] font-mono text-slate-500 pt-1 border-t border-slate-800">Latency: <span class="text-cyber-green">Lowest</span></div>
+                            <p class="text-[11px] text-slate-400 line-clamp-2">Blazing fast speed, minimal latency, ideal for high-volume pipelines.</p>
+                            <div class="text-[10px] font-mono text-slate-500 pt-1 border-t border-slate-800">Speed/Cost: <span class="text-cyber-green">Maximum</span></div>
                         </div>
                     </div>
 
-                    <!-- Interactive Eval Flow Ladder -->
-                    <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-4 flex-1 flex flex-col justify-between">
-                        <div class="flex items-center justify-between border-b border-slate-800 pb-2">
-                            <span class="text-xs font-bold font-mono text-slate-200">
-                                <i class="fa-solid fa-diagram-project text-cyber-cyan me-2"></i> REGRA DE PROVA CCDV-F: EVAL-DRIVEN SELECTION LADDER
-                            </span>
-                            <span class="text-[11px] font-mono text-slate-400" id="selected-model-desc">
-                                Selecionado: <strong class="text-cyber-cyan">Sonnet (Default)</strong>
-                            </span>
+                    <!-- Dynamic Detailed Tier Card Inspector -->
+                    <div id="tier-detail-box" class="bg-slate-900 border border-slate-800 rounded-xl p-4 flex-1 flex flex-col justify-between space-y-3">
+                        <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+                            <div class="flex items-center gap-2">
+                                <span id="detail-icon" class="text-cyber-cyan text-base"><i class="fa-solid fa-microchip"></i></span>
+                                <h3 id="detail-title" class="text-sm font-bold text-white font-mono">Claude Sonnet (Balanced Default)</h3>
+                            </div>
+                            <span id="detail-badge" class="font-mono text-[10px] bg-cyber-cyan/10 text-cyber-cyan px-2 py-0.5 rounded border border-cyber-cyan/30">DEFAULT CHOICE</span>
                         </div>
 
-                        <!-- Visual Ladder Diagram -->
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center my-2">
-                            <!-- Step 1: Default -->
-                            <div class="bg-cyber-surface p-3 rounded-lg border border-cyber-cyan/40 text-center space-y-1">
-                                <span class="text-[10px] font-mono text-cyber-cyan uppercase font-bold block">1. INÍCIO PRÁTICO</span>
-                                <h4 class="font-mono text-sm font-bold text-white">Start with Sonnet</h4>
-                                <p class="text-[11px] text-slate-400 leading-tight">Sempre inicie workloads de produção com Sonnet como baseline.</p>
-                            </div>
+                        <p id="detail-desc" class="text-xs text-slate-300 leading-relaxed">
+                            Sonnet is the standard starting point for almost every production application. It delivers near-frontier reasoning and exceptional code quality at a fraction of Opus latency and cost.
+                        </p>
 
-                            <!-- Step 2: Move Up -->
-                            <div class="bg-cyber-surface p-3 rounded-lg border border-slate-800 text-center space-y-1">
-                                <span class="text-[10px] font-mono text-purple-400 uppercase font-bold block">2. MOVER PARA CIMA</span>
-                                <h4 class="font-mono text-sm font-bold text-white">Move Up to Opus / Fable</h4>
-                                <p class="text-[11px] text-slate-400 leading-tight">Somente quando um <strong class="text-slate-200">Eval</strong> mostrar que Sonnet não atinge o Quality Bar.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs font-mono">
+                            <div class="bg-cyber-surface p-2.5 rounded border border-slate-800">
+                                <span class="text-slate-400 block text-[10px]">WHEN TO DEVIATE TO HAIKU:</span>
+                                <span id="detail-alt1" class="text-cyber-green text-[11px]">Tasks requiring sub-second SLA or cost budgets below $1 / MTok.</span>
                             </div>
-
-                            <!-- Step 3: Move Down -->
-                            <div class="bg-cyber-surface p-3 rounded-lg border border-slate-800 text-center space-y-1">
-                                <span class="text-[10px] font-mono text-cyber-green uppercase font-bold block">3. MOVER PARA BAIXO</span>
-                                <h4 class="font-mono text-sm font-bold text-white">Move Down to Haiku</h4>
-                                <p class="text-[11px] text-slate-400 leading-tight">Somente quando um <strong class="text-slate-200">Eval</strong> mostrar que a queda de qualidade é aceitável.</p>
+                            <div class="bg-cyber-surface p-2.5 rounded border border-slate-800">
+                                <span class="text-slate-400 block text-[10px]">WHEN TO DEVIATE TO OPUS/FABLE:</span>
+                                <span id="detail-alt2" class="text-cyber-purple text-[11px]">Empirical eval failures on Sonnet on edge-case reasoning logic.</span>
+                            </div>
+                            <div class="bg-cyber-surface p-2.5 rounded border border-slate-800">
+                                <span class="text-slate-400 block text-[10px]">CCDV-F EXAM MANDATE:</span>
+                                <span class="text-cyber-amber text-[11px]">Never upgrade tier based on intuition—only on quantified evals.</span>
                             </div>
                         </div>
+                    </div>
 
-                        <div class="bg-slate-950 p-2.5 rounded border border-slate-800 flex items-center justify-between text-xs font-mono">
-                            <span class="text-slate-400"><i class="fa-solid fa-circle-info text-cyber-amber me-1"></i> Dica de Prova:</span>
-                            <span class="text-slate-300">Confirme sempre os identificadores exatos em <code class="text-cyber-cyan">platform.claude.com/docs</code> no momento da criação.</span>
-                        </div>
+                    <div class="text-[11px] font-mono text-slate-400 bg-slate-950 p-2 rounded border border-slate-800 flex items-center justify-between">
+                        <span><i class="fa-solid fa-info-circle text-cyber-cyan me-1"></i> Click any tier card above to inspect architectural properties.</span>
+                        <span class="text-slate-500">Anthropic Architecture Specification</span>
                     </div>
                 </div>
             </section>
 
-            <!-- SLIDE 4: REASONING MODES VS MODEL SELECTION -->
+            <!-- SLIDE 4: REASONING MODES & INDEPENDENT CONTROL LEVERS -->
             <section class="slide" id="slide-4">
                 <div class="flex flex-col h-full space-y-4">
                     <div class="border-b border-slate-800 pb-2">
@@ -522,33 +485,33 @@
                         <div class="md:col-span-5 space-y-3 flex flex-col justify-between">
                             <div class="bg-cyber-surface border border-slate-800 p-4 rounded-xl space-y-2">
                                 <h3 class="text-sm font-bold text-cyber-cyan font-mono flex items-center gap-2">
-                                    <i class="fa-solid fa-sliders"></i> DUA ALAVANCAS INDEPENDENTES
+                                    <i class="fa-solid fa-sliders"></i> TWO INDEPENDENT LEVERS
                                 </h3>
                                 <p class="text-xs text-slate-300 leading-relaxed">
-                                    Escolher qual modelo executar é <strong class="text-white">uma decisão</strong>. Se o modelo deve raciocinar antes de responder é <strong class="text-white">uma decisão separada</strong> feita por chamada da API.
+                                    Choosing which model tier to run is <strong class="text-white">one distinct decision</strong>. Deciding whether the model should execute extended thinking is <strong class="text-white">a separate per-call parameter</strong>.
                                 </p>
                             </div>
 
                             <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl space-y-3 font-mono text-xs">
                                 <div class="flex items-center justify-between text-slate-300 border-b border-slate-800 pb-2">
-                                    <span>Alavanca 1: Modelo</span>
+                                    <span>Lever 1: Model Choice</span>
                                     <span class="text-cyber-blue font-bold">Family Tier</span>
                                 </div>
                                 <div class="flex items-center justify-between text-slate-300">
-                                    <span>Alavanca 2: Reasoning</span>
+                                    <span>Lever 2: Reasoning Mode</span>
                                     <span class="text-cyber-cyan font-bold">Adaptive / Effort</span>
                                 </div>
                                 <p class="text-[11px] text-slate-400 pt-1">
-                                    * Modelos mais recentes usam <strong>Adaptive Thinking</strong>: o modelo decide como e quando pensar, e você ajusta a profundidade via parâmetro <code class="text-cyber-amber">effort</code>.
+                                    * Newer models use <strong>Adaptive Thinking</strong>: Claude determines thinking steps dynamically, guided by the <code class="text-cyber-amber">effort</code> setting.
                                 </p>
                             </div>
 
                             <div class="bg-cyber-amber/10 border border-cyber-amber/30 p-3 rounded-xl text-xs space-y-1">
                                 <span class="font-bold text-cyber-amber font-mono flex items-center gap-1">
-                                    <i class="fa-solid fa-coins"></i> ONDE USAR RACIOCÍNIO?
+                                    <i class="fa-solid fa-coins"></i> WHEN TO REACH FOR REASONING:
                                 </span>
                                 <p class="text-slate-300 text-[11px] leading-tight">
-                                     Reasoning ganha valor em problemas difíceis e multi-etapas. É <strong class="text-cyber-red">desperdiçado</strong> em lookups e classificações simples!
+                                     Reasoning shines on complex algorithmic, diagnostic, and multi-step tasks. It is <strong class="text-cyber-red">pure waste</strong> on simple lookups and classifications!
                                 </p>
                             </div>
                         </div>
@@ -556,8 +519,8 @@
                         <!-- Right Panel: Matrix Simulator -->
                         <div class="md:col-span-7 bg-slate-900 border border-slate-800 rounded-xl p-4 flex flex-col justify-between space-y-3">
                             <div class="flex justify-between items-center border-b border-slate-800 pb-2">
-                                <span class="font-mono text-xs font-bold text-slate-200">SIMULADOR DE ALAVANCAS DE COMPOSIÇÃO</span>
-                                <span class="text-[10px] font-mono text-cyber-cyan">Teste as combinações</span>
+                                <span class="font-mono text-xs font-bold text-slate-200">COMPOSITION LEVERS SIMULATOR</span>
+                                <span class="text-[10px] font-mono text-cyber-cyan">Test parameter combinations</span>
                             </div>
 
                             <!-- Interactive Composition Toggles -->
@@ -565,9 +528,9 @@
                                 <div>
                                     <label class="text-[11px] font-mono text-slate-400 block mb-1">1. MODEL TIER:</label>
                                     <select id="matrixModel" onchange="updateMatrixSim()" class="w-full bg-cyber-surface border border-slate-700 text-xs font-mono rounded p-2 text-white focus:outline-none focus:border-cyber-cyan">
-                                        <option value="haiku">Haiku (Fast / Efficient)</option>
+                                        <option value="haiku">Haiku (Fast / High-Volume)</option>
                                         <option value="sonnet" selected>Sonnet (Balanced Default)</option>
-                                        <option value="opus">Opus (High Intelligence)</option>
+                                        <option value="opus">Opus (Deep Reasoning)</option>
                                         <option value="fable">Fable (Maximum Frontier)</option>
                                     </select>
                                 </div>
@@ -575,7 +538,7 @@
                                 <div>
                                     <label class="text-[11px] font-mono text-slate-400 block mb-1">2. REASONING EFFORT:</label>
                                     <select id="matrixReasoning" onchange="updateMatrixSim()" class="w-full bg-cyber-surface border border-slate-700 text-xs font-mono rounded p-2 text-white focus:outline-none focus:border-cyber-cyan">
-                                        <option value="none">Disabled (Direct Answer)</option>
+                                        <option value="none">Disabled (Direct Output)</option>
                                         <option value="low">Adaptive (Effort: Low)</option>
                                         <option value="medium" selected>Adaptive (Effort: Medium)</option>
                                         <option value="high">Adaptive (Effort: High)</option>
@@ -586,11 +549,11 @@
                             <!-- Live Composition Result Card -->
                             <div id="matrixResultBox" class="bg-cyber-surface border border-cyber-cyan/40 p-4 rounded-lg space-y-2">
                                 <div class="flex justify-between items-center font-mono text-xs">
-                                    <span class="text-slate-400">Comportamento Previsto:</span>
+                                    <span class="text-slate-400">Predicted Runtime Behavior:</span>
                                     <span id="matrixBehaviorBadge" class="text-cyber-cyan font-bold bg-cyan-950/80 px-2 py-0.5 rounded border border-cyan-800">Balanced Thinking</span>
                                 </div>
                                 <p id="matrixText" class="text-xs text-slate-300 leading-relaxed">
-                                    Modelo altamente equilibrado operando com raciocínio adaptativo moderado. Excelente para tarefas complexas de engenharia de software e análise de código.
+                                    Highly balanced model operating with moderate adaptive reasoning. Superb for full-stack engineering tasks, architectural reviews, and code debugging.
                                 </p>
                                 <div class="grid grid-cols-3 gap-2 pt-2 border-t border-slate-800 text-[10px] font-mono text-center">
                                     <div class="bg-slate-900 p-1.5 rounded">
@@ -602,21 +565,21 @@
                                         <span id="matrixCost" class="text-cyber-cyan font-bold">Medium</span>
                                     </div>
                                     <div class="bg-slate-900 p-1.5 rounded">
-                                        <span class="text-slate-500 block">THINKING DISPLAY</span>
+                                        <span class="text-slate-500 block">THINKING OUTPUT</span>
                                         <span id="matrixDisplay" class="text-slate-300 font-bold">Omitted by default</span>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="text-[10px] font-mono text-slate-400 bg-slate-950 p-2 rounded border border-slate-800 text-center">
-                                * Nota de Prova: Conteúdo do raciocínio (thinking blocks) é omitido das respostas por padrão nos modelos mais recentes.
+                                * Exam Fact: Thinking process blocks are omitted from final responses by default on newer models unless explicitly inspected.
                             </div>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- SLIDE 5: CCDV-F EXAM TRAP SPOTLIGHT -->
+            <!-- SLIDE 5: CCDV-F EXAM TRAP: BUDGET_TOKENS DEPRECATION -->
             <section class="slide" id="slide-5">
                 <div class="flex flex-col h-full space-y-3">
                     <div class="border-b border-slate-800 pb-2 flex justify-between items-end">
@@ -624,7 +587,7 @@
                             <span class="text-xs font-mono text-cyber-red uppercase tracking-wider">
                                 <i class="fa-solid fa-skull-crossbones me-1"></i> Critical Exam Trap
                             </span>
-                            <h2 class="text-2xl font-bold text-white">`budget_tokens` Deprecation & HTTP 400 Trap</h2>
+                            <h2 class="text-2xl font-bold text-white">`budget_tokens` Deprecation &amp; HTTP 400 Trap</h2>
                         </div>
                         <span class="text-xs font-mono text-cyber-red bg-cyber-red/10 border border-cyber-red/30 px-3 py-1 rounded">
                             HIGH PROBABILITY EXAM QUESTION
@@ -636,14 +599,14 @@
                         <!-- DON'T (WRONG) -->
                         <div class="bg-slate-900/90 border-2 border-cyber-red/60 rounded-xl p-4 flex flex-col justify-between relative overflow-hidden shadow-lg shadow-red-950/20">
                             <div class="absolute top-0 right-0 bg-cyber-red text-white text-[10px] font-mono font-bold px-3 py-1 rounded-bl">
-                                <i class="fa-solid fa-xmark me-1"></i> ERRADO (DEPRECATED)
+                                <i class="fa-solid fa-xmark me-1"></i> WRONG (DEPRECATED)
                             </div>
                             <div>
                                 <h3 class="text-sm font-bold font-mono text-cyber-red mb-2 flex items-center gap-2">
                                     <i class="fa-solid fa-bug"></i> Legacy Parameter Usage
                                 </h3>
                                 <p class="text-xs text-slate-300 mb-3">
-                                    Usar o controle legados <code class="text-cyber-amber font-mono">budget_tokens</code> nas gerações mais recentes de modelos Claude.
+                                    Passing legacy <code class="text-cyber-amber font-mono">budget_tokens</code> directly to new-generation Claude models.
                                 </p>
                                 <!-- Code snippet wrong -->
                                 <div class="bg-slate-950 p-3 rounded-lg border border-slate-800 font-mono text-[11px] text-slate-300 space-y-1">
@@ -651,7 +614,7 @@
                                     <div>response = client.messages.create(</div>
                                     <div class="pl-4 text-slate-400">model=<span class="text-green-400">"claude-sonnet-latest"</span>,</div>
                                     <div class="pl-4 text-slate-400">max_tokens=4096,</div>
-                                    <div class="pl-4 text-cyber-red bg-cyber-red/20 font-bold px-1 rounded">thinking={"type": "enabled", "budget_tokens": 2048}, # ❌ ERRADO!</div>
+                                    <div class="pl-4 text-cyber-red bg-cyber-red/20 font-bold px-1 rounded">thinking={"type": "enabled", "budget_tokens": 2048}, # ❌ ERROR!</div>
                                     <div class="pl-4 text-slate-400">messages=[...]</div>
                                     <div>)</div>
                                 </div>
@@ -659,10 +622,10 @@
 
                             <div class="bg-cyber-red/10 border border-cyber-red/30 p-2.5 rounded mt-3">
                                 <span class="font-mono text-xs text-cyber-red font-bold block">
-                                    <i class="fa-solid fa-triangle-exclamation me-1"></i> RESULTADO EM PRODUÇÃO:
+                                    <i class="fa-solid fa-triangle-exclamation me-1"></i> PRODUCTION OUTCOME:
                                 </span>
                                 <span class="font-mono text-[11px] text-slate-300">
-                                    Retorna <strong>HTTP 400 Error</strong> imediatamente! A requisição falha sem tentar reprocessar.
+                                    Returns immediate <strong>HTTP 400 Bad Request</strong>! The API halts before dispatching generation.
                                 </span>
                             </div>
                         </div>
@@ -670,14 +633,14 @@
                         <!-- DO (CORRECT) -->
                         <div class="bg-slate-900/90 border-2 border-cyber-green/60 rounded-xl p-4 flex flex-col justify-between relative overflow-hidden shadow-lg shadow-green-950/20">
                             <div class="absolute top-0 right-0 bg-cyber-green text-slate-950 text-[10px] font-mono font-bold px-3 py-1 rounded-bl">
-                                <i class="fa-solid fa-check me-1"></i> CORRETO (ADAPTIVE THINKING)
+                                <i class="fa-solid fa-check me-1"></i> CORRECT (ADAPTIVE THINKING)
                             </div>
                             <div>
                                 <h3 class="text-sm font-bold font-mono text-cyber-green mb-2 flex items-center gap-2">
-                                    <i class="fa-solid fa-circle-check"></i> Modern Effort Setting
+                                    <i class="fa-solid fa-circle-check"></i> Modern Effort Calibration
                                 </h3>
                                 <p class="text-xs text-slate-300 mb-3">
-                                    Ajustar a profundidade de raciocínio via parâmetro <code class="text-cyber-cyan font-mono">effort</code> no modo adaptativo.
+                                    Adjust reasoning depth via the <code class="text-cyber-cyan font-mono">effort</code> parameter in adaptive thinking mode.
                                 </p>
                                 <!-- Code snippet correct -->
                                 <div class="bg-slate-950 p-3 rounded-lg border border-slate-800 font-mono text-[11px] text-slate-300 space-y-1">
@@ -685,7 +648,7 @@
                                     <div>response = client.messages.create(</div>
                                     <div class="pl-4 text-slate-400">model=<span class="text-green-400">"claude-sonnet-latest"</span>,</div>
                                     <div class="pl-4 text-slate-400">max_tokens=4096,</div>
-                                    <div class="pl-4 text-cyber-green bg-cyber-green/20 font-bold px-1 rounded">thinking={"type": "adaptive", "effort": "medium"}, # ✅ CORRETO!</div>
+                                    <div class="pl-4 text-cyber-green bg-cyber-green/20 font-bold px-1 rounded">thinking={"type": "adaptive"}, output_config={"effort": "high"},</div>
                                     <div class="pl-4 text-slate-400">messages=[...]</div>
                                     <div>)</div>
                                 </div>
@@ -693,100 +656,100 @@
 
                             <div class="bg-cyber-green/10 border border-cyber-green/30 p-2.5 rounded mt-3">
                                 <span class="font-mono text-xs text-cyber-green font-bold block">
-                                    <i class="fa-solid fa-bolt me-1"></i> RESULTADO EM PRODUÇÃO:
+                                    <i class="fa-solid fa-circle-check me-1"></i> PRODUCTION OUTCOME:
                                 </span>
                                 <span class="font-mono text-[11px] text-slate-300">
-                                    O modelo decide de forma autônoma quando e quanto raciocinar, sintonizado pelo effort escolhido (low, medium, high).
+                                    Succeeds with optimal reasoning allocation calibrated dynamically by Claude.
                                 </span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="bg-slate-950 p-3 rounded-lg border border-slate-800 font-mono text-xs text-slate-300 flex items-center justify-between">
+                    <div class="bg-cyber-amber/10 border border-cyber-amber/30 p-2.5 rounded text-xs font-mono text-slate-300 flex items-center justify-between">
                         <div>
-                            <span class="text-cyber-amber font-bold"><i class="fa-solid fa-key me-1"></i> RESUMO PARA A PROVA:</span>
-                            <span class="text-slate-400"> `budget_tokens` = Deprecated/HTTP 400 | `effort` = Parâmetro oficial de profundidade</span>
+                            <span class="text-cyber-amber font-bold">EXAM WARNING:</span> Watch out for questions asking how to set thinking limits. If the answer offers `budget_tokens` for current models, it is a distractor trap!
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- SLIDE 6: PRACTICAL COST/LATENCY SIMULATOR -->
+            <!-- SLIDE 6: INTERACTIVE EFFORT & LATENCY ENGINE -->
             <section class="slide" id="slide-6">
                 <div class="flex flex-col h-full space-y-3">
                     <div class="border-b border-slate-800 pb-2 flex justify-between items-end">
                         <div>
-                            <span class="text-xs font-mono text-cyber-cyan uppercase tracking-wider">Interactive Architecture Tool</span>
-                            <h2 class="text-2xl font-bold text-white">Cost & Latency Trade-off Simulator</h2>
+                            <span class="text-xs font-mono text-cyber-cyan uppercase tracking-wider">Engineering Calculator</span>
+                            <h2 class="text-2xl font-bold text-white">Adaptive Effort &amp; Latency Trade-Offs</h2>
                         </div>
-                        <span class="text-xs font-mono text-slate-400">Simule seu workload real</span>
+                        <span class="text-xs font-mono text-slate-400 bg-slate-900 px-3 py-1 rounded border border-slate-800">
+                            Trade-Off Visualizer
+                        </span>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-12 gap-5 flex-1">
-                        <!-- Controls Panel -->
-                        <div class="md:col-span-6 bg-slate-900 border border-slate-800 p-4 rounded-xl space-y-4 flex flex-col justify-between">
-                            <span class="font-mono text-xs font-bold text-cyber-cyan border-b border-slate-800 pb-2 block">
-                                <i class="fa-solid fa-sliders me-1"></i> CONFIGURAÇÃO DA REQUISIÇÃO
-                            </span>
-
-                            <!-- Task Type -->
+                        <!-- Left Sliders Box -->
+                        <div class="md:col-span-5 bg-cyber-surface border border-slate-800 rounded-xl p-4 flex flex-col justify-between space-y-4">
                             <div>
-                                <div class="flex justify-between text-xs font-mono mb-1">
-                                    <span class="text-slate-300">Tipo de Tarefa (Complexity):</span>
-                                    <span id="taskTypeVal" class="text-cyber-cyan font-bold">Complex Multi-Step Logic</span>
-                                </div>
-                                <input type="range" id="taskRange" min="1" max="3" value="3" oninput="runCostSimulator()" class="w-full accent-cyber-cyan cursor-pointer">
-                                <div class="flex justify-between text-[10px] font-mono text-slate-500">
-                                    <span>Simple Lookup</span>
-                                    <span>Standard Code</span>
-                                    <span>Agentic Multi-Step</span>
+                                <h3 class="text-xs font-bold font-mono text-slate-300 uppercase mb-3 flex items-center gap-2">
+                                    <i class="fa-solid fa-sliders text-cyber-cyan"></i> Workload Parameters
+                                </h3>
+
+                                <div class="space-y-4 font-mono text-xs">
+                                    <!-- Task Complexity -->
+                                    <div>
+                                        <div class="flex justify-between text-slate-400 mb-1">
+                                            <span>Task Complexity:</span>
+                                            <span id="taskComplexityLabel" class="text-cyber-cyan font-bold">Software Architecture (Medium)</span>
+                                        </div>
+                                        <input type="range" id="taskSlider" min="1" max="3" value="2" oninput="runLatencySim()" class="w-full accent-cyber-cyan cursor-pointer">
+                                        <div class="flex justify-between text-[10px] text-slate-500 mt-1">
+                                            <span>1. Simple Classification</span>
+                                            <span>2. Fullstack Refactor</span>
+                                            <span>3. Formal Math Proof</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Reasoning Effort -->
+                                    <div>
+                                        <div class="flex justify-between text-slate-400 mb-1">
+                                            <span>Reasoning Effort Setting:</span>
+                                            <span id="effortLabel" class="text-cyber-amber font-bold">Medium Effort</span>
+                                        </div>
+                                        <input type="range" id="effortSlider" min="0" max="3" value="2" oninput="runLatencySim()" class="w-full accent-cyber-amber cursor-pointer">
+                                        <div class="flex justify-between text-[10px] text-slate-500 mt-1">
+                                            <span>Disabled</span>
+                                            <span>Low</span>
+                                            <span>Medium</span>
+                                            <span>High</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
-                            <!-- Model Selector Slider/Buttons -->
-                            <div>
-                                <span class="text-xs font-mono text-slate-300 block mb-1">Modelo Selecionado:</span>
-                                <div class="grid grid-cols-4 gap-2 font-mono text-xs">
-                                    <button onclick="setSimModel('haiku')" id="sim-m-haiku" class="sim-m-btn py-1.5 rounded border border-slate-700 bg-cyber-surface hover:border-cyber-green">Haiku</button>
-                                    <button onclick="setSimModel('sonnet')" id="sim-m-sonnet" class="sim-m-btn py-1.5 rounded border-2 border-cyber-cyan bg-cyber-surface text-cyber-cyan font-bold">Sonnet</button>
-                                    <button onclick="setSimModel('opus')" id="sim-m-opus" class="sim-m-btn py-1.5 rounded border border-slate-700 bg-cyber-surface hover:border-cyber-blue">Opus</button>
-                                    <button onclick="setSimModel('fable')" id="sim-m-fable" class="sim-m-btn py-1.5 rounded border border-slate-700 bg-cyber-surface hover:border-purple-500">Fable</button>
-                                </div>
-                            </div>
-
-                            <!-- Reasoning Mode Effort -->
-                            <div>
-                                <div class="flex justify-between text-xs font-mono mb-1">
-                                    <span class="text-slate-300">Reasoning Effort:</span>
-                                    <span id="effortVal" class="text-cyber-amber font-bold">Medium</span>
-                                </div>
-                                <input type="range" id="effortRange" min="0" max="3" value="2" oninput="runCostSimulator()" class="w-full accent-cyber-amber cursor-pointer">
-                                <div class="flex justify-between text-[10px] font-mono text-slate-500">
-                                    <span>Off (Direct)</span>
-                                    <span>Low Effort</span>
-                                    <span>Medium Effort</span>
-                                    <span>High Effort</span>
-                                </div>
+                            <div class="bg-slate-900 border border-slate-800 p-3 rounded-lg text-[11px] font-mono text-slate-400 space-y-1">
+                                <div class="text-cyber-cyan font-bold">ENGINEERING INSIGHT:</div>
+                                Higher effort increases token count and latency linearly, but yields superlinear returns on high-complexity problems.
                             </div>
                         </div>
 
-                        <!-- Dynamics Metrics Display -->
-                        <div class="md:col-span-6 bg-cyber-surface border border-slate-800 p-4 rounded-xl flex flex-col justify-between space-y-3">
-                            <span class="font-mono text-xs font-bold text-slate-200 border-b border-slate-800 pb-2 block">
-                                <i class="fa-solid fa-chart-line me-1"></i> ESTIMATIVA DE IMPACTO EM PRODUÇÃO
-                            </span>
+                        <!-- Right Live Telemetry Screen -->
+                        <div class="md:col-span-7 bg-cyber-surface border border-slate-800 rounded-xl p-4 flex flex-col justify-between space-y-3">
+                            <div class="flex justify-between items-center border-b border-slate-800 pb-2 text-xs font-mono">
+                                <span class="font-bold text-slate-200">RUNTIME TELEMETRY ESTIMATE</span>
+                                <span class="text-cyber-green flex items-center gap-1">
+                                    <span class="w-2 h-2 rounded-full bg-cyber-green animate-ping"></span> SIMULATING LIVE API
+                                </span>
+                            </div>
 
-                            <div class="grid grid-cols-2 gap-3">
-                                <!-- Cost Indicator -->
-                                <div class="bg-slate-900 p-3 rounded-lg border border-slate-800 space-y-1">
-                                    <span class="text-[10px] font-mono text-slate-500 block">CUSTO RELATIVO / 1K CALLS</span>
-                                    <span id="simCostText" class="text-xl font-mono font-bold text-cyber-cyan">$ 3.75</span>
-                                    <span class="text-[10px] text-slate-400 block" id="simCostNote">Token depth moderate</span>
+                            <!-- Big Metrics Grid -->
+                            <div class="grid grid-cols-2 gap-3 my-auto">
+                                <div class="bg-slate-900 border border-slate-800 p-3 rounded-xl text-center">
+                                    <span class="text-[10px] font-mono text-slate-500 block">ESTIMATED TOKEN SPEND</span>
+                                    <span id="simTokensText" class="text-xl font-mono font-bold text-cyber-cyan">2,400 Tokens</span>
+                                    <span class="text-[10px] text-slate-400 block" id="simTokensNote">~1,600 reasoning + 800 output</span>
                                 </div>
-
-                                <!-- Latency Indicator -->
-                                <div class="bg-slate-900 p-3 rounded-lg border border-slate-800 space-y-1">
-                                    <span class="text-[10px] font-mono text-slate-500 block">LATÊNCIA ESTIMADA (P95)</span>
+                                <div class="bg-slate-900 border border-slate-800 p-3 rounded-xl text-center">
+                                    <span class="text-[10px] font-mono text-slate-500 block">ESTIMATED P95 LATENCY</span>
                                     <span id="simLatencyText" class="text-xl font-mono font-bold text-cyber-amber">1,850 ms</span>
                                     <span class="text-[10px] text-slate-400 block" id="simLatencyNote">Thinking overhead added</span>
                                 </div>
@@ -795,22 +758,22 @@
                             <!-- Evaluation Recommendation Box -->
                             <div id="simEvalBox" class="bg-slate-900/90 border border-cyber-cyan p-3 rounded-lg space-y-1 font-mono text-xs">
                                 <div class="flex items-center gap-2 text-cyber-cyan font-bold">
-                                    <i class="fa-solid fa-circle-check"></i> ARCHITECT ASSESSMENT:
+                                    <i class="fa-solid fa-circle-check"></i> ARCHITECTURAL VERDICT:
                                 </div>
                                 <p id="simEvalText" class="text-slate-300 text-[11px] leading-relaxed">
-                                    Configuração altamente recomendada. Sonnet com esforço médio de raciocínio é o ponto ideal para resolução de tarefas complexas de software.
+                                    Highly recommended configuration. Sonnet with medium adaptive reasoning represents the sweet spot for complex enterprise coding tasks.
                                 </p>
                             </div>
 
                             <div class="text-[10px] font-mono text-slate-400 bg-slate-950 p-2 rounded border border-slate-800 text-center">
-                                * Lembre-se: Mudar de tier exige evidências via **Eval**. Nunca escolha Opus/Fable ou Haiku por intuição prévia.
+                                * Remember: Tier changes require empirical proof via **Evals**. Never upgrade to Opus or downgrade to Haiku on raw assumption.
                             </div>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- SLIDE 7: EXAM TRAP & INTERACTIVE CHALLENGE (QUIZ) -->
+            <!-- SLIDE 7: EXAM CHALLENGE MINI-SIMULATION -->
             <section class="slide" id="slide-7">
                 <div class="flex flex-col h-full space-y-3">
                     <div class="border-b border-slate-800 pb-2 flex justify-between items-end">
@@ -818,10 +781,10 @@
                             <span class="text-xs font-mono text-cyber-amber uppercase tracking-wider">
                                 <i class="fa-solid fa-vial me-1"></i> Interactive Exam Challenge
                             </span>
-                            <h2 class="text-2xl font-bold text-white">CCDV-F Mini Simulation</h2>
+                            <h2 class="text-2xl font-bold text-white">CCDV-F Certification Simulation</h2>
                         </div>
                         <div class="font-mono text-xs text-slate-400">
-                            Pontuação: <span id="quizScore" class="text-cyber-cyan font-bold">0</span> / 3
+                            Score: <span id="quizScore" class="text-cyber-cyan font-bold">0</span> / 3
                         </div>
                     </div>
 
@@ -830,11 +793,11 @@
                         <!-- Question Header -->
                         <div>
                             <div class="flex items-center gap-2 text-xs font-mono text-cyber-cyan mb-2">
-                                <span class="bg-cyber-cyan/10 border border-cyber-cyan/30 px-2 py-0.5 rounded">QUESTÃO <span id="qNum">1</span> DE 3</span>
-                                <span class="text-slate-500">// SIMULADO CERTIFICAÇÃO</span>
+                                <span class="bg-cyber-cyan/10 border border-cyber-cyan/30 px-2 py-0.5 rounded">QUESTION <span id="qNum">1</span> OF 3</span>
+                                <span class="text-slate-500">// CCDV-F PRACTICE EXAM</span>
                             </div>
                             <h3 id="qText" class="text-sm md:text-base font-semibold text-white leading-relaxed">
-                                Carregando questão...
+                                Loading question...
                             </h3>
                         </div>
 
@@ -851,394 +814,453 @@
                         <!-- Quiz Controls -->
                         <div class="flex justify-between items-center border-t border-slate-800 pt-3">
                             <button id="resetQuizBtn" onclick="resetQuiz()" class="text-xs font-mono text-slate-500 hover:text-slate-300">
-                                <i class="fa-solid fa-rotate-right me-1"></i> Reiniciar Simulado
+                                <i class="fa-solid fa-rotate-right me-1"></i> Restart Simulation
                             </button>
                             <button id="nextQBtn" onclick="nextQuestion()" class="hidden px-4 py-2 bg-cyber-cyan text-slate-950 font-bold font-mono text-xs rounded hover:bg-cyan-400 transition-colors">
-                                Próxima Questão <i class="fa-solid fa-arrow-right ms-1"></i>
+                                Next Question <i class="fa-solid fa-arrow-right ms-1"></i>
                             </button>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- SLIDE 8: ELITE SUMMARY & KEY TAKEAWAYS -->
+            <!-- SLIDE 8: SUMMARY & RETROSPECTIVE -->
             <section class="slide" id="slide-8">
-                <div class="flex flex-col h-full space-y-3">
+                <div class="flex flex-col h-full space-y-4">
                     <div class="border-b border-slate-800 pb-2 flex justify-between items-end">
                         <div>
                             <span class="text-xs font-mono text-cyber-green uppercase tracking-wider">
-                                <i class="fa-solid fa-award me-1"></i> Certification Clearance
+                                <i class="fa-solid fa-award me-1"></i> Module 01 Takeaways
                             </span>
-                            <h2 class="text-2xl font-bold text-white">Elite Takeaways // CCDV-F Exam Cheatsheet</h2>
+                            <h2 class="text-2xl font-bold text-white">Lesson 02 Architectural Summary</h2>
                         </div>
                         <span class="text-xs font-mono text-cyber-green bg-cyber-green/10 border border-cyber-green/30 px-3 py-1 rounded">
-                            EPISODE 02 CLEARED
+                            STATUS: MISSION RESOLVED
                         </span>
                     </div>
 
-                    <!-- Grid Cheatsheet -->
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 flex-1">
-                        <!-- Card 1 -->
-                        <div class="bg-cyber-surface border border-slate-800 p-3.5 rounded-xl space-y-2">
-                            <div class="flex items-center gap-2 text-cyber-cyan font-mono text-xs font-bold">
-                                <i class="fa-solid fa-layer-group"></i> 1. SONNET IS DEFAULT
+                    <!-- 4 Golden Takeaways -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1">
+                        <div class="bg-cyber-surface border border-slate-800 p-4 rounded-xl space-y-2">
+                            <div class="text-cyber-cyan font-mono text-xs font-bold flex items-center gap-2">
+                                <i class="fa-solid fa-circle-check"></i> 1. Sonnet is the Universal Default
                             </div>
                             <p class="text-xs text-slate-300 leading-relaxed">
-                                Comece workloads em produção sempre no <strong>Sonnet</strong>. Suba para Opus/Fable ou desça para Haiku apenas se guiado por resultados formais de <strong>Evals</strong>.
+                                Always begin new implementations with Sonnet. Only downgrade to Haiku if latency/cost budgets demand it, and only upgrade to Opus/Fable when backed by empirical evals.
                             </p>
                         </div>
 
-                        <!-- Card 2 -->
-                        <div class="bg-cyber-surface border border-slate-800 p-3.5 rounded-xl space-y-2">
-                            <div class="flex items-center gap-2 text-cyber-blue font-mono text-xs font-bold">
-                                <i class="fa-solid fa-sliders"></i> 2. DUA ALAVANCAS
+                        <div class="bg-cyber-surface border border-slate-800 p-4 rounded-xl space-y-2">
+                            <div class="text-cyber-amber font-mono text-xs font-bold flex items-center gap-2">
+                                <i class="fa-solid fa-sliders"></i> 2. Model Tier &amp; Reasoning are Separate
                             </div>
                             <p class="text-xs text-slate-300 leading-relaxed">
-                                Escolha do modelo (tier) e ativação do raciocínio são independentes. O raciocínio é configurado por chamada via modo adaptativo com o parâmetro <code class="text-cyber-cyan font-mono">effort</code>.
+                                Never couple model tier with reasoning mode. Model tier is an infrastructure choice; reasoning effort is a per-call parameter adjusted to task complexity.
                             </p>
                         </div>
 
-                        <!-- Card 3 -->
-                        <div class="bg-cyber-surface border border-slate-800 p-3.5 rounded-xl space-y-2">
-                            <div class="flex items-center gap-2 text-cyber-red font-mono text-xs font-bold">
-                                <i class="fa-solid fa-ban"></i> 3. BUDGET_TOKENS TRAP
+                        <div class="bg-cyber-surface border border-slate-800 p-4 rounded-xl space-y-2">
+                            <div class="text-cyber-red font-mono text-xs font-bold flex items-center gap-2">
+                                <i class="fa-solid fa-ban"></i> 3. Avoid Deprecated Parameter Traps
                             </div>
                             <p class="text-xs text-slate-300 leading-relaxed">
-                                O parâmetro antigo <code class="text-cyber-amber font-mono">budget_tokens</code> foi descontinuado nos modelos atuais e retorna erro <strong class="text-cyber-red">HTTP 400 Bad Request</strong>.
+                                Passing <code class="text-cyber-amber font-mono">budget_tokens</code> on newer models triggers an immediate HTTP 400 error. Always use the modern adaptive thinking <code class="text-cyber-cyan font-mono">effort</code> setting.
                             </p>
                         </div>
 
-                        <!-- Card 4 -->
-                        <div class="bg-cyber-surface border border-slate-800 p-3.5 rounded-xl space-y-2">
-                            <div class="flex items-center gap-2 text-cyber-amber font-mono text-xs font-bold">
-                                <i class="fa-solid fa-brain"></i> 4. RACIOCÍNIO INTELIGENTE
+                        <div class="bg-cyber-surface border border-slate-800 p-4 rounded-xl space-y-2">
+                            <div class="text-cyber-green font-mono text-xs font-bold flex items-center gap-2">
+                                <i class="fa-solid fa-vial"></i> 4. Evals Drive Architectural Choices
                             </div>
                             <p class="text-xs text-slate-300 leading-relaxed">
-                                Reasoning agrega valor em problemas complexos e multi-etapas, mas é <strong>desperdiçado</strong> em lookups simples e classificações rápidas.
-                            </p>
-                        </div>
-
-                        <!-- Card 5 -->
-                        <div class="bg-cyber-surface border border-slate-800 p-3.5 rounded-xl space-y-2">
-                            <div class="flex items-center gap-2 text-purple-400 font-mono text-xs font-bold">
-                                <i class="fa-solid fa-eye-slash"></i> 5. THINKING OMISSION
-                            </div>
-                            <p class="text-xs text-slate-300 leading-relaxed">
-                                Por padrão, o conteúdo dos blocos de pensamento é omitido no retorno. Solicite <em>summarized display</em> explicitamente se precisar exibi-los na interface.
-                            </p>
-                        </div>
-
-                        <!-- Card 6 -->
-                        <div class="bg-cyber-surface border border-slate-800 p-3.5 rounded-xl space-y-2">
-                            <div class="flex items-center gap-2 text-cyber-green font-mono text-xs font-bold">
-                                <i class="fa-solid fa-globe"></i> 6. BUILD TIME CONFIRMATION
-                            </div>
-                            <p class="text-xs text-slate-300 leading-relaxed">
-                                Como a família Claude evolui continuamente, valide os identificadores exatos de modelos e padrões em <code class="text-cyber-green font-mono">platform.claude.com/docs</code>.
+                                In the CCDV-F exam and production systems, decisions between model tiers and reasoning depths must always be verified through quantitative test suites.
                             </p>
                         </div>
                     </div>
 
-                    <!-- Slide Footer Final Callout -->
-                    <div class="bg-slate-900 border border-cyber-cyan/40 p-3 rounded-xl flex flex-col sm:flex-row items-center justify-between gap-3 font-mono text-xs">
-                        <span class="text-slate-300">
-                            <i class="fa-solid fa-graduation-cap text-cyber-cyan me-2"></i> Você concluiu o Episódio 02 (Models &amp; Reasoning) para o exame CCDV-F!
-                        </span>
-                        <div class="flex flex-wrap items-center gap-2">
-                            <button onclick="goToSlide(1)" class="text-slate-400 hover:text-white px-3 py-1.5 rounded transition">
-                                REVISAR <i class="fa-solid fa-rotate-left ms-1"></i>
-                            </button>
-                            <a href="How%20LLMs%20behave.html" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded border border-slate-700 transition flex items-center gap-1.5">
-                                <i class="fa-solid fa-arrow-left text-[10px]"></i> Part 1: How LLMs Behave
+                    <!-- Next Mission Bar -->
+                    <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl flex flex-col sm:flex-row items-center justify-between gap-3">
+                        <div class="text-xs font-mono text-slate-300">
+                            <span class="text-cyber-cyan font-bold">NEXT UP:</span> Lesson 03: Prompting Modes (Zero-Shot, One-Shot &amp; Multi-Shot)
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <a href="../index.html" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-mono text-xs rounded transition flex items-center gap-1.5">
+                                <i class="fa-solid fa-table-cells"></i> Curriculum Hub
                             </a>
-                            <a href="../index.html" class="bg-cyber-blue hover:bg-blue-600 text-white px-3 py-1.5 rounded transition flex items-center gap-1.5">
-                                <i class="fa-solid fa-table-cells text-[10px]"></i> CURRICULUM HUB
+                            <a href="Prompting_Modes.html" class="px-5 py-2 bg-cyber-cyan hover:bg-cyan-400 text-slate-950 font-bold font-mono text-xs rounded transition flex items-center gap-1.5 shadow-lg shadow-cyan-500/20">
+                                Launch Lesson 03 <i class="fa-solid fa-arrow-right"></i>
                             </a>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- FOOTER CONTROLS -->
-            <footer class="h-14 bg-cyber-surface/95 border-t border-cyber-border px-4 sm:px-6 flex items-center justify-between z-30 backdrop-blur sticky bottom-0" style="padding-bottom: max(0.25rem, env(safe-area-inset-bottom));">
-                <!-- Slide Progress / Nav -->
-                <div class="flex items-center gap-3">
-                    <button onclick="prevSlide()" class="p-2 sm:p-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 flex items-center justify-center">
-                        <i class="fa-solid fa-chevron-left text-xs"></i>
+            <!-- Bottom Navigation Bar -->
+            <footer class="h-[56px] bg-cyber-surface border-t border-cyber-border px-4 md:px-6 flex items-center justify-between z-30 shrink-0">
+                <div class="flex items-center space-x-2">
+                    <button id="btn-prev" onclick="prevSlide()" class="px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-slate-300 text-xs font-mono rounded border border-slate-700 transition flex items-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed">
+                        <i class="fa-solid fa-chevron-left text-[10px]"></i> PREV
                     </button>
-                    <span class="font-mono text-xs text-slate-400">
-                        SLIDE <span id="currentSlideNum" class="text-cyber-cyan font-bold">1</span> / 8
-                    </span>
-                    <button onclick="nextSlide()" class="p-2 sm:p-1.5 rounded bg-cyber-blue hover:bg-blue-600 text-white transition-colors min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 flex items-center justify-center font-bold">
-                        <i class="fa-solid fa-chevron-right text-xs"></i>
+                    <button id="btn-next" onclick="nextSlide()" class="px-4 py-1.5 bg-cyber-cyan hover:bg-cyan-400 text-slate-950 font-bold text-xs font-mono rounded transition flex items-center gap-1.5">
+                        NEXT <i class="fa-solid fa-chevron-right text-[10px]"></i>
                     </button>
                 </div>
 
-                <!-- Slide Dots Indicators -->
-                <div class="hidden sm:flex items-center gap-1.5" id="dotsContainer">
-                    <!-- Injected by JavaScript -->
-                </div>
-
-                <!-- Shortcuts Label -->
-                <div class="text-[11px] font-mono text-slate-500 hidden md:block">
-                    [← / →] Mover Slides | [F] Tela Cheia
+                <!-- Slide Indicators & Counter -->
+                <div class="flex items-center space-x-3 text-xs font-mono">
+                    <div class="hidden sm:flex items-center space-x-1" id="dots-container">
+                        <!-- Dots populated via JS -->
+                    </div>
+                    <span class="text-slate-500">|</span>
+                    <span class="text-slate-400">SLIDE <span id="current-slide" class="text-cyber-cyan font-bold">1</span> / <span id="total-slides">8</span></span>
                 </div>
             </footer>
+
         </div>
     </div>
 
-    <!-- JAVASCRIPT INTERACTIVE LOGIC -->
+    <!-- Scripting & Interactivity Logic -->
     <script>
-        // State Management
+        // Web Audio Synthesizer (Zero external assets needed)
+        let audioCtx = null;
+        let soundEnabled = true;
+
+        function getAudioContext() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            return audioCtx;
+        }
+
+        function toggleAudio() {
+            soundEnabled = !soundEnabled;
+            document.getElementById('audio-label').innerText = soundEnabled ? 'SFX: ON' : 'SFX: OFF';
+            const icon = document.getElementById('audio-icon');
+            icon.className = soundEnabled ? 'fa-solid fa-volume-high text-cyber-cyan' : 'fa-solid fa-volume-xmark text-gray-500';
+            if (soundEnabled) playBeep(600, 'sine', 0.08, 0.1);
+        }
+
+        function playBeep(freq = 440, type = 'sine', duration = 0.08, gainVal = 0.08) {
+            if (!soundEnabled) return;
+            try {
+                const ctx = getAudioContext();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, ctx.currentTime);
+                gain.gain.setValueAtTime(gainVal, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + duration);
+            } catch (e) {
+                console.warn(e);
+            }
+        }
+
+        function playSuccessJingle() {
+            if (!soundEnabled) return;
+            playBeep(523.25, 'triangle', 0.12, 0.15); // C5
+            setTimeout(() => playBeep(659.25, 'triangle', 0.12, 0.15), 100); // E5
+            setTimeout(() => playBeep(783.99, 'triangle', 0.15, 0.15), 200); // G5
+            setTimeout(() => playBeep(1046.50, 'triangle', 0.25, 0.15), 300); // C6
+        }
+
+        function playErrorBuzz() {
+            if (!soundEnabled) return;
+            playBeep(180, 'sawtooth', 0.15, 0.2);
+            setTimeout(() => playBeep(140, 'sawtooth', 0.2, 0.2), 120);
+        }
+
+        // Slide State
         let currentSlide = 1;
         const totalSlides = 8;
-        let simModel = 'sonnet';
 
-        // Quiz State
+        const topicTitles = [
+            "CLAUDE MODEL FAMILY & REASONING",
+            "INCIDENT BRIEFING #0409",
+            "MODEL FAMILY TIERS",
+            "INDEPENDENT CONTROL LEVERS",
+            "BUDGET_TOKENS DEPRECATION TRAP",
+            "ADAPTIVE EFFORT ENGINE",
+            "CCDV-F EXAM SIMULATION",
+            "MODULE RETROSPECTIVE"
+        ];
+
+        // Model Tier Data
+        const tierData = {
+            fable: {
+                title: "Claude Fable (Maximum Frontier)",
+                badge: "MAX FRONTIER",
+                desc: "Fable is the absolute frontier tier built for the most complex reasoning, advanced coding, and autonomous multi-agent environments. Reserved for problems where smaller models fail evaluation suites.",
+                alt1: "When latency constraints require sub-second generation.",
+                alt2: "Active frontier benchmark; evaluate vs Sonnet first.",
+                color: "text-purple-400",
+                badgeClass: "bg-purple-950/80 text-purple-300 border-purple-800/50"
+            },
+            opus: {
+                title: "Claude Opus (Deep Reasoning)",
+                badge: "DEEP REASONING",
+                desc: "Opus delivers top-tier deep analysis, extensive open-ended synthesis, and high intellectual depth. Excels in complex domains requiring deep context assimilation.",
+                alt1: "Use Haiku for high-volume structured transformations.",
+                alt2: "Try Sonnet first as the cost-efficient default.",
+                color: "text-cyber-blue",
+                badgeClass: "bg-blue-950/80 text-blue-300 border-blue-800/50"
+            },
+            sonnet: {
+                title: "Claude Sonnet (Balanced Default)",
+                badge: "PRODUCTION DEFAULT",
+                desc: "Sonnet is the industry benchmark for standard enterprise development. Optimal combination of frontier reasoning capability, speed, and cost efficiency. The practical default for every build.",
+                alt1: "Tasks requiring ultra-low latency or micro-cost budgets.",
+                alt2: "Tasks failing Sonnet-graded evaluation criteria.",
+                color: "text-cyber-cyan",
+                badgeClass: "bg-cyan-950/80 text-cyan-300 border-cyan-800/50"
+            },
+            haiku: {
+                title: "Claude Haiku (Near-Instant Speed)",
+                badge: "NEAR-INSTANT",
+                desc: "Haiku is built for near-instant responses and extreme cost efficiency. Superb for high-throughput classification, routing, and real-time interactive user experiences.",
+                alt1: "Default to Haiku whenever latency is the primary KPI.",
+                alt2: "Upgrade to Sonnet if task accuracy drops below eval SLA.",
+                color: "text-cyber-green",
+                badgeClass: "bg-green-950/80 text-green-300 border-green-800/50"
+            }
+        };
+
+        // Exam Quiz Questions
+        const quizQuestions = [
+            {
+                q: "An engineering team is upgrading to the latest Claude model generation and passes `budget_tokens: 3000` to control reasoning. What happens?",
+                options: [
+                    "The model uses 3,000 thinking tokens and charges standard rates.",
+                    "The API returns an HTTP 400 Bad Request error because budget_tokens is deprecated on current models.",
+                    "The request automatically falls back to Sonnet with default settings.",
+                    "The API silently ignores budget_tokens and provides direct output."
+                ],
+                correct: 1,
+                explain: "Newer Claude models do not accept the deprecated budget_tokens parameter and return an immediate HTTP 400 Bad Request. Reasoning depth is calibrated via the adaptive thinking 'effort' setting."
+            },
+            {
+                q: "According to Anthropic's production best practices, which model tier should serve as your practical default before optimizing?",
+                options: [
+                    "Claude Haiku, to guarantee the lowest possible bill.",
+                    "Claude Opus, to guarantee maximum reasoning depth on every task.",
+                    "Claude Sonnet, as the balanced default for most production workloads.",
+                    "Claude Fable, because frontier models never require eval benchmarking."
+                ],
+                correct: 2,
+                explain: "Claude Sonnet is the recommended practical default. You only step down to Haiku or step up to Opus/Fable when prompted by quantitative evaluation suite evidence."
+            },
+            {
+                q: "Which statement accurately describes the relationship between Model Selection and Reasoning Mode in Anthropic's architecture?",
+                options: [
+                    "They are separate, orthogonal levers: model tier is one decision, and reasoning mode/effort is an independent per-call decision.",
+                    "Reasoning is hardcoded into the Opus tier and cannot be toggled.",
+                    "Enabling reasoning requires downgrading to Haiku to avoid latency breaches.",
+                    "Selecting Sonnet automatically locks temperature to 0.0."
+                ],
+                correct: 0,
+                explain: "Model Selection and Reasoning Mode are two independent, composable levers. You select the model tier based on baseline intelligence and cost, and configure reasoning effort on a per-call basis depending on task complexity."
+            }
+        ];
+
         let currentQuizIndex = 0;
         let quizScore = 0;
         let quizAnswered = false;
 
-        const quizQuestions = [
-            {
-                q: "Um desenvolvedor atualizou o SDK para a geração mais recente do Claude e tentou enviar `thinking={'type': 'enabled', 'budget_tokens': 2048}`. Qual será o resultado da API?",
-                options: [
-                    "A requisição funcionará normalmente limitando o raciocínio a 2048 tokens.",
-                    "O modelo ignorará silenciosamente o parâmetro e responderá sem pensar.",
-                    "A API retornará um erro HTTP 400 Bad Request explicitando a descontinuação do parâmetro.",
-                    "O modelo usará Haiku automaticamente para economizar tokens."
-                ],
-                correct: 2,
-                explain: "Nas gerações mais recentes, o parâmetro `budget_tokens` foi descontinuado e lança erro HTTP 400. O correto é usar o parâmetro `effort` com raciocínio adaptativo."
-            },
-            {
-                q: "Qual é a recomendação oficial do CCDV-F para selecionar o Model Tier inicial em um novo projeto de produção?",
-                options: [
-                    "Iniciar sempre com Opus/Fable para garantir a máxima qualidade.",
-                    "Iniciar com Sonnet como padrão prático e alterar o tier somente se Guiado por Evals.",
-                    "Iniciar sempre com Haiku para minimizar os custos iniciais.",
-                    "Usar um modelo de outro provedor para benchmark antes de escolher o Claude."
-                ],
-                correct: 1,
-                explain: "O padrão prático é iniciar com Sonnet. Mova para Opus/Fable apenas quando um Eval indicar que o Quality Bar não foi atingido, e para Haiku apenas se o Eval mostrar queda aceitável."
-            },
-            {
-                q: "Sobre a relação entre Model Selection e Reasoning Modes, assinale a afirmativa CORRETA:",
-                options: [
-                    "Ativar o Reasoning Mode altera permanentemente o modelo para Opus.",
-                    "São alavancas independentes: a escolha do modelo define a família, enquanto o modo de raciocínio é configurado por chamada de API.",
-                    "Reasoning Mode deve ser mantido ativado em 100% das chamadas, inclusive em classificações simples.",
-                    "O parâmetro effort só pode ser configurado globalmente nas configurações da conta da Anthropic."
-                ],
-                correct: 1,
-                explain: "Escolher o modelo e ativar o raciocínio são duas decisões completamente separadas. O raciocínio é ajustado por chamada (per-call) e deve ser usado quando ganha valor (problemas complexos multi-etapas)."
-            }
-        ];
-
-        // Initialization
-        window.onload = function() {
-            createDots();
-            updateSlideUI();
+        // Slide Deck Lifecycle
+        function initDeck() {
+            renderDots();
+            updateDeck();
             initQuiz();
-            runCostSimulator();
+            runLatencySim();
+        }
 
-            // Keyboard Navigation
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'ArrowRight' || e.key === 'Space') {
-                    nextSlide();
-                } else if (e.key === 'ArrowLeft') {
-                    prevSlide();
-                } else if (e.key === 'f' || e.key === 'F') {
-                    toggleFullScreen();
+        function renderDots() {
+            const container = document.getElementById('dots-container');
+            container.innerHTML = '';
+            for (let i = 1; i <= totalSlides; i++) {
+                const dot = document.createElement('span');
+                dot.className = `w-2 h-2 rounded-full cursor-pointer transition-all ${i === currentSlide ? 'bg-cyber-cyan w-4' : 'bg-slate-700 hover:bg-slate-500'}`;
+                dot.onclick = () => goToSlide(i);
+                container.appendChild(dot);
+            }
+        }
+
+        function updateDeck() {
+            document.querySelectorAll('.slide').forEach((slide, index) => {
+                if (index + 1 === currentSlide) {
+                    slide.classList.add('active');
+                } else {
+                    slide.classList.remove('active');
                 }
             });
-        };
 
-        // Navigation Functions
-        function goToSlide(n) {
-            if (n < 1 || n > totalSlides) return;
-            
-            document.querySelectorAll('.slide').forEach(slide => {
-                slide.classList.remove('active');
-            });
+            document.getElementById('current-slide').innerText = currentSlide;
+            document.getElementById('total-slides').innerText = totalSlides;
+            document.getElementById('topic-badge').innerText = topicTitles[currentSlide - 1];
 
-            currentSlide = n;
-            const target = document.getElementById(`slide-${currentSlide}`);
-            if (target) {
-                target.classList.add('active');
+            document.getElementById('btn-prev').disabled = (currentSlide === 1);
+            const btnNext = document.getElementById('btn-next');
+            if (currentSlide === totalSlides) {
+                btnNext.innerHTML = `COMPLETE <i class="fa-solid fa-award text-[10px]"></i>`;
+            } else {
+                btnNext.innerHTML = `NEXT <i class="fa-solid fa-chevron-right text-[10px]"></i>`;
             }
 
-            updateSlideUI();
+            renderDots();
         }
 
         function nextSlide() {
             if (currentSlide < totalSlides) {
-                goToSlide(currentSlide + 1);
+                currentSlide++;
+                playBeep(480, 'sine', 0.05, 0.06);
+                updateDeck();
             }
         }
 
         function prevSlide() {
             if (currentSlide > 1) {
-                goToSlide(currentSlide - 1);
+                currentSlide--;
+                playBeep(380, 'sine', 0.05, 0.06);
+                updateDeck();
             }
         }
 
-        function updateSlideUI() {
-            document.getElementById('currentSlideNum').innerText = currentSlide;
-            
-            // Update dots
-            const dots = document.querySelectorAll('.dot-btn');
-            dots.forEach((dot, idx) => {
-                if (idx + 1 === currentSlide) {
-                    dot.className = "dot-btn w-6 h-2 rounded-full bg-cyber-cyan transition-all";
+        function goToSlide(num) {
+            if (num >= 1 && num <= totalSlides) {
+                currentSlide = num;
+                playBeep(440, 'sine', 0.05, 0.06);
+                updateDeck();
+            }
+        }
+
+        // Keyboard Navigation (Arrows, Space, F)
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+                nextSlide();
+            } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+                prevSlide();
+            } else if (e.key.toLowerCase() === 'f') {
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen().catch(err => console.log(err));
                 } else {
-                    dot.className = "dot-btn w-2 h-2 rounded-full bg-slate-700 hover:bg-slate-500 transition-all";
+                    document.exitFullscreen().catch(err => console.log(err));
                 }
-            });
-        }
-
-        function createDots() {
-            const container = document.getElementById('dotsContainer');
-            container.innerHTML = '';
-            for (let i = 1; i <= totalSlides; i++) {
-                const btn = document.createElement('button');
-                btn.onclick = () => goToSlide(i);
-                btn.className = i === 1 ? "dot-btn w-6 h-2 rounded-full bg-cyber-cyan transition-all" : "dot-btn w-2 h-2 rounded-full bg-slate-700 hover:bg-slate-500 transition-all";
-                container.appendChild(btn);
             }
-        }
+        });
 
-        function toggleFullScreen() {
-            const deck = document.getElementById('deck');
-            if (!document.fullscreenElement) {
-                deck.requestFullscreen().catch(err => {
-                    console.log(`Error attempting to enable fullscreen: ${err.message}`);
-                });
-            } else {
-                document.exitFullscreen();
-            }
-        }
+        // Slide 3: Model Tier Selector
+        function selectModel(tierKey) {
+            playBeep(520, 'sine', 0.06, 0.08);
+            const t = tierData[tierKey];
+            if (!t) return;
 
-        // Slide 3: Model Card Selector
-        function selectModel(model) {
             document.querySelectorAll('.model-card').forEach(card => {
-                card.className = "model-card cursor-pointer bg-cyber-surface border border-slate-800 p-3 rounded-xl transition-all space-y-2 opacity-70";
+                card.classList.remove('border-2', 'border-cyber-cyan', 'shadow-lg', 'shadow-cyan-900/20');
+                card.classList.add('border-slate-800');
             });
 
-            const selectedCard = document.getElementById(`card-${model}`);
-            const desc = document.getElementById('selected-model-desc');
-
-            if (model === 'sonnet') {
-                selectedCard.className = "model-card cursor-pointer bg-cyber-surface border-2 border-cyber-cyan p-3 rounded-xl transition-all space-y-2 relative shadow-lg shadow-cyan-900/20";
-                desc.innerHTML = 'Selecionado: <strong class="text-cyber-cyan">Sonnet (Default Prático)</strong>';
-            } else if (model === 'fable') {
-                selectedCard.className = "model-card cursor-pointer bg-cyber-surface border-2 border-purple-500 p-3 rounded-xl transition-all space-y-2 shadow-lg shadow-purple-900/20";
-                desc.innerHTML = 'Selecionado: <strong class="text-purple-400">Fable (Maximum Frontier)</strong>';
-            } else if (model === 'opus') {
-                selectedCard.className = "model-card cursor-pointer bg-cyber-surface border-2 border-cyber-blue p-3 rounded-xl transition-all space-y-2 shadow-lg shadow-blue-900/20";
-                desc.innerHTML = 'Selecionado: <strong class="text-cyber-blue">Opus (High Intelligence)</strong>';
-            } else if (model === 'haiku') {
-                selectedCard.className = "model-card cursor-pointer bg-cyber-surface border-2 border-cyber-green p-3 rounded-xl transition-all space-y-2 shadow-lg shadow-green-900/20";
-                desc.innerHTML = 'Selecionado: <strong class="text-cyber-green">Haiku (Speed & Cost)</strong>';
+            const activeCard = document.getElementById(`card-${tierKey}`);
+            if (activeCard) {
+                activeCard.classList.remove('border-slate-800');
+                activeCard.classList.add('border-2', 'border-cyber-cyan', 'shadow-lg', 'shadow-cyan-900/20');
             }
+
+            document.getElementById('detail-title').innerText = t.title;
+            document.getElementById('detail-desc').innerText = t.desc;
+            document.getElementById('detail-alt1').innerText = t.alt1;
+            document.getElementById('detail-alt2').innerText = t.alt2;
+
+            const badge = document.getElementById('detail-badge');
+            badge.className = `font-mono text-[10px] px-2 py-0.5 rounded border ${t.badgeClass}`;
+            badge.innerText = t.badge;
         }
 
-        // Slide 4: Matrix Simulator
+        // Slide 4: Composition Matrix Simulator
         function updateMatrixSim() {
+            playBeep(420, 'sine', 0.04, 0.06);
             const model = document.getElementById('matrixModel').value;
-            const effort = document.getElementById('matrixReasoning').value;
+            const reasoning = document.getElementById('matrixReasoning').value;
 
-            const text = document.getElementById('matrixText');
             const badge = document.getElementById('matrixBehaviorBadge');
+            const desc = document.getElementById('matrixText');
             const latency = document.getElementById('matrixLatency');
             const cost = document.getElementById('matrixCost');
+            const display = document.getElementById('matrixDisplay');
 
-            if (effort === 'none') {
-                badge.innerText = "Fast Direct Answer";
+            if (reasoning === 'none') {
                 badge.className = "text-cyber-green font-bold bg-green-950/80 px-2 py-0.5 rounded border border-green-800";
-                text.innerText = `O modelo ${model.toUpperCase()} responderá imediatamente sem bloco de raciocínio. Baixa latência perfeita para classificações e lookups.`;
-                latency.innerText = "Ultra Low";
-                cost.innerText = "Minimum";
-            } else if (effort === 'high' && (model === 'opus' || model === 'fable')) {
-                badge.innerText = "Frontier Deep Reasoning";
-                badge.className = "text-purple-400 font-bold bg-purple-950/80 px-2 py-0.5 rounded border border-purple-800";
-                text.innerText = `Combinação de inteligência máxima em ${model.toUpperCase()} com reasoning em esforço alto. Reservado para problemas de engenharia e agentes altamente complexos.`;
-                latency.innerText = "High (Thinking Overhead)";
-                cost.innerText = "High";
+                badge.innerText = "Direct Response";
+                desc.innerText = "Model generates output immediately without a separate thinking block. Minimal latency and lowest token spend.";
+                latency.innerText = model === 'haiku' ? "Sub-second" : "Low";
+                cost.innerText = model === 'haiku' ? "Minimal" : (model === 'sonnet' ? "Standard" : "High");
+                display.innerText = "No thinking block";
             } else {
-                badge.innerText = `Adaptive Thinking (${effort.toUpperCase()})`;
                 badge.className = "text-cyber-cyan font-bold bg-cyan-950/80 px-2 py-0.5 rounded border border-cyan-800";
-                text.innerText = `Modelo ${model.toUpperCase()} ponderando adaptativamente a resposta com profundidade ${effort}. Equilíbrio ideal entre inteligência e tempo de resposta.`;
-                latency.innerText = "Moderate";
-                cost.innerText = "Balanced";
+                badge.innerText = `Adaptive Thinking (${reasoning.toUpperCase()})`;
+                desc.innerText = `Model applies internal reasoning steps dynamically calibrated for the task. Outstanding for complex technical synthesis and coding.`;
+                latency.innerText = reasoning === 'high' ? "High" : "Moderate";
+                cost.innerText = model === 'haiku' ? "Low" : (model === 'sonnet' ? "Medium" : "High");
+                display.innerText = "Omitted by default";
             }
         }
 
-        // Slide 6: Cost & Latency Simulator
-        function setSimModel(m) {
-            simModel = m;
-            document.querySelectorAll('.sim-m-btn').forEach(btn => {
-                btn.className = "sim-m-btn py-1.5 rounded border border-slate-700 bg-cyber-surface text-slate-300";
-            });
+        // Slide 6: Latency & Effort Simulator
+        function runLatencySim() {
+            const taskVal = parseInt(document.getElementById('taskSlider').value);
+            const effortVal = parseInt(document.getElementById('effortSlider').value);
+            playBeep(300 + taskVal * 50 + effortVal * 40, 'triangle', 0.02, 0.04);
 
-            const activeBtn = document.getElementById(`sim-m-${m}`);
-            if (m === 'sonnet') activeBtn.className = "sim-m-btn py-1.5 rounded border-2 border-cyber-cyan bg-cyber-surface text-cyber-cyan font-bold";
-            if (m === 'haiku') activeBtn.className = "sim-m-btn py-1.5 rounded border-2 border-cyber-green bg-cyber-surface text-cyber-green font-bold";
-            if (m === 'opus') activeBtn.className = "sim-m-btn py-1.5 rounded border-2 border-cyber-blue bg-cyber-surface text-cyber-blue font-bold";
-            if (m === 'fable') activeBtn.className = "sim-m-btn py-1.5 rounded border-2 border-purple-500 bg-cyber-surface text-purple-400 font-bold";
+            const taskLabels = [
+                "1. Simple Intent Classification",
+                "2. Software Architecture Refactor",
+                "3. Formal Logic / Multi-step Proof"
+            ];
+            const effortLabels = [
+                "Disabled (Direct Output)",
+                "Adaptive: Low Effort",
+                "Adaptive: Medium Effort",
+                "Adaptive: High Effort"
+            ];
 
-            runCostSimulator();
-        }
+            document.getElementById('taskComplexityLabel').innerText = taskLabels[taskVal - 1];
+            document.getElementById('effortLabel').innerText = effortLabels[effortVal];
 
-        function runCostSimulator() {
-            const taskVal = parseInt(document.getElementById('taskRange').value);
-            const effortVal = parseInt(document.getElementById('effortRange').value);
+            let baseTokens = taskVal === 1 ? 300 : (taskVal === 2 ? 1200 : 2500);
+            let thinkingTokens = effortVal === 0 ? 0 : (effortVal === 1 ? 800 : (effortVal === 2 ? 2200 : 4500));
+            let totalTokens = baseTokens + thinkingTokens;
 
-            // Labels
-            const taskLabels = ["Simple Lookup / Classify", "Standard Code & Analysis", "Complex Multi-Step Logic"];
-            const effortLabels = ["Off (Direct)", "Low Effort", "Medium Effort", "High Effort"];
+            let baseLatency = taskVal === 1 ? 350 : (taskVal === 2 ? 800 : 1400);
+            let thinkingLatency = effortVal === 0 ? 0 : (effortVal === 1 ? 500 : (effortVal === 2 ? 1400 : 3200));
+            let totalLatency = baseLatency + thinkingLatency;
 
-            document.getElementById('taskTypeVal').innerText = taskLabels[taskVal - 1];
-            document.getElementById('effortVal').innerText = effortLabels[effortVal];
+            document.getElementById('simTokensText').innerText = `${totalTokens.toLocaleString()} Tokens`;
+            document.getElementById('simTokensNote').innerText = effortVal === 0 ? "Direct output only" : `~${thinkingTokens.toLocaleString()} thinking + ${baseTokens} output`;
 
-            // Base Multipliers
-            let modelMultiplier = 1.0;
-            if (simModel === 'haiku') modelMultiplier = 0.25;
-            if (simModel === 'sonnet') modelMultiplier = 1.0;
-            if (simModel === 'opus') modelMultiplier = 3.5;
-            if (simModel === 'fable') modelMultiplier = 6.0;
+            document.getElementById('simLatencyText').innerText = `${totalLatency.toLocaleString()} ms`;
+            document.getElementById('simLatencyNote').innerText = effortVal === 0 ? "Fast baseline output" : "Adaptive reasoning overhead applied";
 
-            const baseCost = 1.25 * taskVal;
-            const effortMultiplier = 1 + (effortVal * 0.45);
-            const finalCost = (baseCost * modelMultiplier * effortMultiplier).toFixed(2);
-
-            const baseLatency = 450 * taskVal;
-            const thinkingLatency = effortVal * 850;
-            const finalLatency = Math.round((baseLatency + thinkingLatency) * (modelMultiplier > 3 ? 1.4 : 1.0));
-
-            document.getElementById('simCostText').innerText = `$ ${finalCost}`;
-            document.getElementById('simLatencyText').innerText = `${finalLatency.toLocaleString()} ms`;
-
-            // Eval Recommendation Text
             const evalText = document.getElementById('simEvalText');
             const evalBox = document.getElementById('simEvalBox');
 
             if (taskVal === 1 && effortVal > 0) {
                 evalBox.className = "bg-cyber-amber/10 border border-cyber-amber p-3 rounded-lg space-y-1 font-mono text-xs";
-                evalText.innerText = "ALERTA DE ARQUITETURA: Ativar raciocínio para tarefas simples de lookup/classificação desperdiça tokens e eleva a latência sem ganho de qualidade!";
-            } else if (simModel === 'sonnet' && taskVal >= 2) {
+                evalText.innerText = "ARCHITECTURAL ALERT: Enabling reasoning for simple lookup/classification wastes token budget and adds latency with zero accuracy gain!";
+            } else if (taskVal >= 2 && effortVal >= 1) {
                 evalBox.className = "bg-slate-900/90 border border-cyber-cyan p-3 rounded-lg space-y-1 font-mono text-xs";
-                evalText.innerText = "EXCELENTE CONFIGURAÇÃO: Sonnet é o padrão prático recomendado para cargas complexas de trabalho em produção.";
-            } else if (simModel === 'fable' && taskVal < 3) {
-                evalBox.className = "bg-cyber-purple/10 border border-cyber-purple p-3 rounded-lg space-y-1 font-mono text-xs";
-                evalText.innerText = "AVISO DE EVAL: Utilizar Fable em tarefas simples é superdimensionado. Comprove a necessidade de Fable via Eval em relação ao Sonnet.";
+                evalText.innerText = "OPTIMAL CONFIGURATION: Sonnet with medium adaptive reasoning is the proven sweet spot for complex engineering workloads.";
             } else {
                 evalBox.className = "bg-slate-900/90 border border-slate-700 p-3 rounded-lg space-y-1 font-mono text-xs";
-                evalText.innerText = "Configuração válida. Lembre-se de validar a taxa de acerto e o custo do modelo através de testes formais de Eval.";
+                evalText.innerText = "Valid configuration. Remember to benchmark accuracy gains against latency SLAs using quantitative eval suites.";
             }
         }
 
-        // Slide 7: Quiz Simulator
+        // Slide 7: Interactive Quiz Logic
         function initQuiz() {
             currentQuizIndex = 0;
             quizScore = 0;
@@ -1257,7 +1279,6 @@
 
             const feedback = document.getElementById('quizFeedback');
             feedback.className = "hidden";
-
             document.getElementById('nextQBtn').classList.add('hidden');
 
             q.options.forEach((opt, idx) => {
@@ -1282,15 +1303,17 @@
 
             if (idx === q.correct) {
                 quizScore++;
+                playSuccessJingle();
                 document.getElementById('quizScore').innerText = quizScore;
                 options[idx].className = "w-full text-left p-3 rounded-lg bg-cyber-green/20 border-2 border-cyber-green text-white flex items-center gap-3 font-bold";
                 feedback.className = "p-3 rounded-lg font-mono text-xs space-y-1 bg-cyber-green/10 border border-cyber-green/40 text-cyber-green block";
-                feedback.innerHTML = `<i class="fa-solid fa-circle-check me-1"></i> <strong>RESPOSTA CORRETA!</strong><br><span class="text-slate-300 font-sans">${q.explain}</span>`;
+                feedback.innerHTML = `<i class="fa-solid fa-circle-check me-1"></i> <strong>CORRECT ANSWER!</strong><br><span class="text-slate-300 font-sans">${q.explain}</span>`;
             } else {
+                playErrorBuzz();
                 options[idx].className = "w-full text-left p-3 rounded-lg bg-cyber-red/20 border-2 border-cyber-red text-white flex items-center gap-3";
                 options[q.correct].className = "w-full text-left p-3 rounded-lg bg-cyber-green/20 border-2 border-cyber-green text-white flex items-center gap-3 font-bold";
                 feedback.className = "p-3 rounded-lg font-mono text-xs space-y-1 bg-cyber-red/10 border border-cyber-red/40 text-cyber-red block";
-                feedback.innerHTML = `<i class="fa-solid fa-circle-xmark me-1"></i> <strong>INCORRETO!</strong><br><span class="text-slate-300 font-sans">${q.explain}</span>`;
+                feedback.innerHTML = `<i class="fa-solid fa-circle-xmark me-1"></i> <strong>INCORRECT!</strong><br><span class="text-slate-300 font-sans">${q.explain}</span>`;
             }
 
             if (currentQuizIndex < quizQuestions.length - 1) {
@@ -1309,33 +1332,10 @@
             initQuiz();
         }
 
-        // Native Touch Swipe Handler for Mobile Phones
-        (function initTouchNavigation() {
-            let touchStartX = 0;
-            let touchStartY = 0;
-            const threshold = 45;
-            const restraint = 80;
-
-            document.addEventListener('touchstart', (e) => {
-                const touch = e.changedTouches[0];
-                touchStartX = touch.pageX;
-                touchStartY = touch.pageY;
-            }, { passive: true });
-
-            document.addEventListener('touchend', (e) => {
-                const touch = e.changedTouches[0];
-                const distX = touch.pageX - touchStartX;
-                const distY = touch.pageY - touchStartY;
-
-                if (Math.abs(distX) >= threshold && Math.abs(distY) <= restraint) {
-                    if (distX < 0) {
-                        nextSlide();
-                    } else {
-                        prevSlide();
-                    }
-                }
-            }, { passive: true });
-        })();
+        // Initialize on Load
+        window.onload = function() {
+            initDeck();
+        };
     </script>
 </body>
 </html>

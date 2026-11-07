@@ -1,17 +1,18 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CCDV-F Incident #404-LLM & Exam Prep Deck</title>
+    <title>CCDV-F Incident #404-SUBSTRATE: Foundations Debug War Room</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- Custom Fonts & Styles -->
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <style>
         :root {
             --bg-dark: #0B0F19;
@@ -22,6 +23,7 @@
             --amber-warn: #F59E0B;
             --emerald-pass: #10B981;
             --rose-fail: #EF4444;
+            --purple-agent: #8B5CF6;
         }
 
         body {
@@ -29,7 +31,9 @@
             color: #E5E7EB;
             font-family: 'Inter', sans-serif;
             overflow-x: hidden;
-            user-select: none;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(6, 182, 212, 0.06) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(139, 92, 246, 0.06) 0%, transparent 40%);
         }
 
         .font-mono {
@@ -37,1011 +41,676 @@
         }
 
         /* Sci-Fi Glow Effects */
-        .glow-blue {
-            box-shadow: 0 0 20px rgba(59, 130, 246, 0.25);
+        .glow-cyan { box-shadow: 0 0 20px rgba(6, 182, 212, 0.25); }
+        .glow-purple { box-shadow: 0 0 20px rgba(139, 92, 246, 0.25); }
+        .glow-amber { box-shadow: 0 0 20px rgba(245, 158, 11, 0.25); }
+        .glow-emerald { box-shadow: 0 0 20px rgba(16, 185, 129, 0.25); }
+        .glow-rose { box-shadow: 0 0 20px rgba(239, 68, 68, 0.25); }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #0B0F19; }
+        ::-webkit-scrollbar-thumb { background: #374151; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #06B6D4; }
+
+        .code-line {
+            transition: all 0.2s ease;
+            position: relative;
         }
-        .glow-cyan {
-            box-shadow: 0 0 20px rgba(6, 182, 212, 0.25);
+        .code-line:hover {
+            background-color: rgba(6, 182, 212, 0.1);
         }
-        .glow-amber {
-            box-shadow: 0 0 20px rgba(245, 158, 11, 0.25);
+        .buggy-highlight {
+            background-color: rgba(239, 68, 68, 0.18);
+            border-left: 3px solid #EF4444;
         }
-        .border-glow-blue {
-            border-color: rgba(59, 130, 246, 0.5);
-            box-shadow: inset 0 0 10px rgba(59, 130, 246, 0.2);
+        .buggy-fixed {
+            background-color: rgba(16, 185, 129, 0.18);
+            border-left: 3px solid #10B981;
         }
 
-        /* Custom Scrollbars */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #0B0F19;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #374151;
-            border-radius: 3px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #3B82F6;
-        }
-
-        /* 16:9 Aspect Ratio Container Enforcement */
-        .slide-container {
-            width: 100%;
-            max-width: 1280px;
-            height: 720px;
-            aspect-ratio: 16 / 9;
-        }
-
-        @media (max-height: 760px) {
-            .slide-container {
-                height: calc(100vh - 80px);
-            }
-        }
-
-        /* Slide Transition Animations */
-        .slide {
-            display: none;
-            opacity: 0;
-            transform: scale(0.98);
-            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
-        }
-        .slide.active {
-            display: flex;
-            opacity: 1;
-            transform: scale(1);
-        }
-
-        /* Interactive Element States */
-        .interactive-card {
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .interactive-card:hover {
-            transform: translateY(-2px);
-            border-color: var(--cyan-glow);
-        }
-
-        /* Scanline Overlay for Cyberpunk Vibe */
-        .scanline {
-            background: linear-gradient(
-                to bottom,
-                rgba(255,255,255,0),
-                rgba(255,255,255,0) 50%,
-                rgba(0, 0, 0, 0.2) 50%,
-                rgba(0, 0, 0, 0.2)
-            );
+        .scanlines {
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
             background-size: 100% 4px;
-            pointer-events: none;
         }
     </style>
 </head>
-<body class="bg-[#0B0F19] text-gray-200 min-h-screen flex flex-col justify-between items-center p-2 md:p-4 relative">
+<body class="min-h-screen flex flex-col justify-between scanlines">
 
-    <!-- Subtle Background Grid & Cyber Lines -->
-    <div class="fixed inset-0 bg-[linear-gradient(to_right,#1f293710_1px,transparent_1px),linear-gradient(to_bottom,#1f293710_1px,transparent_1px)] bg-[size:4rem_4rem] pointer-events-none"></div>
-    <div class="fixed inset-0 scanline opacity-30 pointer-events-none"></div>
-
-    <!-- Top Navigation & Header Bar -->
-    <header class="w-full max-w-[1280px] flex items-center justify-between pb-3 border-b border-gray-800/80 z-10">
-        <div class="flex items-center gap-3">
-            <div class="w-3 h-3 rounded-full bg-cyan-500 animate-pulse"></div>
-            <span class="font-mono text-xs font-bold tracking-wider text-cyan-400 uppercase">Anthropic Ops HQ // CCDV-F Prep</span>
-            <span class="text-xs px-2 py-0.5 rounded bg-blue-950 text-blue-400 border border-blue-800 font-mono">Incident #404-LLM</span>
-        </div>
-        
-        <!-- Live Progress Indicator -->
-        <div class="flex items-center gap-4">
-            <div class="hidden sm:flex items-center gap-2 font-mono text-xs text-gray-400">
-                <span>PROGRESSO:</span>
-                <span id="slide-number" class="text-cyan-400 font-bold">01</span>
-                <span>/</span>
-                <span id="slide-total">08</span>
+    <!-- Top War Room Header Bar -->
+    <header class="w-full bg-slate-900/90 backdrop-blur-md border-b border-gray-800 px-4 lg:px-8 py-3 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <a href="../index.html" class="text-gray-400 hover:text-cyan-400 transition text-xs font-mono flex items-center gap-1.5 mr-2" title="Return to Curriculum Hub">
+                    <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Hub
+                </a>
+                <span class="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping"></span>
+                <span class="font-mono text-xs md:text-sm text-white font-bold tracking-wider flex items-center gap-2">
+                    <i data-lucide="shield-alert" class="w-4 h-4 text-rose-500"></i> CCDV-F WAR ROOM // INCIDENT #404-SUBSTRATE
+                </span>
+                <span class="hidden sm:inline-block bg-rose-950/80 text-rose-300 border border-rose-800 text-[10px] font-mono px-2 py-0.5 rounded">
+                    4 CRITICAL SUBSTRATE DEFECTS
+                </span>
             </div>
-            <div class="w-32 sm:w-48 bg-gray-800 h-2 rounded-full overflow-hidden border border-gray-700">
-                <div id="progress-bar" class="bg-gradient-to-r from-blue-500 to-cyan-400 h-full w-[12.5%] transition-all duration-300"></div>
+
+            <!-- Header Stats & Telemetry -->
+            <div class="flex items-center space-x-4 font-mono text-xs">
+                <div class="flex items-center gap-1.5 text-gray-400">
+                    <i data-lucide="target" class="w-3.5 h-3.5 text-cyan-400"></i>
+                    <span>BUGS IDENTIFIED: <strong id="bugs-found-count" class="text-white">0 / 4</strong></span>
+                </div>
+                <div class="flex items-center gap-1.5 text-gray-400">
+                    <i data-lucide="zap" class="w-3.5 h-3.5 text-amber-400"></i>
+                    <span>SCORE: <strong id="ops-score" class="text-amber-400">0 XP</strong></span>
+                </div>
+                <button onclick="toggleAudio()" id="audio-toggle-btn" class="bg-gray-800 hover:bg-gray-700 text-gray-300 px-2.5 py-1 rounded text-xs transition flex items-center gap-1">
+                    <i data-lucide="volume-2" id="audio-icon" class="w-3.5 h-3.5 text-cyan-400"></i>
+                    <span id="audio-label" class="hidden md:inline">SFX: ON</span>
+                </button>
             </div>
         </div>
     </header>
 
-    <!-- MAIN SLIDE DECK VIEWPORT -->
-    <main class="slide-container relative my-auto bg-[#111827] rounded-xl border border-gray-800 shadow-2xl flex flex-col overflow-hidden z-10 my-2">
+    <!-- Main Content Grid -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 lg:px-8 py-6 space-y-6">
 
-        <!-- ================= SLIDE 1: CAPA & BRIEFING ================= -->
-        <section id="slide-1" class="slide active flex-col justify-between p-6 md:p-10 h-full bg-gradient-to-br from-[#111827] via-[#0B0F19] to-[#111827]">
-            <div class="flex justify-between items-start">
-                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 font-mono text-xs">
-                    <i data-lucide="alert-triangle" class="w-4 h-4"></i>
-                    <span>CRITICAL SYSTEM INCIDENT POST-MORTEM</span>
-                </div>
-                <div class="font-mono text-xs text-gray-500">EXAM FOCUS: CCDV-F CORE MODULES</div>
-            </div>
-
-            <div class="space-y-4 my-auto max-w-4xl">
-                <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight text-white leading-tight">
-                    Incident #404-LLM: <br>
-                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-cyan-400 to-emerald-400">
-                        The Production Meltdown
-                    </span>
-                </h1>
-                <p class="text-gray-300 text-base md:text-lg leading-relaxed">
-                    Às 03:14 AM, a plataforma de produção colapsou devido a 4 falhas estruturais cometidas por desenvolvedores que ignoraram conceitos fundamentais do Claude. Investigue o incidente, domine os fundamentos do exame <strong class="text-cyan-300">CCDV-F</strong> e evite que a equipe cometa esses mesmos erros em produção.
-                </p>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 pt-2 font-mono text-xs">
-                    <div class="p-2.5 rounded bg-gray-900/80 border border-gray-800 text-gray-300">
-                        <span class="text-gray-500 block">BUG #1</span> Sampling vs Determinism
-                    </div>
-                    <div class="p-2.5 rounded bg-gray-900/80 border border-gray-800 text-gray-300">
-                        <span class="text-gray-500 block">BUG #2</span> Thinking Mode vs Models
-                    </div>
-                    <div class="p-2.5 rounded bg-gray-900/80 border border-gray-800 text-gray-300">
-                        <span class="text-gray-500 block">BUG #3</span> Token Bloat in Few-Shot
-                    </div>
-                    <div class="p-2.5 rounded bg-gray-900/80 border border-gray-800 text-gray-300">
-                        <span class="text-gray-500 block">BUG #4</span> Sync Loop Rate-Limits
-                    </div>
-                </div>
-            </div>
-
-            <div class="flex items-center justify-between pt-4 border-t border-gray-800/80">
-                <div class="text-xs text-gray-400 flex items-center gap-2">
-                    <i data-lucide="info" class="w-4 h-4 text-cyan-400"></i>
-                    <span>Use as setas do teclado <kbd class="px-1.5 py-0.5 bg-gray-800 rounded text-gray-300 font-mono text-[10px]">←</kbd> <kbd class="px-1.5 py-0.5 bg-gray-800 rounded text-gray-300 font-mono text-[10px]">→</kbd> para navegar.</span>
-                </div>
-                <button onclick="goToSlide(2)" class="px-6 py-3 rounded-lg bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white font-semibold text-sm transition-all shadow-lg glow-blue flex items-center gap-2">
-                    <span>INICIAR INVESTIGAÇÃO</span>
-                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
-                </button>
-            </div>
-        </section>
-
-        <!-- ================= SLIDE 2: INCIDENT LOG ================= -->
-        <section id="slide-2" class="slide flex-col justify-between p-6 md:p-8 h-full bg-[#111827]">
-            <div>
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-xl md:text-2xl font-bold text-white flex items-center gap-2">
-                        <i data-lucide="terminal" class="text-amber-400"></i>
-                        <span>Production Outage Log & CCDV-F Anti-Patterns</span>
-                    </h2>
-                    <span class="text-xs font-mono px-2.5 py-1 rounded bg-amber-500/10 text-amber-400 border border-amber-500/30">SEVERITY: HIGH</span>
-                </div>
-                <p class="text-gray-400 text-xs md:text-sm mb-4">
-                    Sua equipe cometeu 4 suposições erradas sobre como o Claude funciona sob o capô. Clique em cada erro para analisar a falha:
-                </p>
-
-                <!-- 2x2 Interactive Bug Matrix -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 font-mono text-xs">
-                    <!-- Bug 1 -->
-                    <div onclick="goToSlide(3)" class="interactive-card p-4 rounded-lg bg-gray-900/90 border border-red-500/30 hover:border-red-400 cursor-pointer space-y-2">
-                        <div class="flex items-center justify-between">
-                            <span class="text-red-400 font-bold flex items-center gap-1.5">
-                                <i data-lucide="x-circle" class="w-4 h-4"></i> INCIDENT #1: Assertion Error
-                            </span>
-                            <span class="text-[10px] text-gray-500">TEST FLAKINESS</span>
-                        </div>
-                        <p class="text-gray-300 text-xs font-sans">
-                            <strong>Mistake:</strong> Equipe esperava respostas idênticas caractere-por-caractere em testes unitários para a mesma prompt.
-                        </p>
-                        <div class="text-[11px] text-cyan-400 flex items-center justify-between pt-1 font-mono">
-                            <span>→ Ver Amostragem & Probabilidade</span>
-                            <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
-                        </div>
-                    </div>
-
-                    <!-- Bug 2 -->
-                    <div onclick="goToSlide(4)" class="interactive-card p-4 rounded-lg bg-gray-900/90 border border-amber-500/30 hover:border-amber-400 cursor-pointer space-y-2">
-                        <div class="flex items-center justify-between">
-                            <span class="text-amber-400 font-bold flex items-center gap-1.5">
-                                <i data-lucide="alert-octagon" class="w-4 h-4"></i> INCIDENT #2: Config Confusion
-                            </span>
-                            <span class="text-[10px] text-gray-500">ARCH FAILURE</span>
-                        </div>
-                        <p class="text-gray-300 text-xs font-sans">
-                            <strong>Mistake:</strong> Engenheiros achavam que "Thinking Mode" era um modelo separado e trocaram a API desnecessariamente.
-                        </p>
-                        <div class="text-[11px] text-cyan-400 flex items-center justify-between pt-1 font-mono">
-                            <span>→ Ver Extended Thinking vs Model Choice</span>
-                            <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
-                        </div>
-                    </div>
-
-                    <!-- Bug 3 -->
-                    <div onclick="goToSlide(5)" class="interactive-card p-4 rounded-lg bg-gray-900/90 border border-amber-500/30 hover:border-amber-400 cursor-pointer space-y-2">
-                        <div class="flex items-center justify-between">
-                            <span class="text-amber-400 font-bold flex items-center gap-1.5">
-                                <i data-lucide="trending-up" class="w-4 h-4"></i> INCIDENT #3: Cost Spike (+800%)
-                            </span>
-                            <span class="text-[10px] text-gray-500">TOKEN WASTE</span>
-                        </div>
-                        <p class="text-gray-300 text-xs font-sans">
-                            <strong>Mistake:</strong> Injeção de 5 exemplos (Few-shot) em uma tarefa de classificação simples onde Zero-shot já atingia 100%.
-                        </p>
-                        <div class="text-[11px] text-cyan-400 flex items-center justify-between pt-1 font-mono">
-                            <span>→ Ver Análise de Custo Token Few-Shot</span>
-                            <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
-                        </div>
-                    </div>
-
-                    <!-- Bug 4 -->
-                    <div onclick="goToSlide(6)" class="interactive-card p-4 rounded-lg bg-gray-900/90 border border-red-500/30 hover:border-red-400 cursor-pointer space-y-2">
-                        <div class="flex items-center justify-between">
-                            <span class="text-red-400 font-bold flex items-center gap-1.5">
-                                <i data-lucide="zap-off" class="w-4 h-4"></i> INCIDENT #4: Rate Limit 429
-                            </span>
-                            <span class="text-[10px] text-gray-500">API CRASH</span>
-                        </div>
-                        <p class="text-gray-300 text-xs font-sans">
-                            <strong>Mistake:</strong> Loop síncrono enviando 50.000 requisições offline simultâneas em vez de utilizar Batch Submission.
-                        </p>
-                        <div class="text-[11px] text-cyan-400 flex items-center justify-between pt-1 font-mono">
-                            <span>→ Ver Sync Loops vs Batches API</span>
-                            <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="flex justify-between items-center pt-3 border-t border-gray-800">
-                <button onclick="goToSlide(1)" class="px-4 py-2 rounded bg-gray-800 hover:bg-gray-700 text-xs font-mono text-gray-300 flex items-center gap-2">
-                    <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Anterior
-                </button>
-                <button onclick="goToSlide(3)" class="px-5 py-2 rounded bg-blue-600 hover:bg-blue-500 text-xs font-semibold text-white flex items-center gap-2">
-                    Analisar Conceito #1 <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
-                </button>
-            </div>
-        </section>
-
-        <!-- ================= SLIDE 3: CONCEPT 1 - NON-DETERMINISM ================= -->
-        <section id="slide-3" class="slide flex-col justify-between p-6 md:p-8 h-full bg-[#111827]">
-            <div>
-                <div class="flex items-center justify-between mb-3">
-                    <div>
-                        <span class="text-xs font-mono text-cyan-400 tracking-wider">CCDV-F CONCEPT #1 (QUESTION 1)</span>
-                        <h2 class="text-xl font-bold text-white">Sampling & Non-Determinism in LLMs</h2>
-                    </div>
-                    <span class="text-xs font-mono px-2 py-1 rounded bg-blue-500/10 text-blue-400 border border-blue-500/30">PROBABILITY DISTRIBUTIONS</span>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
-                    <!-- Text & Code Explanation -->
-                    <div class="md:col-span-6 space-y-3">
-                        <div class="p-3.5 rounded-lg bg-gray-900 border border-gray-800 text-xs text-gray-300 leading-relaxed">
-                            <strong class="text-amber-400">Examing Trap (Pegadinha da Prova):</strong> <br>
-                            LLMs do <em>not</em> return guaranteed identical text strings across calls. The model samples each next token from a <strong>probability distribution</strong>.
-                        </div>
-                        
-                        <!-- Do's and Don'ts comparison -->
-                        <div class="space-y-2 font-mono text-xs">
-                            <div class="p-2.5 rounded bg-red-950/40 border border-red-800/60 text-red-200 flex items-start gap-2">
-                                <i data-lucide="x" class="w-4 h-4 text-red-400 shrink-0 mt-0.5"></i>
-                                <div>
-                                    <strong class="text-red-400">DON'T:</strong> Assert exact text matches in unit tests. <br>
-                                    <code class="text-red-300 font-mono text-[11px]">assert response == "Classification: Positive"</code>
-                                </div>
-                            </div>
-                            <div class="p-2.5 rounded bg-emerald-950/40 border border-emerald-800/60 text-emerald-200 flex items-start gap-2">
-                                <i data-lucide="check" class="w-4 h-4 text-emerald-400 shrink-0 mt-0.5"></i>
-                                <div>
-                                    <strong class="text-emerald-400">DO:</strong> Assert properties, schema, or semantic intent. <br>
-                                    <code class="text-emerald-300 font-mono text-[11px]">assert "Positive" in response.meaning</code>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Interactive Sampling Simulator -->
-                    <div class="md:col-span-6 p-4 rounded-xl bg-gray-900 border border-cyan-500/30 space-y-4">
-                        <div class="flex justify-between items-center">
-                            <span class="font-mono text-xs font-bold text-cyan-300">INTERACTIVE SAMPLING SIMULATOR</span>
-                            <span class="text-[10px] font-mono text-gray-400">Prompt: "Status of order #102?"</span>
-                        </div>
-
-                        <!-- Probability Distribution Visualizer -->
-                        <div class="space-y-2 font-mono text-xs">
-                            <div class="space-y-1">
-                                <div class="flex justify-between text-[11px]">
-                                    <span class="text-gray-300">Token A: "Shipped"</span>
-                                    <span id="prob-a" class="text-cyan-400">65%</span>
-                                </div>
-                                <div class="w-full bg-gray-800 h-2 rounded">
-                                    <div id="bar-a" class="bg-cyan-400 h-2 rounded transition-all duration-300" style="width: 65%;"></div>
-                                </div>
-                            </div>
-
-                            <div class="space-y-1">
-                                <div class="flex justify-between text-[11px]">
-                                    <span class="text-gray-300">Token B: "Dispatched"</span>
-                                    <span id="prob-b" class="text-blue-400">25%</span>
-                                </div>
-                                <div class="w-full bg-gray-800 h-2 rounded">
-                                    <div id="bar-b" class="bg-blue-400 h-2 rounded transition-all duration-300" style="width: 25%;"></div>
-                                </div>
-                            </div>
-
-                            <div class="space-y-1">
-                                <div class="flex justify-between text-[11px]">
-                                    <span class="text-gray-300">Token C: "Sent"</span>
-                                    <span id="prob-c" class="text-amber-400">10%</span>
-                                </div>
-                                <div class="w-full bg-gray-800 h-2 rounded">
-                                    <div id="bar-c" class="bg-amber-400 h-2 rounded transition-all duration-300" style="width: 10%;"></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <button onclick="simulateSampling()" class="w-full py-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 rounded text-xs font-bold text-white transition-all flex items-center justify-center gap-2">
-                            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Run Sampling Call (Gerar Token)
-                        </button>
-
-                        <div id="sample-result" class="p-2.5 rounded bg-gray-950 border border-gray-800 font-mono text-xs text-center text-gray-300">
-                            Clique acima para amostrar a partir da distribuição.
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="flex justify-between items-center pt-3 border-t border-gray-800">
-                <button onclick="goToSlide(2)" class="px-4 py-2 rounded bg-gray-800 hover:bg-gray-700 text-xs font-mono text-gray-300 flex items-center gap-2">
-                    <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Voltar ao Log
-                </button>
-                <button onclick="goToSlide(4)" class="px-5 py-2 rounded bg-blue-600 hover:bg-blue-500 text-xs font-semibold text-white flex items-center gap-2">
-                    Analisar Conceito #2 <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
-                </button>
-            </div>
-        </section>
-
-        <!-- ================= SLIDE 4: CONCEPT 2 - REASONING MODE ================= -->
-        <section id="slide-4" class="slide flex-col justify-between p-6 md:p-8 h-full bg-[#111827]">
-            <div>
-                <div class="flex items-center justify-between mb-3">
-                    <div>
-                        <span class="text-xs font-mono text-cyan-400 tracking-wider">CCDV-F CONCEPT #2 (QUESTION 2)</span>
-                        <h2 class="text-xl font-bold text-white">Model Choice vs Reasoning Mode (Extended Thinking)</h2>
-                    </div>
-                    <span class="text-xs font-mono px-2 py-1 rounded bg-amber-500/10 text-amber-400 border border-amber-500/30">INDEPENDENT LEVERS</span>
-                </div>
-
-                <!-- Explanation Matrix -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <div class="p-4 rounded-xl bg-gray-900 border border-gray-800 space-y-2">
-                        <div class="flex items-center gap-2 text-cyan-400 font-bold font-mono text-sm">
-                            <i data-lucide="cpu" class="w-4 h-4"></i> LEVER 1: Model Choice
-                        </div>
-                        <p class="text-xs text-gray-300 leading-relaxed">
-                            Determina qual membro da família Claude executa a chamada (ex: Claude 3.5 Sonnet, Claude 3.5 Haiku, Claude 3 Opus). Define velocidade base, intelligence tier e custo básico por token.
-                        </p>
-                    </div>
-
-                    <div class="p-4 rounded-xl bg-gray-900 border border-gray-800 space-y-2">
-                        <div class="flex items-center gap-2 text-amber-400 font-bold font-mono text-sm">
-                            <i data-lucide="brain text-amber-400" class="w-4 h-4"></i> LEVER 2: Extended Thinking
-                        </div>
-                        <p class="text-xs text-gray-300 leading-relaxed">
-                            Parâmetro **por chamada** (<code class="text-cyan-300">thinking: {type: "enabled", budget_tokens: ...}</code>). Pode ser ativado ou desativado independentemente em qualquer modelo compatível.
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Interactive Config Tester -->
-                <div class="p-4 rounded-xl bg-gray-900/90 border border-blue-500/30 space-y-3 font-mono text-xs">
-                    <div class="text-xs font-bold text-gray-300">API PARAMETER SIMULATOR:</div>
-                    
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                        <div>
-                            <label class="block text-[10px] text-gray-400 mb-1">SELECT MODEL:</label>
-                            <select id="sim-model" onchange="updateApiCode()" class="w-full bg-gray-800 border border-gray-700 rounded p-2 text-xs text-cyan-300 focus:outline-none">
-                                <option value="claude-3-5-sonnet-20241022">claude-3-5-sonnet</option>
-                                <option value="claude-3-5-haiku-20241022">claude-3-5-haiku</option>
-                            </select>
-                        </div>
-
-                        <div>
-                            <label class="block text-[10px] text-gray-400 mb-1">EXTENDED THINKING:</label>
-                            <select id="sim-thinking" onchange="updateApiCode()" class="w-full bg-gray-800 border border-gray-700 rounded p-2 text-xs text-amber-300 focus:outline-none">
-                                <option value="off">OFF (Default Reasoning)</option>
-                                <option value="on">ON (Extended Thinking Enabled)</option>
-                            </select>
-                        </div>
-
-                        <div>
-                            <label class="block text-[10px] text-gray-400 mb-1">THINKING BUDGET:</label>
-                            <input id="sim-budget" type="number" value="2048" disabled onchange="updateApiCode()" class="w-full bg-gray-800 border border-gray-700 rounded p-2 text-xs text-gray-400 opacity-50 focus:outline-none">
-                        </div>
-                    </div>
-
-                    <!-- Generated Payload Preview -->
-                    <div class="bg-gray-950 p-3 rounded border border-gray-800 overflow-x-auto text-[11px] text-emerald-400">
-                        <pre id="api-payload-code">// API Payload Preview</pre>
-                    </div>
-                </div>
-            </div>
-
-            <div class="flex justify-between items-center pt-3 border-t border-gray-800">
-                <button onclick="goToSlide(3)" class="px-4 py-2 rounded bg-gray-800 hover:bg-gray-700 text-xs font-mono text-gray-300 flex items-center gap-2">
-                    <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Anterior
-                </button>
-                <button onclick="goToSlide(5)" class="px-5 py-2 rounded bg-blue-600 hover:bg-blue-500 text-xs font-semibold text-white flex items-center gap-2">
-                    Analisar Conceito #3 <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
-                </button>
-            </div>
-        </section>
-
-        <!-- ================= SLIDE 5: CONCEPT 3 - FEW-SHOT vs ZERO-SHOT ================= -->
-        <section id="slide-5" class="slide flex-col justify-between p-6 md:p-8 h-full bg-[#111827]">
-            <div>
-                <div class="flex items-center justify-between mb-3">
-                    <div>
-                        <span class="text-xs font-mono text-cyan-400 tracking-wider">CCDV-F CONCEPT #3 (QUESTION 3)</span>
-                        <h2 class="text-xl font-bold text-white">Prompt Optimization & Token Bloat</h2>
-                    </div>
-                    <span class="text-xs font-mono px-2 py-1 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">COST vs EFFICIENCY</span>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
-                    <!-- Rule Box -->
-                    <div class="p-3.5 rounded-lg bg-gray-900 border border-gray-800 text-xs text-gray-300 space-y-2">
-                        <div class="font-bold text-amber-400 font-mono text-xs flex items-center gap-1.5">
-                            <i data-lucide="alert-circle" class="w-4 h-4"></i> CCDV-F Core Principle:
-                        </div>
-                        <p class="text-xs leading-relaxed">
-                            Adicione exemplos (Few-Shot) <strong>apenas quando o formato de saída (output shape) estiver incorreto</strong> ou a tarefa for complexa. Se o Zero-Shot já funciona perfeitamente, adicionar exemplos apenas desperdiça custo por token em todas as chamadas sem benefício perceptível.
-                        </p>
-                    </div>
-
-                    <!-- Cost Calculator Visual -->
-                    <div class="p-3.5 rounded-lg bg-gray-900 border border-cyan-500/30 space-y-2 font-mono text-xs">
-                        <div class="text-cyan-300 font-bold flex justify-between">
-                            <span>TOKEN COST IMPACT CALCULATOR</span>
-                            <span class="text-[10px] text-gray-400">100,000 API CALLS</span>
-                        </div>
-                        
-                        <div class="space-y-2">
-                            <div class="flex justify-between items-center text-[11px] p-2 bg-emerald-950/30 border border-emerald-800/40 rounded">
-                                <div>
-                                    <span class="text-emerald-400 font-bold block">Zero-Shot Prompt</span>
-                                    <span class="text-gray-400">150 tokens/call</span>
-                                </div>
-                                <div class="text-right">
-                                    <span class="text-emerald-300 font-bold block">15.0M Tokens</span>
-                                    <span class="text-[10px] text-gray-400">$45.00 Est.</span>
-                                </div>
-                            </div>
-
-                            <div class="flex justify-between items-center text-[11px] p-2 bg-red-950/30 border border-red-800/40 rounded">
-                                <div>
-                                    <span class="text-red-400 font-bold block">+3 Unnecessary Examples</span>
-                                    <span class="text-gray-400">1,200 tokens/call</span>
-                                </div>
-                                <div class="text-right">
-                                    <span class="text-red-300 font-bold block">120.0M Tokens (+800%)</span>
-                                    <span class="text-[10px] text-gray-400">$360.00 Est.</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Do's and Don'ts Interactive Matrix -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 font-mono text-xs">
-                    <div class="p-3 rounded bg-emerald-950/20 border border-emerald-800/50 space-y-1">
-                        <span class="text-emerald-400 font-bold flex items-center gap-1">
-                            <i data-lucide="check-circle" class="w-3.5 h-3.5"></i> WHEN TO USE FEW-SHOT:
-                        </span>
-                        <ul class="list-disc list-inside text-gray-300 text-[11px] space-y-1 font-sans">
-                            <li>Claude struggles with complex JSON schemas or specialized formatting.</li>
-                            <li>Enforcing consistent tone/style across niche enterprise domain domain jargon.</li>
-                        </ul>
-                    </div>
-
-                    <div class="p-3 rounded bg-red-950/20 border border-red-800/50 space-y-1">
-                        <span class="text-red-400 font-bold flex items-center gap-1">
-                            <i data-lucide="x-circle" class="w-3.5 h-3.5"></i> WHEN NOT TO USE FEW-SHOT:
-                        </span>
-                        <ul class="list-disc list-inside text-gray-300 text-[11px] space-y-1 font-sans">
-                            <li>Short classification tasks returning correct answers in Zero-shot.</li>
-                            <li>When token costs/latency must be strictly minimized.</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
-            <div class="flex justify-between items-center pt-3 border-t border-gray-800">
-                <button onclick="goToSlide(4)" class="px-4 py-2 rounded bg-gray-800 hover:bg-gray-700 text-xs font-mono text-gray-300 flex items-center gap-2">
-                    <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Anterior
-                </button>
-                <button onclick="goToSlide(6)" class="px-5 py-2 rounded bg-blue-600 hover:bg-blue-500 text-xs font-semibold text-white flex items-center gap-2">
-                    Analisar Conceito #4 <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
-                </button>
-            </div>
-        </section>
-
-        <!-- ================= SLIDE 6: CONCEPT 4 - BATCH vs SYNC ================= -->
-        <section id="slide-6" class="slide flex-col justify-between p-6 md:p-8 h-full bg-[#111827]">
-            <div>
-                <div class="flex items-center justify-between mb-3">
-                    <div>
-                        <span class="text-xs font-mono text-cyan-400 tracking-wider">CCDV-F CONCEPT #4 (QUESTION 4)</span>
-                        <h2 class="text-xl font-bold text-white">Message Batches API vs Synchronous Loops</h2>
-                    </div>
-                    <span class="text-xs font-mono px-2 py-1 rounded bg-purple-500/10 text-purple-400 border border-purple-500/30">OFFLINE WORKLOADS</span>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <!-- Sync Call Card -->
-                    <div class="p-4 rounded-xl bg-gray-900 border border-red-500/30 space-y-2">
-                        <div class="flex justify-between items-center">
-                            <span class="text-red-400 font-bold font-mono text-xs flex items-center gap-1.5">
-                                <i data-lucide="refresh-cw" class="w-4 h-4"></i> Synchronous API Loop
-                            </span>
-                            <span class="text-[10px] font-mono text-red-400 bg-red-950 px-2 py-0.5 rounded">High Risk</span>
-                        </div>
-                        <ul class="text-xs text-gray-300 space-y-1.5 list-disc list-inside font-sans">
-                            <li>Hits Rate Limits (<code class="text-red-300">HTTP 429 Too Many Requests</code>).</li>
-                            <li>Full 100% standard token cost per query.</li>
-                            <li>Requires active thread execution and connection polling.</li>
-                        </ul>
-                    </div>
-
-                    <!-- Batch Call Card -->
-                    <div class="p-4 rounded-xl bg-gray-900 border border-emerald-500/30 space-y-2">
-                        <div class="flex justify-between items-center">
-                            <span class="text-emerald-400 font-bold font-mono text-xs flex items-center gap-1.5">
-                                <i data-lucide="layers" class="w-4 h-4"></i> Message Batches API
-                            </span>
-                            <span class="text-[10px] font-mono text-emerald-400 bg-emerald-950 px-2 py-0.5 rounded">Optimal Offline</span>
-                        </div>
-                        <ul class="text-xs text-gray-300 space-y-1.5 list-disc list-inside font-sans">
-                            <li><strong class="text-emerald-400">50% Cost Discount</strong> on all tokens!</li>
-                            <li>Bypasses standard API rate limits for massive scale.</li>
-                            <li>Asynchronous processing with pollable batch ID status.</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- Interactive Latency/Cost Simulator -->
-                <div class="p-4 rounded-xl bg-gray-900 border border-cyan-500/30 font-mono text-xs space-y-3">
-                    <div class="flex justify-between items-center">
-                        <span class="text-cyan-300 font-bold">WORKLOAD SIMULATOR: 10,000 CUSTOMER REVIEWS</span>
-                        <button onclick="runBatchSimulation()" class="px-3 py-1 bg-cyan-600 hover:bg-cyan-500 text-white rounded text-[11px] font-bold transition-all">
-                            Executar Comparativo
-                        </button>
-                    </div>
-
-                    <div id="batch-sim-output" class="grid grid-cols-2 gap-4 text-center">
-                        <div class="p-3 bg-gray-950 rounded border border-gray-800">
-                            <span class="text-gray-400 text-[10px] block">SYNC LOOP EXECUTION</span>
-                            <span class="text-red-400 text-lg font-bold block mt-1">$300.00</span>
-                            <span class="text-red-400 text-[10px] block">Frequent 429 Errors</span>
-                        </div>
-                        <div class="p-3 bg-gray-950 rounded border border-gray-800">
-                            <span class="text-gray-400 text-[10px] block">BATCHES API EXECUTION</span>
-                            <span class="text-emerald-400 text-lg font-bold block mt-1">$150.00 (-50%)</span>
-                            <span class="text-emerald-400 text-[10px] block">0 Rate Limit Exceptions</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="flex justify-between items-center pt-3 border-t border-gray-800">
-                <button onclick="goToSlide(5)" class="px-4 py-2 rounded bg-gray-800 hover:bg-gray-700 text-xs font-mono text-gray-300 flex items-center gap-2">
-                    <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Anterior
-                </button>
-                <button onclick="goToSlide(7)" class="px-5 py-2 rounded bg-emerald-600 hover:bg-emerald-500 text-xs font-semibold text-white flex items-center gap-2">
-                    Iniciar Quiz CCDV-F <i data-lucide="award" class="w-3.5 h-3.5"></i>
-                </button>
-            </div>
-        </section>
-
-        <!-- ================= SLIDE 7: INTERACTIVE CCDV-F QUIZ GAME ================= -->
-        <section id="slide-7" class="slide flex-col justify-between p-6 md:p-8 h-full bg-[#111827]">
-            <div>
-                <!-- Quiz Header -->
-                <div class="flex justify-between items-center mb-3">
+        <!-- Incident Intro Briefing -->
+        <section class="bg-gray-900/90 border border-gray-800 rounded-xl p-5 relative overflow-hidden">
+            <div class="absolute -right-16 -top-16 w-52 h-52 bg-rose-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+                <div class="space-y-1">
                     <div class="flex items-center gap-2">
-                        <i data-lucide="help-circle" class="text-cyan-400 w-5 h-5"></i>
-                        <h2 class="text-lg font-bold text-white">CCDV-F Exam Simulator</h2>
+                        <span class="bg-cyan-950 text-cyan-400 border border-cyan-800 text-[10px] font-mono px-2 py-0.5 rounded font-semibold">
+                            MODULE 01 BOSS CHALLENGE
+                        </span>
+                        <span class="text-xs font-mono text-gray-400">Module 01: MSO Foundations</span>
                     </div>
-                    <div class="flex items-center gap-3 font-mono text-xs">
-                        <span class="text-gray-400">QUESTÃO: <span id="quiz-q-num" class="text-cyan-400 font-bold">1</span>/4</span>
-                        <span class="text-gray-400">SCORE: <span id="quiz-score" class="text-emerald-400 font-bold">0</span> pts</span>
-                    </div>
-                </div>
-
-                <!-- Question Card Container -->
-                <div class="p-4 md:p-5 rounded-xl bg-gray-900 border border-gray-800 space-y-4">
-                    <p id="quiz-question-text" class="text-sm md:text-base font-semibold text-gray-100 leading-snug">
-                        <!-- Dynamic Question Text -->
+                    <h1 class="text-xl sm:text-2xl font-extrabold text-white font-mono tracking-tight">
+                        Incident #404: The Substrate Meltdown
+                    </h1>
+                    <p class="text-xs sm:text-sm text-gray-300 max-w-4xl leading-relaxed">
+                        ApexCorp's foundational AI Gateway crashed in production. The gateway team introduced <strong>four critical substrate bugs</strong> across four core layers: <span class="text-cyan-400">Sampling &amp; Parameters</span>, <span class="text-purple-400">Reasoning Depth</span>, <span class="text-amber-400">Context &amp; Truncation</span>, and <span class="text-emerald-400">Protocol Ingestion</span>. Inspect the code, triage the root cause, and apply hotfixes before service SLAs are breached!
                     </p>
-
-                    <!-- Answer Options Grid -->
-                    <div id="quiz-options-container" class="grid grid-cols-1 gap-2.5 font-mono text-xs">
-                        <!-- Dynamic Options Generated via JS -->
-                    </div>
-
-                    <!-- Answer Rationale Box -->
-                    <div id="quiz-rationale-box" class="hidden p-3.5 rounded-lg bg-gray-950 border border-gray-800 text-xs space-y-1">
-                        <div id="quiz-result-title" class="font-bold"></div>
-                        <p id="quiz-result-explanation" class="text-gray-300 leading-relaxed font-sans"></p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Quiz Navigation -->
-            <div class="flex justify-between items-center pt-3 border-t border-gray-800">
-                <button onclick="goToSlide(6)" class="px-4 py-2 rounded bg-gray-800 hover:bg-gray-700 text-xs font-mono text-gray-300 flex items-center gap-2">
-                    <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Voltar
-                </button>
-                <button id="quiz-next-btn" onclick="nextQuizQuestion()" disabled class="px-5 py-2 rounded bg-cyan-600 hover:bg-cyan-500 disabled:opacity-40 disabled:cursor-not-allowed text-xs font-semibold text-white flex items-center gap-2">
-                    Próxima Questão <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
-                </button>
-            </div>
-        </section>
-
-        <!-- ================= SLIDE 8: CHEAT SHEET & SUMMARY ================= -->
-        <section id="slide-8" class="slide flex-col justify-between p-6 md:p-8 h-full bg-[#111827]">
-            <div>
-                <div class="flex items-center justify-between mb-4">
-                    <div>
-                        <span class="text-xs font-mono text-emerald-400 tracking-wider">CERTIFICATION READY</span>
-                        <h2 class="text-xl font-bold text-white flex items-center gap-2">
-                            <i data-lucide="award" class="text-emerald-400"></i>
-                            CCDV-F Elite Cheat Sheet & Exam Anchors
-                        </h2>
-                    </div>
-                    <span class="text-xs font-mono px-2.5 py-1 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">HIGH YIELD SUMMARY</span>
                 </div>
 
-                <!-- Summary Cards Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-                    <!-- Concept 1 Anchor -->
-                    <div class="p-3.5 rounded-lg bg-gray-900 border border-gray-800 space-y-1">
-                        <div class="font-mono text-cyan-400 font-bold flex items-center gap-1.5">
-                            <i data-lucide="shuffle" class="w-4 h-4"></i> 1. Non-Determinism
-                        </div>
-                        <p class="text-gray-300 font-sans text-[11px] leading-relaxed">
-                            Amostragem probabilística torna a geração não-determinística. Em testes automatizados, avalie propriedades/significado semântico, nunca igualdade estrita de string.
-                        </p>
-                    </div>
-
-                    <!-- Concept 2 Anchor -->
-                    <div class="p-3.5 rounded-lg bg-gray-900 border border-gray-800 space-y-1">
-                        <div class="font-mono text-amber-400 font-bold flex items-center gap-1.5">
-                            <i data-lucide="sliders" class="w-4 h-4"></i> 2. Model vs Extended Thinking
-                        </div>
-                        <p class="text-gray-300 font-sans text-[11px] leading-relaxed">
-                            São seletores **independentes**. A escolha do modelo define a família/capacidade base; Extended Thinking é um parâmetro por chamada chaveável em modelos suportados.
-                        </p>
-                    </div>
-
-                    <!-- Concept 3 Anchor -->
-                    <div class="p-3.5 rounded-lg bg-gray-900 border border-gray-800 space-y-1">
-                        <div class="font-mono text-blue-400 font-bold flex items-center gap-1.5">
-                            <i data-lucide="scissors" class="w-4 h-4"></i> 3. Optimization & Few-Shot
-                        </div>
-                        <p class="text-gray-300 font-sans text-[11px] leading-relaxed">
-                            Não adicione Few-Shot se o Zero-Shot já funciona. Exemplos aumentam custo e latência em cada chamada sem melhoria substancial de precisão.
-                        </p>
-                    </div>
-
-                    <!-- Concept 4 Anchor -->
-                    <div class="p-3.5 rounded-lg bg-gray-900 border border-gray-800 space-y-1">
-                        <div class="font-mono text-emerald-400 font-bold flex items-center gap-1.5">
-                            <i data-lucide="box" class="w-4 h-4"></i> 4. Message Batches API
-                        </div>
-                        <p class="text-gray-300 font-sans text-[11px] leading-relaxed">
-                            Para processamento offline de grande volume, troque latência por **50% de desconto em tokens** e eliminação de erros 429 de Rate Limits.
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Final Certification Status Banner -->
-                <div id="final-cert-banner" class="mt-4 p-3 rounded-lg bg-gradient-to-r from-blue-900/40 via-cyan-900/40 to-emerald-900/40 border border-cyan-500/40 flex items-center justify-between font-mono text-xs">
-                    <div class="flex items-center gap-3">
-                        <i data-lucide="check-circle" class="w-5 h-5 text-emerald-400"></i>
-                        <div>
-                            <span class="text-white font-bold block">REVISÃO CONCLUÍDA</span>
-                            <span class="text-gray-400 text-[11px]">Você assimilou as armadilhas fundamentais da prova CCDV-F.</span>
-                        </div>
-                    </div>
-                    <button onclick="resetQuizAndDeck()" class="px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-cyan-300 rounded text-[11px] flex items-center gap-1">
-                        <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> Reiniciar Estudo
+                <!-- Navigation Tabs -->
+                <div class="flex items-center gap-2 font-mono text-xs w-full lg:w-auto shrink-0">
+                    <button onclick="switchTab('stage1')" id="tab-stage1" class="flex-1 lg:flex-initial px-4 py-2.5 rounded-lg bg-cyan-600 text-white font-bold transition flex items-center justify-center gap-2 shadow-lg glow-cyan">
+                        <i data-lucide="crosshair" class="w-4 h-4"></i> Stage 1: Bug Hunter
+                    </button>
+                    <button onclick="switchTab('stage2')" id="tab-stage2" class="flex-1 lg:flex-initial px-4 py-2.5 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-300 font-semibold transition flex items-center justify-center gap-2">
+                        <i data-lucide="wrench" class="w-4 h-4"></i> Stage 2: Code Surgeon
+                    </button>
+                    <button onclick="switchTab('exam')" id="tab-exam" class="flex-1 lg:flex-initial px-4 py-2.5 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-300 font-semibold transition flex items-center justify-center gap-2">
+                        <i data-lucide="graduation-cap" class="w-4 h-4"></i> Exam Simulation
                     </button>
                 </div>
             </div>
+        </section>
 
-            <!-- Footer Nav -->
-            <div class="flex justify-between items-center pt-3 border-t border-gray-800">
-                <button onclick="goToSlide(7)" class="px-4 py-2 rounded bg-gray-800 hover:bg-gray-700 text-xs font-mono text-gray-300 flex items-center gap-2">
-                    <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Voltar ao Quiz
-                </button>
-                <div class="text-xs font-mono text-gray-500">
-                    STATUS: <span class="text-emerald-400">READY FOR EXAMINATION</span>
+        <!-- STAGE 1: BUG HUNTER VIEW -->
+        <section id="view-stage1" class="space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+                <!-- Left: Buggy Source Code Explorer (7 cols) -->
+                <div class="lg:col-span-7 bg-slate-950 border border-gray-800 rounded-xl overflow-hidden flex flex-col shadow-2xl">
+                    <div class="bg-gray-900 px-4 py-2.5 border-b border-gray-800 flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <span class="w-3 h-3 rounded-full bg-red-500/80"></span>
+                            <span class="w-3 h-3 rounded-full bg-amber-500/80"></span>
+                            <span class="w-3 h-3 rounded-full bg-emerald-500/80"></span>
+                            <span class="text-xs font-mono text-gray-300 font-bold ml-2">gateway_substrate_v1.py (BROKEN)</span>
+                        </div>
+                        <span class="text-[11px] font-mono text-gray-400"><i data-lucide="mouse-pointer" class="w-3 h-3 inline mr-1"></i>Click highlighted lines to diagnose</span>
+                    </div>
+
+                    <!-- Code Block -->
+                    <div class="p-4 font-mono text-xs overflow-x-auto leading-relaxed space-y-0.5 select-text">
+                        <div class="text-gray-500">import anthropic, json</div>
+                        <div class="text-gray-400">client = anthropic.Anthropic()</div>
+                        <br>
+                        <div class="text-gray-500">// --- 1. MODEL SELECTION &amp; PARAMETER LAYER ---</div>
+                        <div class="text-gray-400"><span class="text-cyan-400">def</span> <span class="text-amber-400">classify_intent</span>(user_query: str):</div>
+                        
+                        <!-- BUG 1 TARGET -->
+                        <div id="code-bug-1" onclick="triggerBugDiagnosis(1)" class="code-line p-1 rounded cursor-pointer border border-transparent hover:border-cyan-500/60 bg-gray-900/60 flex items-start gap-2">
+                            <span class="text-rose-400 font-bold">L14</span>
+                            <span class="text-gray-300">
+                                &nbsp;&nbsp;response = client.messages.create(<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;model=<span class="text-emerald-400">"claude-3-7-sonnet-20250219"</span>, max_tokens=1024,<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-rose-400 font-bold">temperature=0.7, top_k=40,</span>&nbsp;&nbsp;<span class="text-gray-500"># Unsupported sampling params!</span><br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;messages=[{<span class="text-emerald-400">"role"</span>: <span class="text-emerald-400">"user"</span>, <span class="text-emerald-400">"content"</span>: user_query}]<br>
+                                &nbsp;&nbsp;)
+                            </span>
+                            <span class="ml-auto text-[10px] bg-rose-950 text-rose-300 border border-rose-800 px-1.5 py-0.5 rounded font-mono shrink-0">DEFECT #1</span>
+                        </div>
+
+                        <div class="text-gray-400">&nbsp;&nbsp;<span class="text-purple-400">return</span> response.content[0].text</div>
+                        <br>
+                        <div class="text-gray-500">// --- 2. REASONING MODE CALIBRATION LAYER ---</div>
+                        <div class="text-gray-400"><span class="text-cyan-400">def</span> <span class="text-amber-400">solve_complex_math</span>(problem_spec: str):</div>
+
+                        <!-- BUG 2 TARGET -->
+                        <div id="code-bug-2" onclick="triggerBugDiagnosis(2)" class="code-line p-1 rounded cursor-pointer border border-transparent hover:border-cyan-500/60 bg-gray-900/60 flex items-start gap-2">
+                            <span class="text-rose-400 font-bold">L26</span>
+                            <span class="text-gray-300">
+                                &nbsp;&nbsp;return client.messages.create(<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;model=<span class="text-emerald-400">"claude-3-7-sonnet-20250219"</span>, max_tokens=8192,<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-rose-400 font-bold">thinking={"type": "enabled", "budget_tokens": 4096},</span>&nbsp;&nbsp;<span class="text-gray-500"># Deprecated!</span><br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;messages=[{<span class="text-emerald-400">"role"</span>: <span class="text-emerald-400">"user"</span>, <span class="text-emerald-400">"content"</span>: problem_spec}]<br>
+                                &nbsp;&nbsp;)
+                            </span>
+                            <span class="ml-auto text-[10px] bg-rose-950 text-rose-300 border border-rose-800 px-1.5 py-0.5 rounded font-mono shrink-0">DEFECT #2</span>
+                        </div>
+                        <br>
+                        <div class="text-gray-500">// --- 3. CONTEXT CEILING &amp; TRUNCATION LAYER ---</div>
+                        <div class="text-gray-400"><span class="text-cyan-400">def</span> <span class="text-amber-400">extract_structured_json</span>(conversation_history):</div>
+                        <div class="text-gray-400">&nbsp;&nbsp;res = client.messages.create(model=<span class="text-emerald-400">"claude-3-5-sonnet-20241022"</span>, max_tokens=1024, messages=conversation_history)</div>
+
+                        <!-- BUG 3 TARGET -->
+                        <div id="code-bug-3" onclick="triggerBugDiagnosis(3)" class="code-line p-1 rounded cursor-pointer border border-transparent hover:border-cyan-500/60 bg-gray-900/60 flex items-start gap-2">
+                            <span class="text-rose-400 font-bold">L38</span>
+                            <span class="text-gray-300">
+                                &nbsp;&nbsp;<span class="text-gray-500"># Assumes generation succeeded without inspecting stop_reason!</span><br>
+                                &nbsp;&nbsp;<span class="text-rose-400 font-bold">return json.loads(res.content[0].text)</span>&nbsp;&nbsp;<span class="text-gray-500"># Crashes if truncated!</span>
+                            </span>
+                            <span class="ml-auto text-[10px] bg-rose-950 text-rose-300 border border-rose-800 px-1.5 py-0.5 rounded font-mono shrink-0">DEFECT #3</span>
+                        </div>
+                        <br>
+                        <div class="text-gray-500">// --- 4. PROTOCOL &amp; BULK INGESTION LAYER ---</div>
+                        <div class="text-gray-400"><span class="text-cyan-400">def</span> <span class="text-amber-400">evaluate_50k_documents</span>(documents: list):</div>
+
+                        <!-- BUG 4 TARGET -->
+                        <div id="code-bug-4" onclick="triggerBugDiagnosis(4)" class="code-line p-1 rounded cursor-pointer border border-transparent hover:border-cyan-500/60 bg-gray-900/60 flex items-start gap-2">
+                            <span class="text-rose-400 font-bold">L49</span>
+                            <span class="text-gray-300">
+                                &nbsp;&nbsp;<span class="text-rose-400 font-bold">for doc in documents:</span>&nbsp;&nbsp;<span class="text-gray-500"># 50,000 blocking synchronous calls!</span><br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;client.messages.create(model=<span class="text-emerald-400">"claude-3-5-haiku-20241022"</span>, max_tokens=256, ...)<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-rose-400 font-bold"># Rate limit 429 errors &amp; double token pricing!</span>
+                            </span>
+                            <span class="ml-auto text-[10px] bg-rose-950 text-rose-300 border border-rose-800 px-1.5 py-0.5 rounded font-mono shrink-0">DEFECT #4</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Live Diagnosis & Post-Mortem Terminal (5 cols) -->
+                <div class="lg:col-span-5 flex flex-col space-y-4">
+                    <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 flex-1 flex flex-col justify-between shadow-xl">
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between border-b border-gray-800 pb-2">
+                                <span class="font-mono text-xs font-bold text-gray-300 flex items-center gap-1.5">
+                                    <i data-lucide="terminal" class="w-4 h-4 text-cyan-400"></i> DIAGNOSTIC RADAR
+                                </span>
+                                <span id="radar-status" class="text-[10px] font-mono text-amber-400 bg-amber-950/80 px-2 py-0.5 rounded border border-amber-800">
+                                    AWAITING SELECTION
+                                </span>
+                            </div>
+
+                            <div id="diagnosis-panel" class="space-y-3">
+                                <p class="text-xs text-gray-400 leading-relaxed font-mono">
+                                    Click on any marked defect in the code window (L14, L26, L38, L49) to inspect runtime logs, analyze root causes, and discover the CCDV-F exam rule.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Progress Tracker -->
+                        <div class="pt-4 border-t border-gray-800 space-y-2 font-mono text-xs">
+                            <div class="flex justify-between text-gray-400">
+                                <span>TRIAGE PROGRESS:</span>
+                                <span id="triage-progress-text" class="text-cyan-400 font-bold">0 / 4 DEFECTS TRIAGED</span>
+                            </div>
+                            <div class="w-full bg-gray-800 h-2 rounded-full overflow-hidden">
+                                <div id="triage-progress-bar" class="bg-gradient-to-r from-cyan-500 to-emerald-500 h-full w-0 transition-all duration-300"></div>
+                            </div>
+                            <button onclick="switchTab('stage2')" id="btn-proceed-stage2" class="w-full mt-2 py-2.5 bg-gray-800 hover:bg-gray-700 text-gray-400 rounded text-xs font-bold transition flex items-center justify-center gap-2 cursor-not-allowed" disabled>
+                                Proceed to Stage 2: Code Surgeon <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- STAGE 2: CODE SURGEON VIEW -->
+        <section id="view-stage2" class="hidden space-y-6">
+            <div class="bg-gray-900 border border-gray-800 rounded-xl p-6 space-y-6">
+                <div>
+                    <span class="text-xs font-mono text-emerald-400 font-bold uppercase tracking-wider block mb-1">
+                        <i data-lucide="wrench" class="w-3.5 h-3.5 inline mr-1"></i> HOTFIX PATCH SELECTOR
+                    </span>
+                    <h2 class="text-xl font-bold text-white font-mono">Deploy Production Remediation Patches</h2>
+                    <p class="text-xs text-gray-400 mt-1">
+                        Select the correct architectural hotfix patch for each layer. Deploy the remediation to verify the automated test suite.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Patch Card 1 -->
+                    <div id="patch-card-1" class="bg-slate-950 border border-gray-800 p-4 rounded-xl space-y-3">
+                        <div class="flex justify-between items-center font-mono text-xs">
+                            <span class="font-bold text-cyan-400">PATCH 01: Parameter Sanitation</span>
+                            <span id="patch-status-1" class="text-[10px] text-gray-500">PENDING</span>
+                        </div>
+                        <p class="text-xs text-gray-300">How should sampling parameters be configured for new model tiers?</p>
+                        <div class="space-y-2 text-xs font-mono">
+                            <button onclick="applyPatch(1, 'A')" id="btn-patch-1A" class="w-full text-left p-2.5 rounded bg-gray-900 border border-gray-800 hover:border-gray-700 text-gray-300 transition">
+                                A) Remove temperature &amp; top_k; steer model behavior exclusively via prompting.
+                            </button>
+                            <button onclick="applyPatch(1, 'B')" id="btn-patch-1B" class="w-full text-left p-2.5 rounded bg-gray-900 border border-gray-800 hover:border-gray-700 text-gray-300 transition">
+                                B) Pass temperature=0.0 and top_p=1.0 on every call.
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Patch Card 2 -->
+                    <div id="patch-card-2" class="bg-slate-950 border border-gray-800 p-4 rounded-xl space-y-3">
+                        <div class="flex justify-between items-center font-mono text-xs">
+                            <span class="font-bold text-purple-400">PATCH 02: Adaptive Thinking Setting</span>
+                            <span id="patch-status-2" class="text-[10px] text-gray-500">PENDING</span>
+                        </div>
+                        <p class="text-xs text-gray-300">How should reasoning depth be calibrated on current models?</p>
+                        <div class="space-y-2 text-xs font-mono">
+                            <button onclick="applyPatch(2, 'A')" id="btn-patch-2A" class="w-full text-left p-2.5 rounded bg-gray-900 border border-gray-800 hover:border-gray-700 text-gray-300 transition">
+                                A) Keep budget_tokens=4096 and set temperature=0.
+                            </button>
+                            <button onclick="applyPatch(2, 'B')" id="btn-patch-2B" class="w-full text-left p-2.5 rounded bg-gray-900 border border-gray-800 hover:border-gray-700 text-gray-300 transition">
+                                B) Use thinking={"type": "adaptive"} and output_config={"effort": "high"}.
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Patch Card 3 -->
+                    <div id="patch-card-3" class="bg-slate-950 border border-gray-800 p-4 rounded-xl space-y-3">
+                        <div class="flex justify-between items-center font-mono text-xs">
+                            <span class="font-bold text-amber-400">PATCH 03: Stop Reason Verification</span>
+                            <span id="patch-status-3" class="text-[10px] text-gray-500">PENDING</span>
+                        </div>
+                        <p class="text-xs text-gray-300">How should downstream parsing handle potential context ceiling breaches?</p>
+                        <div class="space-y-2 text-xs font-mono">
+                            <button onclick="applyPatch(3, 'A')" id="btn-patch-3A" class="w-full text-left p-2.5 rounded bg-gray-900 border border-gray-800 hover:border-gray-700 text-gray-300 transition">
+                                A) Verify if stop_reason == "end_turn"; if context window was exceeded, handle truncation gracefully.
+                            </button>
+                            <button onclick="applyPatch(3, 'B')" id="btn-patch-3B" class="w-full text-left p-2.5 rounded bg-gray-900 border border-gray-800 hover:border-gray-700 text-gray-300 transition">
+                                B) Wrap json.loads() in a generic try/except block without checking stop_reason.
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Patch Card 4 -->
+                    <div id="patch-card-4" class="bg-slate-950 border border-gray-800 p-4 rounded-xl space-y-3">
+                        <div class="flex justify-between items-center font-mono text-xs">
+                            <span class="font-bold text-emerald-400">PATCH 04: Batch Ingestion Protocol</span>
+                            <span id="patch-status-4" class="text-[10px] text-gray-500">PENDING</span>
+                        </div>
+                        <p class="text-xs text-gray-300">How should 50,000 document evaluation jobs be submitted?</p>
+                        <div class="space-y-2 text-xs font-mono">
+                            <button onclick="applyPatch(4, 'A')" id="btn-patch-4A" class="w-full text-left p-2.5 rounded bg-gray-900 border border-gray-800 hover:border-gray-700 text-gray-300 transition">
+                                A) Use Message Batches API (`client.messages.batches.create`) for 50% discount and separate rate limits.
+                            </button>
+                            <button onclick="applyPatch(4, 'B')" id="btn-patch-4B" class="w-full text-left p-2.5 rounded bg-gray-900 border border-gray-800 hover:border-gray-700 text-gray-300 transition">
+                                B) Spin up 100 parallel threads executing synchronous requests simultaneously.
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Test Suite Runner Card -->
+                <div class="bg-slate-950 border border-gray-800 p-4 rounded-xl flex flex-col sm:flex-row items-center justify-between gap-4 font-mono text-xs">
+                    <div class="flex items-center gap-2">
+                        <span id="test-suite-status-icon" class="w-3 h-3 rounded-full bg-gray-600"></span>
+                        <span id="test-suite-status-text" class="text-gray-400">Automated Integration Tests: Awaiting 4 Patches</span>
+                    </div>
+                    <button onclick="runAutomatedTests()" id="btn-run-tests" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg transition flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed" disabled>
+                        <i data-lucide="play" class="w-4 h-4"></i> Run Test Suite
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- STAGE 3: EXAM PRACTICE VIEW -->
+        <section id="view-exam" class="hidden space-y-6">
+            <div class="bg-gray-900 border border-gray-800 rounded-xl p-6 space-y-6">
+                <div class="flex justify-between items-center border-b border-gray-800 pb-3">
+                    <div>
+                        <span class="text-xs font-mono text-amber-400 font-bold uppercase tracking-wider block">
+                            <i data-lucide="graduation-cap" class="w-3.5 h-3.5 inline mr-1"></i> OFFICIAL CERTIFICATION EXAM DRILL
+                        </span>
+                        <h2 class="text-xl font-bold text-white font-mono">Foundations Exam Practice Questions</h2>
+                    </div>
+                    <span id="exam-score-badge" class="font-mono text-xs text-cyan-400 bg-cyan-950/80 px-3 py-1 rounded border border-cyan-800">
+                        EXAM SCORE: 0 / 3
+                    </span>
+                </div>
+
+                <div id="exam-question-card" class="bg-slate-950 border border-gray-800 p-5 rounded-xl space-y-4">
+                    <!-- Populated via Javascript -->
                 </div>
             </div>
         </section>
 
     </main>
 
-    <!-- Bottom Global Navigation Bar -->
-    <footer class="w-full max-w-[1280px] flex items-center justify-between pt-2 text-xs font-mono text-gray-400">
-        <div class="flex items-center gap-2">
-            <button onclick="prevSlide()" class="px-3 py-1.5 rounded bg-gray-800 hover:bg-gray-700 text-gray-200 transition-all flex items-center gap-1">
-                <i data-lucide="chevron-left" class="w-4 h-4"></i> Anter.
-            </button>
-            <button onclick="nextSlide()" class="px-3 py-1.5 rounded bg-gray-800 hover:bg-gray-700 text-gray-200 transition-all flex items-center gap-1">
-                Próx. <i data-lucide="chevron-right" class="w-4 h-4"></i>
-            </button>
-        </div>
-
-        <div class="hidden md:flex items-center gap-4 text-gray-500 text-[11px]">
-            <span>NAVEGAÇÃO POR TECLADO ATIVA</span>
-            <span class="px-1.5 py-0.5 bg-gray-800 rounded border border-gray-700">← Anterior</span>
-            <span class="px-1.5 py-0.5 bg-gray-800 rounded border border-gray-700">Próximo →</span>
-        </div>
-
-        <div class="text-gray-500">
-            CCDV-F Module Review // Anthropic Certification
-        </div>
+    <!-- Footer -->
+    <footer class="w-full bg-slate-950 border-t border-gray-900 px-4 py-3 text-center text-xs font-mono text-gray-500">
+        CCDV-F Certification Prep // Module 01: MSO Foundations &copy; 2026 ApexCorp Training
     </footer>
 
-    <!-- INTERACTIVE JAVASCRIPT LOGIC -->
+    <!-- SCRIPTING LOGIC & AUDIO SYNTH -->
     <script>
-        // Initialize Lucide Icons
-        lucide.createIcons();
+        // Web Audio Synthesizer (Zero external assets needed)
+        let audioCtx = null;
+        let soundEnabled = true;
 
-        // Slide State Management
-        let currentSlide = 1;
-        const totalSlides = 8;
-
-        function updateDeckUI() {
-            // Hide all slides
-            for (let i = 1; i <= totalSlides; i++) {
-                const el = document.getElementById(`slide-${i}`);
-                if (el) el.classList.remove('active');
+        function getAudioContext() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             }
-            // Show current slide
-            const activeEl = document.getElementById(`slide-${currentSlide}`);
-            if (activeEl) activeEl.classList.add('active');
-
-            // Update Header Counter & Progress Bar
-            document.getElementById('slide-number').innerText = String(currentSlide).padStart(2, '0');
-            document.getElementById('slide-total').innerText = String(totalSlides).padStart(2, '0');
-            const progressPercent = (currentSlide / totalSlides) * 100;
-            document.getElementById('progress-bar').style.width = `${progressPercent}%`;
-
-            // Refresh icons on slide swap
-            lucide.createIcons();
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            return audioCtx;
         }
 
-        function goToSlide(n) {
-            if (n >= 1 && n <= totalSlides) {
-                currentSlide = n;
-                updateDeckUI();
-            }
+        function toggleAudio() {
+            soundEnabled = !soundEnabled;
+            document.getElementById('audio-label').innerText = soundEnabled ? 'SFX: ON' : 'SFX: OFF';
+            const icon = document.getElementById('audio-icon');
+            icon.classList.toggle('text-gray-500', !soundEnabled);
+            icon.classList.toggle('text-cyan-400', soundEnabled);
+            if (soundEnabled) playBeep(600, 'sine', 0.08, 0.1);
         }
 
-        function nextSlide() {
-            if (currentSlide < totalSlides) {
-                currentSlide++;
-                updateDeckUI();
-            }
-        }
-
-        function prevSlide() {
-            if (currentSlide > 1) {
-                currentSlide--;
-                updateDeckUI();
+        function playBeep(freq = 440, type = 'sine', duration = 0.08, gainVal = 0.08) {
+            if (!soundEnabled) return;
+            try {
+                const ctx = getAudioContext();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, ctx.currentTime);
+                gain.gain.setValueAtTime(gainVal, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + duration);
+            } catch (e) {
+                console.warn(e);
             }
         }
 
-        // Keyboard Arrow Navigation
-        window.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowRight') {
-                nextSlide();
-            } else if (e.key === 'ArrowLeft') {
-                prevSlide();
-            }
-        });
-
-        // ================= SLIDE 3 LOGIC: SAMPLING SIMULATOR =================
-        const sampleTokens = [
-            { text: '"Shipped"', class: 'text-cyan-400' },
-            { text: '"Dispatched"', class: 'text-blue-400' },
-            { text: '"Sent"', class: 'text-amber-400' }
-        ];
-
-        function simulateSampling() {
-            const rand = Math.random();
-            let chosen;
-            if (rand < 0.65) chosen = sampleTokens[0];
-            else if (rand < 0.90) chosen = sampleTokens[1];
-            else chosen = sampleTokens[2];
-
-            const resultEl = document.getElementById('sample-result');
-            resultEl.innerHTML = `Token gerado: <strong class="${chosen.class}">${chosen.text}</strong> (Probabilidade sorteada: ${(rand * 100).toFixed(1)}%)`;
+        function playSuccessJingle() {
+            if (!soundEnabled) return;
+            playBeep(523.25, 'triangle', 0.12, 0.15); // C5
+            setTimeout(() => playBeep(659.25, 'triangle', 0.12, 0.15), 100); // E5
+            setTimeout(() => playBeep(783.99, 'triangle', 0.15, 0.15), 200); // G5
+            setTimeout(() => playBeep(1046.50, 'triangle', 0.25, 0.15), 300); // C6
         }
 
-        // ================= SLIDE 4 LOGIC: API CODE GENERATOR =================
-        function updateApiCode() {
-            const model = document.getElementById('sim-model').value;
-            const thinking = document.getElementById('sim-thinking').value;
-            const budgetInput = document.getElementById('sim-budget');
+        function playErrorBuzz() {
+            if (!soundEnabled) return;
+            playBeep(180, 'sawtooth', 0.15, 0.2);
+            setTimeout(() => playBeep(140, 'sawtooth', 0.2, 0.2), 120);
+        }
 
-            let thinkingCode = '';
-            if (thinking === 'on') {
-                budgetInput.disabled = false;
-                budgetInput.classList.remove('opacity-50');
-                thinkingCode = `,\n  thinking: {\n    type: "enabled",\n    budget_tokens: ${budgetInput.value}\n  }`;
-            } else {
-                budgetInput.disabled = true;
-                budgetInput.classList.add('opacity-50');
+        // State Tracking
+        let identifiedBugs = new Set();
+        let appliedPatches = {};
+        let totalScore = 0;
+
+        const bugDetails = {
+            1: {
+                layer: "Layer 1: Model Selection & Parameter Sanitization",
+                codeLine: 'temperature=0.7, top_k=40',
+                severity: "FATAL HTTP 400 ERROR",
+                cause: "Passing non-default sampling parameters (temperature, top_k, top_p) to new generation Claude models that strictly steer via prompt instructions.",
+                impact: "The API rejects the request immediately before generation starts with a 400 Bad Request error.",
+                examTip: "Newer Claude models do not accept non-default sampling parameters and require prompt steering. Verify model parameter support in documentation."
+            },
+            2: {
+                layer: "Layer 2: Reasoning Mode & Adaptive Thinking Calibration",
+                codeLine: 'thinking={"type": "enabled", "budget_tokens": 4096}',
+                severity: "DEPRECATED PARAMETER REJECTION",
+                cause: "Passing the legacy 'budget_tokens' parameter to models utilizing Adaptive Thinking.",
+                impact: "Returns HTTP 400 error. In current models, reasoning depth is configured via the 'effort' setting.",
+                examTip: "Never use budget_tokens on modern adaptive reasoning models. Set thinking={'type': 'adaptive'} and adjust depth with output_config={'effort': 'high'}."
+            },
+            3: {
+                layer: "Layer 3: Context Ceiling & Truncation Handling",
+                codeLine: 'return json.loads(res.content[0].text)',
+                severity: "SILENT DATA CORRUPTION / PARSE CRASH",
+                cause: "Calling json.loads() without verifying if response.stop_reason == 'end_turn'.",
+                impact: "If generation hit the context ceiling, response text is cut off midway, crashing downstream JSON parsers.",
+                examTip: "Always inspect response.stop_reason before consuming output. If stop_reason is 'model_context_window_exceeded' or 'max_tokens', output is truncated."
+            },
+            4: {
+                layer: "Layer 4: Ingestion Architecture & Protocol Choice",
+                codeLine: 'for doc in documents: client.messages.create(...)',
+                severity: "50% BUDGET WASTE & 429 RATE LIMIT CRISIS",
+                cause: "Running 50,000 offline document extractions via standard synchronous interactive API loops.",
+                impact: "Incurs full token costs, trips interactive rate limits, and risks thread exhaustion.",
+                examTip: "Use the Message Batches API for bulk offline workloads. It provides a 50% discount on prompt and completion tokens with independent rate limits."
+            }
+        };
+
+        function triggerBugDiagnosis(bugId) {
+            playBeep(480, 'square', 0.08, 0.1);
+            const b = bugDetails[bugId];
+            
+            const lineEl = document.getElementById(`code-bug-${bugId}`);
+            lineEl.classList.remove('bg-gray-900/60');
+            lineEl.classList.add('buggy-highlight');
+
+            if (!identifiedBugs.has(bugId)) {
+                identifiedBugs.add(bugId);
+                totalScore += 125;
+                document.getElementById('ops-score').innerText = `${totalScore} XP`;
+                document.getElementById('bugs-found-count').innerText = `${identifiedBugs.size} / 4`;
+                document.getElementById('triage-progress-text').innerText = `${identifiedBugs.size} / 4 DEFECTS TRIAGED`;
+                document.getElementById('triage-progress-bar').style.width = `${(identifiedBugs.size / 4) * 100}%`;
+
+                if (identifiedBugs.size === 4) {
+                    playSuccessJingle();
+                    const btnStage2 = document.getElementById('btn-proceed-stage2');
+                    btnStage2.disabled = false;
+                    btnStage2.classList.remove('cursor-not-allowed', 'bg-gray-800', 'text-gray-400');
+                    btnStage2.classList.add('bg-cyan-600', 'hover:bg-cyan-500', 'text-white', 'glow-cyan');
+                }
             }
 
-            const codePayload = `const response = await anthropic.messages.create({\n  model: "${model}",\n  max_tokens: 4096${thinkingCode},\n  messages: [{ role: "user", content: "Solve logic puzzle..." }]\n});`;
+            document.getElementById('radar-status').className = "text-[10px] font-mono text-rose-400 bg-rose-950/80 px-2 py-0.5 rounded border border-rose-800";
+            document.getElementById('radar-status').innerText = `DEFECT #${bugId} INSPECTED`;
 
-            document.getElementById('api-payload-code').innerText = codePayload;
-        }
-        // Run initial update
-        updateApiCode();
-
-        // ================= SLIDE 6 LOGIC: BATCH SIMULATOR =================
-        function runBatchSimulation() {
-            const output = document.getElementById('batch-sim-output');
-            output.innerHTML = `
-                <div class="p-3 bg-gray-950 rounded border border-red-500/50 animate-pulse">
-                    <span class="text-gray-400 text-[10px] block">SYNC LOOP EXECUTION</span>
-                    <span class="text-red-400 text-lg font-bold block mt-1">429 Rate Limit Error</span>
-                    <span class="text-red-300 text-[10px] block">Execution Halted at req #1,420</span>
-                </div>
-                <div class="p-3 bg-gray-950 rounded border border-emerald-500/50 glow-cyan">
-                    <span class="text-gray-400 text-[10px] block">BATCHES API EXECUTION</span>
-                    <span class="text-emerald-400 text-lg font-bold block mt-1">$150.00 (-50% Cost)</span>
-                    <span class="text-emerald-300 text-[10px] block">10,000/10,000 Processed Async</span>
+            document.getElementById('diagnosis-panel').innerHTML = `
+                <div class="space-y-2 font-mono text-xs">
+                    <span class="text-cyan-400 font-bold block">${b.layer}</span>
+                    <div class="bg-slate-950 p-2.5 rounded border border-rose-900/40 text-rose-300 font-bold">
+                        ${b.severity}: ${b.codeLine}
+                    </div>
+                    <p class="text-gray-300 font-sans text-xs"><strong>Root Cause:</strong> ${b.cause}</p>
+                    <p class="text-gray-400 font-sans text-xs"><strong>Production Impact:</strong> ${b.impact}</p>
+                    <div class="p-2.5 bg-cyan-950/40 border border-cyan-800/40 rounded text-cyan-200 text-[11px] font-sans">
+                        <strong>CCDV-F Exam Tip:</strong> ${b.examTip}
+                    </div>
                 </div>
             `;
         }
 
-        // ================= SLIDE 7 LOGIC: OFFICIAL QUIZ ENGINE =================
-        const quizData = [
+        // Tab Switching
+        function switchTab(tabKey) {
+            playBeep(420, 'sine', 0.04, 0.06);
+            document.getElementById('view-stage1').classList.add('hidden');
+            document.getElementById('view-stage2').classList.add('hidden');
+            document.getElementById('view-exam').classList.add('hidden');
+
+            document.querySelectorAll('#tab-stage1, #tab-stage2, #tab-exam').forEach(btn => {
+                btn.className = "flex-1 lg:flex-initial px-4 py-2.5 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-300 font-semibold transition flex items-center justify-center gap-2";
+            });
+
+            if (tabKey === 'stage1') {
+                document.getElementById('view-stage1').classList.remove('hidden');
+                document.getElementById('tab-stage1').className = "flex-1 lg:flex-initial px-4 py-2.5 rounded-lg bg-cyan-600 text-white font-bold transition flex items-center justify-center gap-2 shadow-lg glow-cyan";
+            } else if (tabKey === 'stage2') {
+                document.getElementById('view-stage2').classList.remove('hidden');
+                document.getElementById('tab-stage2').className = "flex-1 lg:flex-initial px-4 py-2.5 rounded-lg bg-cyan-600 text-white font-bold transition flex items-center justify-center gap-2 shadow-lg glow-cyan";
+            } else if (tabKey === 'exam') {
+                document.getElementById('view-exam').classList.remove('hidden');
+                document.getElementById('tab-exam').className = "flex-1 lg:flex-initial px-4 py-2.5 rounded-lg bg-cyan-600 text-white font-bold transition flex items-center justify-center gap-2 shadow-lg glow-cyan";
+                renderExamQuestion();
+            }
+        }
+
+        // Stage 2: Code Surgeon Logic
+        const correctPatches = { 1: 'A', 2: 'B', 3: 'A', 4: 'A' };
+
+        function applyPatch(defectId, choice) {
+            appliedPatches[defectId] = choice;
+
+            document.querySelectorAll(`#btn-patch-${defectId}A, #btn-patch-${defectId}B`).forEach(btn => {
+                btn.className = "w-full text-left p-2.5 rounded bg-gray-900 border border-gray-800 hover:border-gray-700 text-gray-300 transition";
+            });
+
+            const activeBtn = document.getElementById(`btn-patch-${defectId}${choice}`);
+            const statusEl = document.getElementById(`patch-status-${defectId}`);
+
+            if (choice === correctPatches[defectId]) {
+                playBeep(520, 'triangle', 0.08, 0.1);
+                activeBtn.className = "w-full text-left p-2.5 rounded bg-emerald-950/60 border border-emerald-500 text-emerald-300 font-bold transition";
+                statusEl.className = "text-[10px] text-emerald-400 font-bold";
+                statusEl.innerText = "HOTFIX VALID";
+            } else {
+                playErrorBuzz();
+                activeBtn.className = "w-full text-left p-2.5 rounded bg-rose-950/60 border border-rose-500 text-rose-300 transition";
+                statusEl.className = "text-[10px] text-rose-400 font-bold";
+                statusEl.innerText = "DEFECT UNRESOLVED";
+            }
+
+            const patchesCount = Object.keys(appliedPatches).length;
+            const btnRun = document.getElementById('btn-run-tests');
+            if (patchesCount === 4) {
+                btnRun.disabled = false;
+            }
+        }
+
+        function runAutomatedTests() {
+            let allCorrect = true;
+            for (let i = 1; i <= 4; i++) {
+                if (appliedPatches[i] !== correctPatches[i]) allCorrect = false;
+            }
+
+            const statusIcon = document.getElementById('test-suite-status-icon');
+            const statusText = document.getElementById('test-suite-status-text');
+
+            if (allCorrect) {
+                playSuccessJingle();
+                totalScore += 500;
+                document.getElementById('ops-score').innerText = `${totalScore} XP`;
+                statusIcon.className = "w-3 h-3 rounded-full bg-emerald-400 animate-ping";
+                statusText.className = "text-emerald-400 font-bold";
+                statusText.innerText = "ALL 4 INTEGRATION TESTS PASSED! APEXCORP SUBSTRATE RESTORED.";
+            } else {
+                playErrorBuzz();
+                statusIcon.className = "w-3 h-3 rounded-full bg-rose-500 animate-pulse";
+                statusText.className = "text-rose-400 font-bold";
+                statusText.innerText = "TEST SUITE FAILED: One or more architectural defects remain unresolved.";
+            }
+        }
+
+        // Stage 3: Exam Drill Logic
+        const examQuestions = [
             {
-                id: 1,
-                question: "Question 1: A teammate says two identical prompts must return identical text. What is the most accurate response?",
+                q: "1. When migrating legacy applications to the newest Claude model generations, which parameter will cause an immediate HTTP 400 Bad Request error if passed in the request body?",
                 options: [
-                    { letter: "A", text: "That is true, the model is deterministic." },
-                    { letter: "B", text: "Not necessarily, the model samples each next token from a probability distribution, so wording can vary even when both answers are correct." },
-                    { letter: "C", text: "That is only true if streaming is off." },
-                    { letter: "D", text: "That is only true on the largest model." }
+                    "A) `max_tokens`",
+                    "B) `budget_tokens`",
+                    "C) `messages`",
+                    "D) `system`"
                 ],
-                correct: "B",
-                rationale: "B is Correct. Sampling makes generation non-deterministic, which is why tests should assert on semantic properties and meaning rather than exact output strings."
+                correct: 1,
+                explain: "The `budget_tokens` parameter is deprecated on current adaptive reasoning models and causes an immediate HTTP 400 error. Adaptive thinking depth is controlled via the `effort` setting."
             },
             {
-                id: 2,
-                question: "Question 2: Which statement best separates model choice from reasoning mode?",
+                q: "2. An engineering team wants to process 100,000 synthetic test prompts for model evaluation over the weekend. No live users are waiting. Which design choice satisfies the requirement at the lowest operational cost?",
                 options: [
-                    { letter: "A", text: "They are the same setting." },
-                    { letter: "B", text: "Extended thinking is a different model." },
-                    { letter: "C", text: "Model choice picks which member of the family runs; extended thinking is a per-call setting that any supporting model can run with on or off." },
-                    { letter: "D", text: "Reasoning mode is fixed per account." }
+                    "A) Server-Sent Events (SSE) streaming using 200 concurrent worker threads.",
+                    "B) Message Batches API, which processes requests within 24 hours at a 50% discount on token pricing.",
+                    "C) Sequential synchronous REST calls with automatic exponential backoff retries.",
+                    "D) Sending all 100,000 prompts within a single oversized messages array."
                 ],
-                correct: "C",
-                rationale: "C is Correct. Model choice and reasoning mode (extended thinking) are independent levers that work together."
+                correct: 1,
+                explain: "The Message Batches API is purpose-built for offline batch evaluation workloads. It provides a 50% discount on both prompt and output tokens and runs on dedicated batch rate limits."
             },
             {
-                id: 3,
-                question: "Question 3: A short, well-specified classification task returns the right answer zero-shot. What does adding three examples most likely do?",
+                q: "3. A downstream JSON parser throws a syntax error when parsing a response from Claude. Inspection reveals the text was cut off midway. Which check should the application implement before attempting to parse?",
                 options: [
-                    { letter: "A", text: "Improves accuracy substantially." },
-                    { letter: "B", text: "Adds token cost on every call for little or no gain." },
-                    { letter: "C", text: "Changes the model being used." },
-                    { letter: "D", text: "Disables sampling." }
+                    "A) Check if `response.stop_reason` equals 'model_context_window_exceeded' or 'max_tokens'.",
+                    "B) Verify if `temperature` was set to 0.0.",
+                    "C) Check if the model tier was Claude Haiku instead of Claude Sonnet.",
+                    "D) Increase the client HTTP connection timeout from 30s to 120s."
                 ],
-                correct: "B",
-                rationale: "B is Correct. Add examples when the output shape or formatting is wrong, not when zero-shot already succeeds consistently."
-            },
-            {
-                id: 4,
-                question: "Question 4: You must process thousands of inputs offline at the lowest cost. Which shape fits?",
-                options: [
-                    { letter: "A", text: "Synchronous calls in a loop." },
-                    { letter: "B", text: "Streaming." },
-                    { letter: "C", text: "Batch submission with polling." },
-                    { letter: "D", text: "A larger context window." }
-                ],
-                correct: "C",
-                rationale: "C is Correct. Batch processing trades real-time latency for a 50% discount on token costs and avoids rate limit exceptions."
+                explain: "When a generation truncates due to token or context window exhaustion, the API returns partial content with `stop_reason == 'model_context_window_exceeded'` or `'max_tokens'`. Checking stop_reason is mandatory before parsing."
             }
         ];
 
-        let currentQuizIdx = 0;
-        let quizScore = 0;
-        let answerSelected = false;
+        let currentExamQ = 0;
+        let examScore = 0;
 
-        function loadQuizQuestion() {
-            answerSelected = false;
-            const q = quizData[currentQuizIdx];
-            document.getElementById('quiz-q-num').innerText = q.id;
-            document.getElementById('quiz-question-text').innerText = q.question;
-            
-            // Hide rationale
-            const rationaleBox = document.getElementById('quiz-rationale-box');
-            rationaleBox.classList.add('hidden');
+        function renderExamQuestion() {
+            const q = examQuestions[currentExamQ];
+            const container = document.getElementById('exam-question-card');
 
-            // Disable Next Button until answer selected
-            document.getElementById('quiz-next-btn').disabled = true;
+            let html = `
+                <div class="space-y-2">
+                    <span class="text-xs font-mono text-cyan-400 font-bold">QUESTION ${currentExamQ + 1} OF ${examQuestions.length}</span>
+                    <h3 class="text-sm font-semibold text-white">${q.q}</h3>
+                </div>
+                <div class="space-y-2 pt-2 font-mono text-xs">
+            `;
 
-            // Render options
-            const optionsContainer = document.getElementById('quiz-options-container');
-            optionsContainer.innerHTML = '';
-
-            q.options.forEach(opt => {
-                const btn = document.createElement('button');
-                btn.className = `p-3 rounded-lg bg-gray-950 border border-gray-800 hover:border-cyan-500 text-left transition-all flex items-start gap-2.5`;
-                btn.onclick = () => selectQuizAnswer(opt.letter, q.correct, q.rationale, btn);
-                btn.innerHTML = `
-                    <span class="px-2 py-0.5 rounded bg-gray-800 text-cyan-400 font-bold shrink-0">${opt.letter}</span>
-                    <span class="text-gray-300">${opt.text}</span>
+            q.options.forEach((opt, idx) => {
+                html += `
+                    <button onclick="selectExamAnswer(${idx})" class="w-full text-left p-3 rounded-lg bg-gray-900 border border-gray-800 hover:border-cyan-500/60 text-gray-300 transition">
+                        ${opt}
+                    </button>
                 `;
-                optionsContainer.appendChild(btn);
             });
+
+            html += `</div><div id="exam-feedback" class="hidden mt-3 p-3 rounded text-xs font-mono"></div>`;
+            container.innerHTML = html;
         }
 
-        function selectQuizAnswer(selectedLetter, correctLetter, rationaleText, clickedBtn) {
-            if (answerSelected) return;
-            answerSelected = true;
+        function selectExamAnswer(choiceIdx) {
+            const q = examQuestions[currentExamQ];
+            const feedback = document.getElementById('exam-feedback');
+            feedback.classList.remove('hidden');
 
-            const isCorrect = selectedLetter === correctLetter;
-            if (isCorrect) {
-                quizScore += 25;
-                document.getElementById('quiz-score').innerText = quizScore;
-                clickedBtn.classList.remove('bg-gray-950', 'border-gray-800');
-                clickedBtn.classList.add('bg-emerald-950/60', 'border-emerald-500', 'text-emerald-200');
+            if (choiceIdx === q.correct) {
+                playSuccessJingle();
+                examScore++;
+                document.getElementById('exam-score-badge').innerText = `EXAM SCORE: ${examScore} / 3`;
+                feedback.className = "mt-3 p-3 rounded text-xs font-mono bg-emerald-950/60 border border-emerald-500 text-emerald-300";
+                feedback.innerHTML = `<strong><i data-lucide="check-circle" class="w-3.5 h-3.5 inline mr-1"></i> CORRECT!</strong><br>${q.explain}`;
             } else {
-                clickedBtn.classList.remove('bg-gray-950', 'border-gray-800');
-                clickedBtn.classList.add('bg-red-950/60', 'border-red-500', 'text-red-200');
+                playErrorBuzz();
+                feedback.className = "mt-3 p-3 rounded text-xs font-mono bg-rose-950/60 border border-rose-500 text-rose-300";
+                feedback.innerHTML = `<strong><i data-lucide="x-circle" class="w-3.5 h-3.5 inline mr-1"></i> INCORRECT:</strong><br>${q.explain}`;
             }
 
-            // Reveal Rationale Box
-            const rationaleBox = document.getElementById('quiz-rationale-box');
-            const resultTitle = document.getElementById('quiz-result-title');
-            const resultExp = document.getElementById('quiz-result-explanation');
-
-            rationaleBox.classList.remove('hidden');
-            if (isCorrect) {
-                resultTitle.className = 'font-bold text-emerald-400 flex items-center gap-1';
-                resultTitle.innerHTML = '<i data-lucide="check-circle" class="w-4 h-4"></i> Resposta Correta!';
-            } else {
-                resultTitle.className = 'font-bold text-red-400 flex items-center gap-1';
-                resultTitle.innerHTML = `<i data-lucide="x-circle" class="w-4 h-4"></i> Incorreto (Resposta Certa: ${correctLetter})`;
+            if (currentExamQ < examQuestions.length - 1) {
+                feedback.innerHTML += `
+                    <button onclick="currentExamQ++; renderExamQuestion();" class="mt-3 px-3 py-1.5 bg-cyan-600 hover:bg-cyan-500 text-white rounded font-bold block">
+                        Next Question →
+                    </button>
+                `;
             }
-            resultExp.innerText = rationaleText;
             lucide.createIcons();
-
-            // Enable Next Button
-            document.getElementById('quiz-next-btn').disabled = false;
         }
 
-        function nextQuizQuestion() {
-            if (currentQuizIdx < quizData.length - 1) {
-                currentQuizIdx++;
-                loadQuizQuestion();
-            } else {
-                // Quiz completed, jump to slide 8
-                goToSlide(8);
-            }
-        }
-
-        function resetQuizAndDeck() {
-            currentQuizIdx = 0;
-            quizScore = 0;
-            document.getElementById('quiz-score').innerText = '0';
-            loadQuizQuestion();
-            goToSlide(1);
-        }
-
-        // Initialize quiz on load
-        loadQuizQuestion();
+        // Initialize Lucide Icons
+        window.onload = function() {
+            lucide.createIcons();
+        };
     </script>
 </body>
 </html>

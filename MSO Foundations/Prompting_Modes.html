@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>CCDV-F Module 02: Prompting Modes</title>
+    <title>CCDV-F Module 01 // Lesson 03: Prompting Modes & In-Context Learning</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
@@ -84,7 +84,7 @@
             }
         }
 
-        /* Custom Scrollbar for inner components */
+        /* Custom Scrollbar */
         ::-webkit-scrollbar {
             width: 6px;
             height: 6px;
@@ -119,162 +119,152 @@
             box-shadow: 0 0 20px rgba(245, 158, 11, 0.25);
         }
 
-        /* Slide Transitions */
+        /* Slide Transition Management */
         .slide {
             display: none;
             opacity: 0;
-            transition: opacity 0.3s ease-in-out;
+            transition: opacity 0.25s ease-in-out;
         }
 
         .slide.active {
             display: flex;
             opacity: 1;
         }
-
-        /* Scanline Overlay for Cyber Aesthetic */
-        .scanline {
-            background: linear-gradient(
-                to bottom,
-                rgba(255,255,255,0),
-                rgba(255,255,255,0) 50%,
-                rgba(0, 0, 0, 0.2) 50%,
-                rgba(0, 0, 0, 0.2)
-            );
-            background-size: 100% 4px;
-        }
     </style>
 </head>
-<body class="flex items-center justify-center min-h-screen bg-bgDark relative overflow-hidden">
+<body class="flex items-center justify-center min-h-screen bg-black">
 
-    <!-- Scanline effect layer -->
-    <div class="pointer-events-none absolute inset-0 scanline z-50 opacity-30"></div>
+    <div class="slide-aspect-ratio relative flex flex-col justify-between p-4 sm:p-6 bg-bgDark border border-gray-800 shadow-2xl rounded-xl overflow-hidden">
 
-    <!-- MAIN SLIDE CONTAINER (Enforces 16:9 Aspect Ratio) -->
-    <div class="slide-aspect-ratio relative flex flex-col justify-between p-6 bg-bgDark border border-gray-800 shadow-2xl rounded-xl overflow-hidden">
-
-        <!-- HEADER / NAVIGATION TOP BAR -->
+        <!-- HEADER / NAVIGATION HUB -->
         <header class="flex items-center justify-between z-40 pb-3 border-b border-gray-800/80">
             <div class="flex items-center space-x-3">
-                <div class="w-3 h-3 rounded-full bg-accentCyan animate-pulse"></div>
-                <span class="text-xs font-mono tracking-widest text-accentCyan font-bold uppercase">CCDV-F // Cert Prep Episode 02</span>
-                <span class="text-xs text-gray-500">|</span>
-                <span class="text-xs font-mono text-gray-400">Prompting Modes Architecture</span>
+                <div class="flex space-x-1.5">
+                    <span class="w-2.5 h-2.5 rounded-full bg-alertRed inline-block"></span>
+                    <span class="w-2.5 h-2.5 rounded-full bg-alertAmber inline-block"></span>
+                    <span class="w-2.5 h-2.5 rounded-full bg-successGreen inline-block"></span>
+                </div>
+                <a href="../index.html" class="text-xs font-mono text-gray-300 hover:text-accentCyan transition flex items-center gap-1.5 px-2 py-1 rounded bg-surface border border-gray-700 hover:border-accentCyan/50" title="Return to Curriculum Hub">
+                    <i class="fa-solid fa-arrow-left text-[10px]"></i>
+                    <span class="font-semibold">CURRICULUM HUB</span>
+                </a>
+                <span class="text-gray-600 font-mono text-xs">|</span>
+                <span class="text-xs font-mono text-gray-300 font-bold tracking-wider flex items-center gap-2">
+                    <i class="fa-solid fa-terminal text-accentCyan"></i> CCDV-F // MODULE 01: LESSON 03
+                </span>
             </div>
 
-            <!-- Slide Title Dynamic Indicator -->
-            <div id="slide-header-title" class="text-sm font-semibold text-gray-300 font-mono tracking-wide">
-                01. MISSION PREMISE
-            </div>
-
-            <!-- Quick Navigation Jump Menu -->
-            <div class="flex items-center space-x-2">
-                <select id="jump-menu" onchange="jumpToSlide(this.value)" class="bg-surface border border-gray-700 text-xs text-gray-300 rounded px-2 py-1 code-font focus:outline-none focus:border-accentBlue">
-                    <option value="0">01. Mission Briefing</option>
-                    <option value="1">02. Production Incident</option>
-                    <option value="2">03. Modes Breakdown & Simulator</option>
-                    <option value="3">04. Model vs Mode Synergy</option>
-                    <option value="4">05. CCDV-F Exam Traps & Rules</option>
-                    <option value="5">06. Interactive Exam Simulator</option>
-                    <option value="6">07. Elite Key Takeaways</option>
-                </select>
+            <!-- Header Quick Actions & Telemetry -->
+            <div class="flex items-center space-x-3 text-xs font-mono">
+                <button onclick="toggleAudio()" id="audio-toggle-btn" class="bg-surface hover:bg-gray-800 text-gray-300 px-2.5 py-1 rounded border border-gray-700 hover:border-accentCyan/50 transition flex items-center gap-1.5" title="Toggle Sound Effects">
+                    <i class="fa-solid fa-volume-high text-accentCyan" id="audio-icon"></i>
+                    <span id="audio-label" class="hidden sm:inline">SFX: ON</span>
+                </button>
+                <div class="hidden md:flex items-center space-x-2 text-gray-400">
+                    <span class="w-2 h-2 rounded-full bg-successGreen animate-pulse"></span>
+                    <span>PROMPTING MODES &amp; IN-CONTEXT LEARNING</span>
+                </div>
+                <span class="px-2 py-0.5 rounded bg-accentBlue/10 text-accentBlue border border-accentBlue/30 text-[11px] font-bold">
+                    LESSON 03
+                </span>
             </div>
         </header>
 
-        <!-- SLIDES CONTENT CONTAINER -->
-        <main class="flex-1 relative my-4 overflow-hidden">
+        <!-- MAIN SLIDE PRESENTATION AREA -->
+        <main class="relative flex-1 flex flex-col justify-center my-3 overflow-y-auto">
 
             <!-- SLIDE 1: COVER / MISSION PREMISE -->
-            <section class="slide active flex-col justify-between h-full w-full rounded-lg glass-panel p-8 relative">
+            <section class="slide active flex-col justify-between h-full w-full rounded-lg glass-panel p-6 sm:p-8 relative">
                 <div class="absolute top-0 right-0 p-8 opacity-10">
                     <i class="fa-solid fa-terminal text-9xl text-accentBlue"></i>
                 </div>
                 <div>
-                    <div class="inline-flex items-center space-x-2 px-3 py-1 bg-accentBlue/10 border border-accentBlue/30 rounded-full mb-4">
+                    <div class="inline-flex items-center space-x-2 px-3 py-1 bg-accentBlue/10 border border-accentBlue/30 rounded-full mb-3">
                         <i class="fa-solid fa-shield-halved text-accentBlue text-xs"></i>
-                        <span class="text-xs font-mono text-accentBlue font-bold tracking-wider">OFFICIAL CURRICULUM MODULE</span>
+                        <span class="text-xs font-mono text-accentBlue font-bold tracking-wider">OFFICIAL CURRICULUM MODULE 01</span>
                     </div>
-                    <h1 class="text-4xl lg:text-5xl font-extrabold text-white tracking-tight mb-3">
-                        Prompting Modes: <span class="text-transparent bg-clip-text bg-gradient-to-r from-accentBlue via-accentCyan to-blue-400">Zero-Shot, One-Shot & Multi-Shot</span>
+                    <h1 class="text-3xl lg:text-5xl font-extrabold text-white tracking-tight mb-2">
+                        Prompting Modes: <span class="text-transparent bg-clip-text bg-gradient-to-r from-accentBlue via-accentCyan to-blue-400">Zero-Shot, One-Shot &amp; Multi-Shot</span>
                     </h1>
-                    <p class="text-gray-400 text-lg max-w-3xl font-light">
-                        Dominando o custo em tokens, a consistência de output e a sinergia de modelos para a certificação <span class="text-gray-200 font-semibold">Claude Certified Developer – Foundations</span>.
+                    <p class="text-gray-400 text-base lg:text-lg max-w-3xl font-light">
+                        Mastering token expenditure, structural consistency, and model tier synergy for the <span class="text-gray-200 font-semibold">Claude Certified Developer – Foundations</span> exam.
                     </p>
                 </div>
 
-                <!-- Mission Premise Card (Narrative Context) -->
-                <div class="grid grid-cols-3 gap-4 my-auto">
+                <!-- Mission Premise Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 my-auto">
                     <div class="bg-surface/80 border border-gray-800 p-4 rounded-lg">
                         <div class="flex items-center space-x-2 text-accentCyan mb-2">
                             <i class="fa-solid fa-crosshair"></i>
-                            <h3 class="font-bold text-sm">Objetivo Principal</h3>
+                            <h3 class="font-bold text-sm">Primary Objective</h3>
                         </div>
                         <p class="text-xs text-gray-400 leading-relaxed">
-                            Aprender quando fornecer zero, um ou múltiplos exemplos (shots) no prompt para obter saídas determinísticas sem esgotar a janela de contexto.
+                            Learn when to supply zero, one, or multiple worked examples in the prompt to obtain deterministic structural output without exceeding context budget.
                         </p>
                     </div>
 
                     <div class="bg-surface/80 border border-gray-800 p-4 rounded-lg">
                         <div class="flex items-center space-x-2 text-alertAmber mb-2">
                             <i class="fa-solid fa-scale-balanced"></i>
-                            <h3 class="font-bold text-sm">Trade-off Fundamental</h3>
+                            <h3 class="font-bold text-sm">Fundamental Trade-Off</h3>
                         </div>
                         <p class="text-xs text-gray-400 leading-relaxed">
-                            Exemplos consomem orçamento de tokens em **todas** as chamadas de API. Balanceie qualidade de saída com custo operacional.
+                            Examples consume token budget on **every single API request**. Balance strict output compliance against recurring operational cost.
                         </p>
                     </div>
 
                     <div class="bg-surface/80 border border-gray-800 p-4 rounded-lg">
                         <div class="flex items-center space-x-2 text-accentBlue mb-2">
                             <i class="fa-solid fa-microchip"></i>
-                            <h3 class="font-bold text-sm">Alavanca de Modelos</h3>
+                            <h3 class="font-bold text-sm">Model Synergy Lever</h3>
                         </div>
                         <p class="text-xs text-gray-400 leading-relaxed">
-                            Modelos mais baratos (Claude Haiku) com Multi-Shot costumam superar zero-shot em modelos mais caros (Claude Opus) para tarefas estruturadas.
+                            High-speed models (Claude Haiku) combined with Multi-Shot often outperform zero-shot on expensive tiers (Claude Opus) for structured data extraction.
                         </p>
                     </div>
                 </div>
 
                 <!-- Footer Callout -->
-                <div class="flex items-center justify-between border-t border-gray-800 pt-4 text-xs font-mono text-gray-500">
+                <div class="flex items-center justify-between border-t border-gray-800 pt-3 text-xs font-mono text-gray-500">
                     <div>STATUS: SYSTEM READY // ENTER TO START INVESTIGATION</div>
                     <div class="flex items-center space-x-2 text-accentCyan">
-                        <span>Pressione</span>
-                        <kbd class="px-2 py-0.5 bg-gray-800 border border-gray-700 rounded text-gray-300">➔</kbd>
-                        <span>para iniciar</span>
+                        <span>Press</span>
+                        <kbd class="px-2 py-0.5 bg-gray-800 border border-gray-700 rounded text-gray-300">→</kbd>
+                        <span>to proceed</span>
                     </div>
                 </div>
             </section>
 
-            <!-- SLIDE 2: PRODUCTION INCIDENT -->
-            <section class="slide flex-col justify-between h-full w-full rounded-lg glass-panel p-8">
+            <!-- SLIDE 2: PRODUCTION INCIDENT REPORT -->
+            <section class="slide flex-col justify-between h-full w-full rounded-lg glass-panel p-6 sm:p-8">
                 <div>
                     <div class="flex items-center justify-between mb-2">
                         <div class="inline-flex items-center space-x-2 px-3 py-1 bg-alertRed/10 border border-alertRed/30 rounded-full">
                             <i class="fa-solid fa-triangle-exclamation text-alertRed text-xs"></i>
                             <span class="text-xs font-mono text-alertRed font-bold tracking-wider">CRITICAL PRODUCTION INCIDENT #8042</span>
                         </div>
-                        <span class="text-xs font-mono text-gray-500">SYSTEM: LOG_PARSER_SERVICE</span>
+                        <span class="text-xs font-mono text-gray-500">SERVICE: LOG_PARSER_SERVICE</span>
                     </div>
-                    <h2 class="text-2xl font-bold text-white mb-2">Incidente: Falhas Frequentes de Parsing JSON e Context Overrun</h2>
-                    <p class="text-sm text-gray-400">
-                        O microserviço de extração de telemetria falhou em produção. A equipe tentou corrigir enviando instruções cada vez mais longas no prompt Zero-Shot, gerando custos altíssimos sem resolver a flutuação da estrutura de saída.
+                    <h2 class="text-2xl font-bold text-white mb-2">Incident: JSON Schema Parsing Failures &amp; Context Overrun</h2>
+                    <p class="text-xs sm:text-sm text-gray-400">
+                        The telemetry extraction microservice failed in production. The team attempted to fix output fluctuations by appending lengthy normative rules to a Zero-Shot prompt, inflating costs without fixing structural drift.
                     </p>
                 </div>
 
                 <!-- Comparative Diagnostic Grid -->
-                <div class="grid grid-cols-2 gap-6 my-auto">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 my-auto">
                     <!-- Failure Mode A -->
                     <div class="bg-surface border border-alertRed/30 p-4 rounded-lg relative overflow-hidden">
                         <div class="absolute top-0 right-0 px-2 py-1 bg-alertRed/20 text-alertRed text-[10px] font-mono font-bold rounded-bl">FAIL: FORMAT DRIFT</div>
                         <h4 class="text-sm font-bold text-gray-200 mb-2 flex items-center">
-                            <i class="fa-solid fa-xmark text-alertRed mr-2"></i> Zero-Shot Verboso (Inconsistente)
+                            <i class="fa-solid fa-xmark text-alertRed mr-2"></i> Verbose Zero-Shot (Inconsistent)
                         </h4>
                         <div class="bg-bgDark p-3 rounded border border-gray-800 font-mono text-xs text-gray-300 mb-2">
-                            <span class="text-gray-500">// Instruction provided without any example:</span><br>
-                            <span class="text-accentBlue">"Extract log details into JSON. Do not write markdown, do not add explanation, make key names uppercase, convert dates to Unix timestamp..."</span>
+                            <span class="text-gray-500">// Instruction provided without worked examples:</span><br>
+                            <span class="text-accentBlue">"Extract log details into strict JSON. Do not write markdown, do not add explanation, make key names uppercase, convert dates to Unix timestamp..."</span>
                         </div>
                         <p class="text-xs text-gray-400">
-                            **Sintoma:** O modelo às vezes adiciona explicações em texto livre, usa maiúsculas em alguns campos e em outros não, quebrando o parser estrito da aplicação.
+                            **Symptom:** Claude occasionally inserts conversational framing ("Here is the JSON:"), wraps outputs in markdown backticks, or alternates casing, breaking strict downstream consumers.
                         </p>
                     </div>
 
@@ -282,15 +272,15 @@
                     <div class="bg-surface border border-alertAmber/30 p-4 rounded-lg relative overflow-hidden">
                         <div class="absolute top-0 right-0 px-2 py-1 bg-alertAmber/20 text-alertAmber text-[10px] font-mono font-bold rounded-bl">FAIL: TOKEN DRAIN</div>
                         <h4 class="text-sm font-bold text-gray-200 mb-2 flex items-center">
-                            <i class="fa-solid fa-xmark text-alertAmber mr-2"></i> Multi-Shot Massivo Indiscriminado
+                            <i class="fa-solid fa-xmark text-alertAmber mr-2"></i> Indiscriminate Massive Multi-Shot
                         </h4>
                         <div class="bg-bgDark p-3 rounded border border-gray-800 font-mono text-xs text-gray-300 mb-2">
-                            <span class="text-gray-500">// 15 heavy examples provided per request:</span><br>
+                            <span class="text-gray-500">// 15 heavy raw examples provided per request:</span><br>
                             <span class="text-accentCyan">Input: ... Output: ... [x15 Examples]</span><br>
                             <span class="text-alertAmber">Prompt Tokens: 8,500 tokens / call</span>
                         </div>
                         <p class="text-xs text-gray-400">
-                            **Sintoma:** Estrutura corrigida, porém a conta de API quadruplicou e a latência subiu para 3.4s por requisição.
+                            **Symptom:** Structure was fixed, but API bills quadrupled overnight and P95 latency climbed to 3.4 seconds per call.
                         </p>
                     </div>
                 </div>
@@ -300,19 +290,19 @@
                     <div class="flex items-center space-x-3">
                         <i class="fa-solid fa-lightbulb text-accentBlue text-xl"></i>
                         <div>
-                            <span class="text-xs font-bold text-white block">Diagnóstico de Engenharia CCDV-F:</span>
-                            <span class="text-xs text-gray-300">1 ou 2 exemplos bem formatados (One/Two-Shot) fixam a estrutura mais rápido do que um parágrafo inteiro de regras normativas.</span>
+                            <span class="text-xs font-bold text-white block">CCDV-F Architectural Diagnosis:</span>
+                            <span class="text-xs text-gray-300">1 or 2 clean worked examples (One/Two-Shot) anchor output structure far more reliably than an entire paragraph of negative rules.</span>
                         </div>
                     </div>
                 </div>
             </section>
 
             <!-- SLIDE 3: CONCEPT BREAKDOWN & INTERACTIVE SIMULATOR -->
-            <section class="slide flex-col justify-between h-full w-full rounded-lg glass-panel p-8">
+            <section class="slide flex-col justify-between h-full w-full rounded-lg glass-panel p-6 sm:p-8">
                 <div class="flex justify-between items-start">
                     <div>
                         <h2 class="text-2xl font-bold text-white">Prompting Modes: Zero-Shot vs One-Shot vs Multi-Shot</h2>
-                        <p class="text-xs text-gray-400">A quantidade de exemplos trabalhados (*worked examples*) dita o comportamento do modelo.</p>
+                        <p class="text-xs text-gray-400">The number of worked demonstration pairs determines model behavior and token cost.</p>
                     </div>
 
                     <!-- Interactive Mode Switcher Header -->
@@ -324,9 +314,9 @@
                 </div>
 
                 <!-- Dynamic Content Display & Cost Simulator Grid -->
-                <div class="grid grid-cols-12 gap-6 my-auto">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 my-auto">
                     <!-- Left: Prompt Inspector Panel (7 cols) -->
-                    <div class="col-span-7 bg-surface border border-gray-800 rounded-lg p-4 flex flex-col justify-between">
+                    <div class="lg:col-span-7 bg-surface border border-gray-800 rounded-lg p-4 flex flex-col justify-between">
                         <div>
                             <div class="flex justify-between items-center mb-2">
                                 <span class="text-xs font-mono text-accentCyan font-bold uppercase" id="mode-display-title">Mode: Zero-Shot (No Examples)</span>
@@ -346,62 +336,57 @@
                         <div class="mt-3 pt-3 border-t border-gray-800 text-xs text-gray-400 flex items-start space-x-2">
                             <i class="fa-solid fa-circle-info text-accentBlue mt-0.5"></i>
                             <span id="mode-description-text">
-                                **Zero-Shot:** Ideal para tarefas simples onde o formato de saída é óbvio ou flexível. Economiza tokens de contexto.
+                                **Zero-Shot:** Ideal for straightforward tasks where the output format is simple or flexible. Minimizes input token costs and preserves context.
                             </span>
                         </div>
                     </div>
 
                     <!-- Right: Token & Cost Trade-off Calculator (5 cols) -->
-                    <div class="col-span-5 bg-surface border border-gray-800 rounded-lg p-4 flex flex-col justify-between">
+                    <div class="lg:col-span-5 bg-surface border border-gray-800 rounded-lg p-4 flex flex-col justify-between">
                         <h3 class="text-xs font-mono uppercase text-gray-300 font-bold mb-3 flex items-center">
-                            <i class="fa-solid fa-calculator text-accentBlue mr-2"></i> Operational Impact Simulator
+                            <i class="fa-solid fa-calculator text-accentBlue mr-2"></i> Operational Impact Calculator
                         </h3>
 
                         <div class="space-y-3">
-                            <div>
-                                <div class="flex justify-between text-xs mb-1">
-                                    <span class="text-gray-400">Structural Format Reliability:</span>
-                                    <span class="font-bold font-mono text-accentCyan" id="metric-reliability">70%</span>
-                                </div>
-                                <div class="w-full bg-gray-800 h-2 rounded-full overflow-hidden">
-                                    <div id="bar-reliability" class="bg-accentCyan h-full transition-all duration-500" style="width: 70%"></div>
-                                </div>
+                            <div class="flex justify-between items-center text-xs font-mono border-b border-gray-800 pb-2">
+                                <span class="text-gray-400">Monthly Call Volume:</span>
+                                <span class="text-white font-bold">100,000 requests</span>
                             </div>
 
-                            <div>
-                                <div class="flex justify-between text-xs mb-1">
-                                    <span class="text-gray-400">Token Cost per Request:</span>
-                                    <span class="font-bold font-mono text-alertAmber" id="metric-cost">$0.00036</span>
-                                </div>
-                                <div class="w-full bg-gray-800 h-2 rounded-full overflow-hidden">
-                                    <div id="bar-cost" class="bg-alertAmber h-full transition-all duration-500" style="width: 15%"></div>
-                                </div>
+                            <div class="flex justify-between items-center text-xs font-mono border-b border-gray-800 pb-2">
+                                <span class="text-gray-400">Tokens / Request:</span>
+                                <span class="text-accentCyan font-bold" id="metric-tokens-call">120 tokens</span>
                             </div>
 
-                            <div>
-                                <div class="flex justify-between text-xs mb-1">
-                                    <span class="text-gray-400">Context Budget Usage (per 1M calls):</span>
-                                    <span class="font-bold font-mono text-gray-300" id="metric-budget">120M Tokens</span>
-                                </div>
-                                <div class="w-full bg-gray-800 h-2 rounded-full overflow-hidden">
-                                    <div id="bar-budget" class="bg-accentBlue h-full transition-all duration-500" style="width: 12%"></div>
-                                </div>
+                            <div class="flex justify-between items-center text-xs font-mono border-b border-gray-800 pb-2">
+                                <span class="text-gray-400">Estimated P95 Latency:</span>
+                                <span class="text-alertAmber font-bold" id="metric-latency">~380 ms</span>
+                            </div>
+
+                            <div class="flex justify-between items-center text-xs font-mono border-b border-gray-800 pb-2">
+                                <span class="text-gray-400">Format Consistency SLA:</span>
+                                <span class="text-emeraldSuccess font-bold" id="metric-consistency">82% (Potential Drift)</span>
+                            </div>
+
+                            <div class="p-2.5 rounded bg-bgDark border border-gray-800 flex justify-between items-center">
+                                <span class="text-xs font-mono text-gray-300">Monthly Cost (Haiku):</span>
+                                <span class="text-sm font-mono font-extrabold text-successGreen" id="metric-cost">$3.00 / mo</span>
                             </div>
                         </div>
 
-                        <div class="mt-4 p-2 bg-bgDark rounded border border-gray-800 text-[11px] text-gray-400">
-                            <span class="font-bold text-gray-200">Exam Note:</span> Examples sit in the prompt on <span class="text-accentBlue font-mono">EVERY</span> call. They are <span class="text-alertAmber font-bold">NOT</span> training data.
+                        <div class="text-[10px] font-mono text-gray-500 mt-2 text-center">
+                            * Tokens calculated assuming 100k requests/month on Claude Haiku.
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- SLIDE 4: MODEL SELECTION & PROMPTING MODE SYNERGY -->
-            <section class="slide flex-col justify-between h-full w-full rounded-lg glass-panel p-8">
+            <!-- SLIDE 4: MODEL SELECTION & PROMPTING SYNERGY -->
+            <section class="slide flex-col justify-between h-full w-full rounded-lg glass-panel p-6 sm:p-8">
                 <div>
-                    <h2 class="text-2xl font-bold text-white mb-1">Model Selection & Prompting Mode Synergy</h2>
+                    <h2 class="text-2xl font-bold text-white mb-1">Model Selection &amp; Prompting Mode Synergy</h2>
                     <p class="text-xs text-gray-400">
-                        Como combinar os modelos da família Claude (Haiku, Sonnet, Opus) com o modo de prompt adequado para otimizar a relação Custo vs Desempenho.
+                        How to combine Claude family tiers (Haiku, Sonnet, Opus) with the appropriate prompting mode to optimize cost-to-performance.
                     </p>
                 </div>
 
@@ -423,13 +408,13 @@
                                     <span>Claude Haiku</span>
                                 </td>
                                 <td class="p-3 text-gray-400">
-                                    May require examples for complex schema matching or edge cases.
+                                    May require worked examples for complex schemas or strict formatting edge cases.
                                 </td>
                                 <td class="p-3 font-semibold text-successGreen">
                                     High Impact (+40% accuracy)
                                 </td>
                                 <td class="p-3 text-gray-300">
-                                    Use **Multi-Shot + Haiku** to replace Zero-Shot Sonnet on structured tasks for maximum cost savings.
+                                    Use **Multi-Shot + Haiku** to replace Zero-Shot Sonnet on structured extraction tasks for massive cost savings.
                                 </td>
                             </tr>
                             <tr class="hover:bg-bgDark/50 transition">
@@ -438,13 +423,13 @@
                                     <span>Claude Sonnet</span>
                                 </td>
                                 <td class="p-3 text-gray-400">
-                                    Strong zero-shot capabilities across standard tasks and code formatting.
+                                    Strong zero-shot baseline across standard tasks, code generation, and schema conformity.
                                 </td>
                                 <td class="p-3 text-accentBlue">
                                     Medium Impact (Refines edge cases)
                                 </td>
                                 <td class="p-3 text-gray-300">
-                                    Default choice. Use **One-Shot** when output structure keeps missing minor formatting rules.
+                                    Default choice. Use **One-Shot** when output structure misses minor punctuation or casing rules.
                                 </td>
                             </tr>
                             <tr class="hover:bg-bgDark/50 transition">
@@ -459,7 +444,7 @@
                                     Low Need (Succeeds Zero-Shot)
                                 </td>
                                 <td class="p-3 text-gray-300">
-                                    Avoid overloading Opus with heavy Multi-Shot prompts unless enforcing highly esoteric data structures.
+                                    Avoid overloading Opus with heavy multi-shot tokens unless enforcing esoteric internal schema constraints.
                                 </td>
                             </tr>
                         </tbody>
@@ -471,19 +456,19 @@
                     <div class="space-y-0.5">
                         <span class="text-xs font-bold text-accentBlue font-mono uppercase">CCDV-F Rule of Thumb:</span>
                         <p class="text-xs text-gray-300">
-                            "Try the simplest model and the fewest examples that meet your evaluation suite (evals)."
+                            "Try the simplest model and the fewest worked examples that reliably satisfy your quantitative evaluation suite."
                         </p>
                     </div>
                     <span class="px-3 py-1 bg-accentBlue/20 text-accentBlue font-mono text-[11px] rounded font-bold">Minimum Viable Prompt</span>
                 </div>
             </section>
 
-            <!-- SLIDE 5: EXAM TRAPS & BEST PRACTICES -->
-            <section class="slide flex-col justify-between h-full w-full rounded-lg glass-panel p-8">
+            <!-- SLIDE 5: EXAM TRAPS & CERTIFIED BEST PRACTICES -->
+            <section class="slide flex-col justify-between h-full w-full rounded-lg glass-panel p-6 sm:p-8">
                 <div class="flex justify-between items-center">
                     <div>
-                        <h2 class="text-2xl font-bold text-white">Pegadinhas da Prova (CCDV-F Exam Traps)</h2>
-                        <p class="text-xs text-gray-400">Atenção a estes pontos de falha recorrentes nas questões do exame oficial.</p>
+                        <h2 class="text-2xl font-bold text-white">Exam Pitfalls (CCDV-F Exam Traps)</h2>
+                        <p class="text-xs text-gray-400">High-frequency distractor patterns on official certification questions.</p>
                     </div>
                     <span class="px-3 py-1 bg-alertAmber/10 border border-alertAmber/30 text-alertAmber text-xs font-mono rounded-full font-bold">
                         <i class="fa-solid fa-triangle-exclamation mr-1"></i> High Frequency Exam Topics
@@ -491,31 +476,31 @@
                 </div>
 
                 <!-- Do's and Don'ts / Traps Comparison -->
-                <div class="grid grid-cols-2 gap-6 my-auto">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 my-auto">
                     <!-- Column 1: Exam Traps (Wrong Assumptions) -->
                     <div class="bg-surface border border-alertRed/30 p-4 rounded-lg space-y-3">
                         <h3 class="text-xs font-mono font-bold text-alertRed uppercase flex items-center">
-                            <i class="fa-solid fa-bug mr-2"></i> Common Exam Misconceptions (DON'T)
+                            <i class="fa-solid fa-bug mr-2"></i> Common Misconceptions (DON'T)
                         </h3>
 
                         <div class="p-2.5 bg-bgDark rounded border border-gray-800 text-xs space-y-1">
-                            <div class="font-bold text-gray-200">Trap 1: Examples Fine-Tune the Model</div>
+                            <div class="font-bold text-gray-200">Trap 1: Examples Fine-Tune the Model Weights</div>
                             <p class="text-gray-400 text-[11px]">
-                                Assumir que exemplos no prompt treinam o modelo. **Fato:** Exemplos no prompt são apenas contexto temporário e são cobrados em **todas** as chamadas de API.
+                                Believing few-shot examples alter weights permanently. **Fact:** Examples reside strictly in the ephemeral context window and are billed on **every single call**.
                             </p>
                         </div>
 
                         <div class="p-2.5 bg-bgDark rounded border border-gray-800 text-xs space-y-1">
                             <div class="font-bold text-gray-200">Trap 2: HTTP 400 Bad Request vs Output Truncation</div>
                             <p class="text-gray-400 text-[11px]">
-                                Confundir estouro de limite de tokens da requisição (`400 Bad Request` por exceder a janela de contexto) com interrupção da resposta (`stop_reason: max_tokens`).
+                                Confusing request prompt overflow (`400 Bad Request` before generation) with output token limit cutoff (`stop_reason: max_tokens`).
                             </p>
                         </div>
 
                         <div class="p-2.5 bg-bgDark rounded border border-gray-800 text-xs space-y-1">
-                            <div class="font-bold text-gray-200">Trap 3: Adding Paragraphs instead of Examples</div>
+                            <div class="font-bold text-gray-200">Trap 3: Appending Rule Paragraphs Instead of 1 Example</div>
                             <p class="text-gray-400 text-[11px]">
-                                Tentar corrigir erros de formatação escrevendo parágrafos adicionais de regras em vez de adicionar apenas 1 exemplo claro (One-Shot).
+                                Attempting to fix syntax drift by writing walls of negative rules ("Do not...") rather than providing 1 clear worked One-Shot pair.
                             </p>
                         </div>
                     </div>
@@ -529,40 +514,40 @@
                         <div class="p-2.5 bg-bgDark rounded border border-gray-800 text-xs space-y-1">
                             <div class="font-bold text-gray-200 font-mono text-accentCyan">Minimal Prompt Discipline</div>
                             <p class="text-gray-400 text-[11px]">
-                                Adicione a menor quantidade de prompt/exemplos capaz de produzir um resultado confiável no seu framework de testes (*evals*).
+                                Provide the smallest prompt and fewest examples necessary to pass your automated evaluation suite (*evals*).
                             </p>
                         </div>
 
                         <div class="p-2.5 bg-bgDark rounded border border-gray-800 text-xs space-y-1">
                             <div class="font-bold text-gray-200 font-mono text-accentCyan">Representative Diversity</div>
                             <p class="text-gray-400 text-[11px]">
-                                No modo Multi-Shot, certifique-se de que os exemplos cubram casos de borda e diferentes variações sem inflar o tamanho do prompt.
+                                In multi-shot prompts, ensure examples cover edge cases and input variations without needlessly inflating prompt tokens.
                             </p>
                         </div>
 
                         <div class="p-2.5 bg-bgDark rounded border border-gray-800 text-xs space-y-1">
-                            <div class="font-bold text-gray-200 font-mono text-accentCyan">Model + Mode Coupling</div>
+                            <div class="font-bold text-gray-200 font-mono text-accentCyan">Model + Mode Synergy</div>
                             <p class="text-gray-400 text-[11px]">
-                                Combine **Claude Haiku + Multi-Shot** para pipelines de alto volume e baixo custo que exigem conformidade estrutural rígida.
+                                Pair **Claude Haiku + Multi-Shot** for high-volume, low-cost pipelines requiring rigorous structural compliance.
                             </p>
                         </div>
                     </div>
                 </div>
 
                 <div class="text-center text-[11px] text-gray-500 font-mono">
-                    PRO-TIP: No exame CCDV-F, a resposta correta quase sempre prioriza eficiência de custos e manutenção de contexto.
+                    PRO-TIP: On the CCDV-F exam, the correct answer almost always prioritizes token efficiency and maintainable context.
                 </div>
             </section>
 
             <!-- SLIDE 6: INTERACTIVE CCDV-F EXAM CHALLENGE -->
-            <section class="slide flex-col justify-between h-full w-full rounded-lg glass-panel p-8">
+            <section class="slide flex-col justify-between h-full w-full rounded-lg glass-panel p-6 sm:p-8">
                 <div class="flex justify-between items-center">
                     <div>
                         <div class="inline-flex items-center space-x-2 px-3 py-0.5 bg-accentBlue/10 border border-accentBlue/30 rounded-full mb-1">
                             <i class="fa-solid fa-vial text-accentBlue text-xs"></i>
-                            <span class="text-[10px] font-mono text-accentBlue font-bold tracking-wider">SIMULATED CERTIFICATION QUESTION</span>
+                            <span class="text-[10px] font-mono text-accentBlue font-bold tracking-wider">PRACTICE CERTIFICATION CHALLENGE</span>
                         </div>
-                        <h2 class="text-xl font-bold text-white">Desafio Prático: CCDV-F Exam Simulation</h2>
+                        <h2 class="text-xl font-bold text-white">Interactive CCDV-F Exam Simulation</h2>
                     </div>
                     <div class="bg-surface border border-gray-800 px-3 py-1 rounded-lg text-right">
                         <span class="text-[10px] text-gray-400 block font-mono">EXAM SCORE</span>
@@ -590,21 +575,23 @@
                     </div>
                 </div>
 
-                <!-- Quiz Navigation / Reset -->
+                <!-- Quiz Navigation & Reset -->
                 <div class="flex justify-between items-center pt-2">
-                    <button onclick="resetQuiz()" class="text-xs font-mono text-gray-500 hover:text-gray-300 underline">
-                        <i class="fa-solid fa-rotate-right mr-1"></i> Reiniciar Simulado
+                    <button onclick="resetQuiz()" class="text-xs font-mono text-gray-500 hover:text-gray-300 transition flex items-center">
+                        <i class="fa-solid fa-rotate-right mr-1.5"></i> Restart Challenge
                     </button>
-                    <span class="text-xs text-gray-500 font-mono">Escolha a alternativa mais alinhada com as diretrizes oficiais da Anthropic.</span>
+                    <button onclick="nextQuizQuestion()" id="btn-quiz-next" class="hidden px-4 py-2 bg-accentBlue hover:bg-blue-600 text-white font-mono text-xs font-bold rounded transition">
+                        Next Question <i class="fa-solid fa-arrow-right ml-1"></i>
+                    </button>
                 </div>
             </section>
 
-            <!-- SLIDE 7: ELITE SUMMARY / KEY TAKEAWAYS -->
-            <section class="slide flex-col justify-between h-full w-full rounded-lg glass-panel p-8">
-                <div class="flex items-center justify-between">
+            <!-- SLIDE 7: SUMMARY & CHEATSHEET -->
+            <section class="slide flex-col justify-between h-full w-full rounded-lg glass-panel p-6 sm:p-8">
+                <div class="flex justify-between items-center">
                     <div>
-                        <span class="text-xs font-mono text-accentCyan font-bold tracking-widest uppercase">CHEATSHEET DE ELITE</span>
-                        <h2 class="text-2xl font-bold text-white">Key Takeaways para o Exame CCDV-F</h2>
+                        <span class="text-xs font-mono text-accentCyan font-bold tracking-widest uppercase">ELITE CHEATSHEET</span>
+                        <h2 class="text-2xl font-bold text-white">CCDV-F Key Takeaways: Prompting Modes</h2>
                     </div>
                     <div class="w-10 h-10 rounded-full bg-accentBlue/20 border border-accentBlue/40 flex items-center justify-center">
                         <i class="fa-solid fa-award text-accentBlue text-lg"></i>
@@ -612,7 +599,7 @@
                 </div>
 
                 <!-- Key Takeaways Cards -->
-                <div class="grid grid-cols-3 gap-4 my-auto">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 my-auto">
                     <!-- Takeaway 1 -->
                     <div class="bg-surface border border-gray-800 p-4 rounded-lg space-y-2">
                         <div class="w-7 h-7 rounded bg-accentBlue/10 flex items-center justify-center text-accentBlue font-mono font-bold text-xs">
@@ -620,7 +607,7 @@
                         </div>
                         <h3 class="text-sm font-bold text-gray-200">Examples Are Context, Not Weights</h3>
                         <p class="text-xs text-gray-400 leading-relaxed">
-                            Exemplos fornecidos em prompts não alteram os pesos do modelo (não é fine-tuning). Eles residem na janela de contexto e incorrem em custos de tokens em **cada** requisição.
+                            Examples in prompts do not update model weights (this is not fine-tuning). They reside entirely in the ephemeral context window and incur token costs on **every single request**.
                         </p>
                     </div>
 
@@ -631,7 +618,7 @@
                         </div>
                         <h3 class="text-sm font-bold text-gray-200">Examples Beat Long Rules</h3>
                         <p class="text-xs text-gray-400 leading-relaxed">
-                            Um ou dois exemplos (*One-Shot* ou *Two-Shot*) corrigem problemas de estrutura e sintaxe mais rápido e com mais consistência do que parágrafos adicionais de instruções descritivas.
+                            One or two worked demonstration pairs (*One-Shot* or *Two-Shot*) correct syntax, formatting, and structural drift far faster and more reliably than walls of descriptive constraints.
                         </p>
                     </div>
 
@@ -640,25 +627,30 @@
                         <div class="w-7 h-7 rounded bg-alertAmber/10 flex items-center justify-center text-alertAmber font-mono font-bold text-xs">
                             03
                         </div>
-                        <h3 class="text-sm font-bold text-gray-200">Model & Mode Synergy</h3>
+                        <h3 class="text-sm font-bold text-gray-200">Model &amp; Mode Synergy</h3>
                         <p class="text-xs text-gray-400 leading-relaxed">
-                            Combine **Claude Haiku com Multi-Shot** para atingir precisão equivalente a modelos maiores em tarefas estruturadas, reduzindo custos operacionais de forma drástica.
+                            Pair **Claude Haiku with Multi-Shot** to achieve structural accuracy equivalent to much larger tiers on classification/extraction tasks, dramatically slashing operational bills.
                         </p>
                     </div>
                 </div>
 
-                <!-- Exam Status Callout -->
-                <div class="bg-surface border border-accentCyan/30 p-4 rounded-lg flex items-center justify-between">
+                <!-- Next Lesson Callout -->
+                <div class="bg-surface border border-accentCyan/30 p-4 rounded-lg flex flex-col sm:flex-row items-center justify-between gap-3">
                     <div class="flex items-center space-x-3">
                         <i class="fa-solid fa-graduation-cap text-accentCyan text-2xl"></i>
                         <div>
-                            <div class="text-xs font-bold text-white">Módulo 02 Concluído com Sucesso!</div>
-                            <div class="text-[11px] text-gray-400">Você assimilou as regras fundamentais de Prompting Modes para a certificação Claude Certified Developer - Foundations.</div>
+                            <div class="text-xs font-bold text-white">Lesson 03 Completed Successfully!</div>
+                            <div class="text-[11px] text-gray-400">You have mastered prompt mode selection, token taxation, and in-context learning mechanics.</div>
                         </div>
                     </div>
-                    <button onclick="jumpToSlide(0)" class="px-4 py-2 bg-accentBlue hover:bg-blue-600 text-white font-mono text-xs rounded font-bold transition">
-                        REVISAR MÓDULO
-                    </button>
+                    <div class="flex items-center gap-2">
+                        <button onclick="jumpToSlide(0)" class="px-3.5 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 font-mono text-xs rounded transition">
+                            Review Lesson
+                        </button>
+                        <a href="Technical_Substrate.html" class="px-4 py-2 bg-accentBlue hover:bg-blue-600 text-white font-mono text-xs rounded font-bold transition flex items-center gap-1.5 shadow-lg">
+                            Next: Lesson 04 <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+                    </div>
                 </div>
             </section>
 
@@ -678,292 +670,313 @@
             </div>
 
             <!-- Slide Counter Display -->
-            <div class="text-xs font-mono text-gray-400">
-                SLIDE <span id="current-slide-num" class="text-accentBlue font-bold">01</span> / <span id="total-slides-num" class="text-gray-300">07</span>
-            </div>
+            <div class="flex items-center space-x-4">
+                <div class="text-xs font-mono text-gray-400">
+                    SLIDE <span id="current-slide-num" class="text-accentBlue font-bold">01</span> / <span id="total-slides-num" class="text-gray-300">07</span>
+                </div>
 
-            <!-- Nav Buttons -->
-            <div class="flex items-center space-x-2">
-                <button onclick="prevSlide()" id="btn-prev" class="px-3.5 py-2 sm:px-3 sm:py-1.5 bg-surface hover:bg-surfaceLight border border-gray-700 text-gray-300 rounded text-xs font-mono flex items-center space-x-1 min-h-[44px] sm:min-h-0 transition disabled:opacity-30 disabled:cursor-not-allowed">
-                    <i class="fa-solid fa-chevron-left"></i>
-                    <span>PREV</span>
-                </button>
-                <button onclick="nextSlide()" id="btn-next" class="px-4 py-2 sm:px-4 sm:py-1.5 bg-accentBlue hover:bg-blue-600 text-white rounded text-xs font-mono font-bold flex items-center space-x-1 min-h-[44px] sm:min-h-0 transition glow-blue">
-                    <span>NEXT</span>
-                    <i class="fa-solid fa-chevron-right"></i>
-                </button>
+                <div class="flex items-center space-x-2">
+                    <button onclick="prevSlide()" id="btn-prev" class="px-3 py-1.5 rounded bg-surface hover:bg-surfaceLight border border-gray-700 text-xs font-mono transition text-gray-300 flex items-center space-x-1 disabled:opacity-40 disabled:cursor-not-allowed">
+                        <i class="fa-solid fa-chevron-left text-[10px]"></i>
+                        <span>PREV</span>
+                    </button>
+
+                    <button onclick="nextSlide()" id="btn-next" class="px-4 py-1.5 rounded bg-accentBlue hover:bg-blue-600 text-white text-xs font-mono font-bold transition flex items-center space-x-1 shadow-lg shadow-blue-500/20">
+                        <span>NEXT</span>
+                        <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                    </button>
+                </div>
             </div>
         </footer>
 
     </div>
 
-    <!-- JAVASCRIPT LOGIC -->
+    <!-- SCRIPTING LOGIC & INTERACTIVE CONTROLLERS -->
     <script>
-        // State Management
-        let currentSlide = 0;
+        // Web Audio Synthesizer (Zero external assets needed)
+        let audioCtx = null;
+        let soundEnabled = true;
+
+        function getAudioContext() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            return audioCtx;
+        }
+
+        function toggleAudio() {
+            soundEnabled = !soundEnabled;
+            document.getElementById('audio-label').innerText = soundEnabled ? 'SFX: ON' : 'SFX: OFF';
+            const icon = document.getElementById('audio-icon');
+            icon.className = soundEnabled ? 'fa-solid fa-volume-high text-accentCyan' : 'fa-solid fa-volume-xmark text-gray-500';
+            if (soundEnabled) playBeep(600, 'sine', 0.08, 0.1);
+        }
+
+        function playBeep(freq = 440, type = 'sine', duration = 0.08, gainVal = 0.08) {
+            if (!soundEnabled) return;
+            try {
+                const ctx = getAudioContext();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, ctx.currentTime);
+                gain.gain.setValueAtTime(gainVal, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + duration);
+            } catch (e) {
+                console.warn(e);
+            }
+        }
+
+        function playSuccessJingle() {
+            if (!soundEnabled) return;
+            playBeep(523.25, 'triangle', 0.12, 0.15); // C5
+            setTimeout(() => playBeep(659.25, 'triangle', 0.12, 0.15), 100); // E5
+            setTimeout(() => playBeep(783.99, 'triangle', 0.15, 0.15), 200); // G5
+            setTimeout(() => playBeep(1046.50, 'triangle', 0.25, 0.15), 300); // C6
+        }
+
+        function playErrorBuzz() {
+            if (!soundEnabled) return;
+            playBeep(180, 'sawtooth', 0.15, 0.2);
+            setTimeout(() => playBeep(140, 'sawtooth', 0.2, 0.2), 120);
+        }
+
+        // Global Presentation State
+        let currentSlideIndex = 0;
         const slides = document.querySelectorAll('.slide');
-        const totalSlides = slides.length;
+        const totalSlidesCount = slides.length;
 
-        // Slide Title Mapping for Header
-        const slideTitles = [
-            "01. MISSION PREMISE",
-            "02. PRODUCTION INCIDENT",
-            "03. PROMPTING MODES & SIMULATOR",
-            "04. MODEL VS MODE SYNERGY",
-            "05. CCDV-F EXAM TRAPS",
-            "06. INTERACTIVE EXAM CHALLENGE",
-            "07. ELITE KEY TAKEAWAYS"
-        ];
-
-        // Initialize App
-        window.onload = function() {
-            document.getElementById('total-slides-num').innerText = totalSlides.toString().padStart(2, '0');
-            updateSlideView();
-            initQuiz();
-
-            // Keyboard Navigation Listener
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'ArrowRight' || e.key === 'Space') {
-                    nextSlide();
-                } else if (e.key === 'ArrowLeft') {
-                    prevSlide();
-                }
-            });
-        };
-
-        // Slide Navigation Logic
-        function updateSlideView() {
-            slides.forEach((slide, index) => {
-                if (index === currentSlide) {
+        function updateSlideUI() {
+            slides.forEach((slide, idx) => {
+                if (idx === currentSlideIndex) {
                     slide.classList.add('active');
                 } else {
                     slide.classList.remove('active');
                 }
             });
 
-            // Update UI Counters and Controls
-            document.getElementById('current-slide-num').innerText = (currentSlide + 1).toString().padStart(2, '0');
-            document.getElementById('slide-header-title').innerText = slideTitles[currentSlide];
-            document.getElementById('jump-menu').value = currentSlide;
+            document.getElementById('current-slide-num').innerText = String(currentSlideIndex + 1).padStart(2, '0');
+            document.getElementById('total-slides-num').innerText = String(totalSlidesCount).padStart(2, '0');
 
-            // Progress Bar Calculation
-            const progressPercent = ((currentSlide + 1) / totalSlides) * 100;
-            document.getElementById('progress-bar').style.width = progressPercent + '%';
-            document.getElementById('progress-text').innerText = `${currentSlide + 1} / ${totalSlides}`;
+            const progressPercentage = ((currentSlideIndex + 1) / totalSlidesCount) * 100;
+            document.getElementById('progress-bar').style.width = `${progressPercentage}%`;
+            document.getElementById('progress-text').innerText = `${currentSlideIndex + 1} / ${totalSlidesCount}`;
 
-            // Buttons State
-            document.getElementById('btn-prev').disabled = (currentSlide === 0);
-            if (currentSlide === totalSlides - 1) {
-                document.getElementById('btn-next').innerHTML = `<span>REVISAR</span> <i class="fa-solid fa-rotate-right"></i>`;
+            document.getElementById('btn-prev').disabled = (currentSlideIndex === 0);
+            
+            const btnNext = document.getElementById('btn-next');
+            if (currentSlideIndex === totalSlidesCount - 1) {
+                btnNext.innerHTML = `COMPLETE <i class="fa-solid fa-award text-[10px]"></i>`;
             } else {
-                document.getElementById('btn-next').innerHTML = `<span>PRÓXIMO</span> <i class="fa-solid fa-chevron-right"></i>`;
+                btnNext.innerHTML = `NEXT <i class="fa-solid fa-chevron-right text-[10px]"></i>`;
             }
         }
 
         function nextSlide() {
-            if (currentSlide < totalSlides - 1) {
-                currentSlide++;
-            } else {
-                currentSlide = 0; // Loop back to start
+            if (currentSlideIndex < totalSlidesCount - 1) {
+                currentSlideIndex++;
+                playBeep(480, 'sine', 0.05, 0.06);
+                updateSlideUI();
             }
-            updateSlideView();
         }
 
         function prevSlide() {
-            if (currentSlide > 0) {
-                currentSlide--;
-                updateSlideView();
+            if (currentSlideIndex > 0) {
+                currentSlideIndex--;
+                playBeep(380, 'sine', 0.05, 0.06);
+                updateSlideUI();
             }
         }
 
         function jumpToSlide(index) {
-            currentSlide = parseInt(index);
-            updateSlideView();
+            if (index >= 0 && index < totalSlidesCount) {
+                currentSlideIndex = index;
+                playBeep(440, 'sine', 0.05, 0.06);
+                updateSlideUI();
+            }
         }
 
-        // --- SLIDE 3 INTERACTIVE SIMULATOR LOGIC ---
-        const simulatorData = {
+        // Keyboard Navigation (Arrows, Space, F)
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+                nextSlide();
+            } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+                prevSlide();
+            } else if (e.key.toLowerCase() === 'f') {
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen().catch(err => console.log(err));
+                } else {
+                    document.exitFullscreen().catch(err => console.log(err));
+                }
+            }
+        });
+
+        // -------------------------------------------------------------
+        // SLIDE 3: OPERATIONAL IMPACT SIMULATOR
+        // -------------------------------------------------------------
+        const simData = {
             zero: {
-                title: "Mode: Zero-Shot (Instruction Only)",
-                badge: "~120 Prompt Tokens",
-                preview: `<span class="text-gray-500">// Task Description only - No worked examples</span><br>
-<span class="text-purple-400">Classify customer feedback into POSITIVE, NEGATIVE, or NEUTRAL. Return valid JSON only.</span><br><br>
-<span class="text-yellow-300">Text: "The system crashed during sync, but support recovered it quickly."</span><br>
-<span class="text-accentBlue">Output:</span>`,
-                desc: "**Zero-Shot:** Ideal para tarefas simples onde o formato de saída é trivial. Menor custo de tokens por chamada, porém vulnerável a desvios de formato (*format drift*).",
-                reliability: "65%",
-                cost: "$0.00036",
-                budget: "120M Tokens",
-                relWidth: "65%",
-                costWidth: "15%",
-                budWidth: "12%"
+                title: "Mode: Zero-Shot (No Examples)",
+                tokensBadge: "~120 Prompt Tokens",
+                promptHtml: `<span class="text-gray-500">// Task Description only</span><br><span class="text-purple-400">Classify customer feedback sentiment into POSITIVE, NEGATIVE, or NEUTRAL. Output JSON only.</span><br><br><span class="text-yellow-300">Text: "The system crashed during sync, but support fixed it in 5 mins."</span><br><span class="text-accentBlue">Sentiment:</span>`,
+                desc: "**Zero-Shot:** Ideal for straightforward tasks where the output format is simple or flexible. Minimizes input token costs and preserves context budget.",
+                tokensPerCall: "120 tokens",
+                latency: "~380 ms",
+                consistency: "82% (Potential Drift)",
+                cost: "$3.00 / mo"
             },
             one: {
-                title: "Mode: One-Shot (1 Worked Example)",
-                badge: "~380 Prompt Tokens",
-                preview: `<span class="text-gray-500">// Task Description + 1 Worked Example</span><br>
-<span class="text-purple-400">Classify customer feedback. Return valid JSON.</span><br><br>
-<span class="text-gray-400">Example Input: "Great service!"</span><br>
-<span class="text-gray-400">Example Output: {"sentiment": "POSITIVE", "score": 0.95}</span><br><br>
-<span class="text-yellow-300">Text: "The system crashed during sync, but support recovered it quickly."</span><br>
-<span class="text-accentBlue">Output:</span>`,
-                desc: "**One-Shot:** Adiciona 1 exemplo. Geralmente é suficiente para ancorar a estrutura JSON e eliminar desvios de chave/sintaxe sem inflar excessivamente o prompt.",
-                reliability: "92%",
-                cost: "$0.00114",
-                budget: "380M Tokens",
-                relWidth: "92%",
-                costWidth: "40%",
-                budWidth: "38%"
+                title: "Mode: One-Shot (1 Demonstration Pair)",
+                tokensBadge: "~280 Prompt Tokens",
+                promptHtml: `<span class="text-gray-500">// Task Description + 1 Example Pair</span><br><span class="text-purple-400">Classify customer feedback sentiment into POSITIVE, NEGATIVE, or NEUTRAL.</span><br><br><span class="text-gray-400">Input: "Delivery was 2 days late but driver was very polite."</span><br><span class="text-emeraldSuccess">Output: {"sentiment": "NEUTRAL", "confidence": 0.85}</span><br><br><span class="text-yellow-300">Input: "The system crashed during sync, but support fixed it in 5 mins."</span><br><span class="text-accentBlue">Output:</span>`,
+                desc: "**One-Shot:** A single worked example immediately anchors JSON syntax, key naming, and confidence scaling without requiring verbose textual rules.",
+                tokensPerCall: "280 tokens",
+                latency: "~460 ms",
+                consistency: "96% (High Fidelity)",
+                cost: "$7.00 / mo"
             },
             multi: {
-                title: "Mode: Multi-Shot (3 Worked Examples)",
-                badge: "~950 Prompt Tokens",
-                preview: `<span class="text-gray-500">// Task Description + 3 Worked Examples (Edge Cases)</span><br>
-<span class="text-purple-400">Classify customer feedback. Return valid JSON.</span><br><br>
-<span class="text-gray-400">Ex 1: "Great service!" -> {"sentiment": "POSITIVE"}</span><br>
-<span class="text-gray-400">Ex 2: "Laggy UI." -> {"sentiment": "NEGATIVE"}</span><br>
-<span class="text-gray-400">Ex 3: "It works." -> {"sentiment": "NEUTRAL"}</span><br><br>
-<span class="text-yellow-300">Text: "The system crashed during sync, but support recovered it quickly."</span><br>
-<span class="text-accentBlue">Output:</span>`,
-                desc: "**Multi-Shot (Few-Shot):** Fornece múltiplos exemplos incluindo casos de borda. Garante máxima precisão estrutural em modelos menores (ex: Claude Haiku).",
-                reliability: "99%",
-                cost: "$0.00285",
-                budget: "950M Tokens",
-                relWidth: "99%",
-                costWidth: "85%",
-                budWidth: "95%"
+                title: "Mode: Multi-Shot (3 Worked Demonstrations)",
+                tokensBadge: "~620 Prompt Tokens",
+                promptHtml: `<span class="text-gray-500">// Task Description + 3 Diverse Examples</span><br><span class="text-purple-400">Classify customer feedback sentiment with strict JSON schema.</span><br><br><span class="text-gray-400">Ex 1: "Super fast response!" -> {"sentiment": "POSITIVE", "score": 1.0}</span><br><span class="text-gray-400">Ex 2: "Awful bug, broke our prod." -> {"sentiment": "NEGATIVE", "score": 0.1}</span><br><span class="text-gray-400">Ex 3: "Average tool, does the job." -> {"sentiment": "NEUTRAL", "score": 0.5}</span><br><br><span class="text-yellow-300">Input: "The system crashed during sync, but support fixed it in 5 mins."</span><br><span class="text-accentBlue">Output:</span>`,
+                desc: "**Multi-Shot:** Essential for complex schemas, nuanced edge cases, or domain-specific formatting. Enforces 99%+ compliance on smaller models like Claude Haiku.",
+                tokensPerCall: "620 tokens",
+                latency: "~620 ms",
+                consistency: "99.8% (Deterministic)",
+                cost: "$15.50 / mo"
             }
         };
 
         function setSimMode(modeKey) {
-            // Update Active Tab Styling
-            ['zero', 'one', 'multi'].forEach(key => {
-                const btn = document.getElementById(`btn-mode-${key}`);
-                if (key === modeKey) {
-                    btn.className = "px-3 py-1 text-xs font-mono rounded transition-all bg-accentBlue text-white font-bold";
-                } else {
-                    btn.className = "px-3 py-1 text-xs font-mono rounded transition-all text-gray-400 hover:text-white";
-                }
+            playBeep(520, 'sine', 0.05, 0.06);
+            document.querySelectorAll('#btn-mode-zero, #btn-mode-one, #btn-mode-multi').forEach(btn => {
+                btn.className = "px-3 py-1 text-xs font-mono rounded transition-all text-gray-400 hover:text-white";
             });
 
-            // Update Inspector Display
-            const data = simulatorData[modeKey];
+            const activeBtn = document.getElementById(`btn-mode-${modeKey}`);
+            if (activeBtn) {
+                activeBtn.className = "px-3 py-1 text-xs font-mono rounded transition-all bg-accentBlue text-white font-bold";
+            }
+
+            const data = simData[modeKey];
             document.getElementById('mode-display-title').innerText = data.title;
-            document.getElementById('token-count-badge').innerText = data.badge;
-            document.getElementById('prompt-preview').innerHTML = data.preview;
+            document.getElementById('token-count-badge').innerText = data.tokensBadge;
+            document.getElementById('prompt-preview').innerHTML = data.promptHtml;
             document.getElementById('mode-description-text').innerHTML = data.desc;
 
-            // Update Metrics Bar
-            document.getElementById('metric-reliability').innerText = data.reliability;
+            document.getElementById('metric-tokens-call').innerText = data.tokensPerCall;
+            document.getElementById('metric-latency').innerText = data.latency;
+            document.getElementById('metric-consistency').innerText = data.consistency;
             document.getElementById('metric-cost').innerText = data.cost;
-            document.getElementById('metric-budget').innerText = data.budget;
-
-            document.getElementById('bar-reliability').style.width = data.relWidth;
-            document.getElementById('bar-cost').style.width = data.costWidth;
-            document.getElementById('bar-budget').style.width = data.budWidth;
         }
 
-        // --- SLIDE 6 INTERACTIVE QUIZ LOGIC ---
-        const quizData = [
+        // -------------------------------------------------------------
+        // SLIDE 6: INTERACTIVE CCDV-F CERTIFICATION QUIZ
+        // -------------------------------------------------------------
+        const quizQuestions = [
             {
-                question: "A software engineering team is building a high-volume log parsing microservice using Claude Haiku. Despite detailed zero-shot instructions, Haiku occasionally fails to format responses as strict JSON. What is the MOST cost-effective architectural fix according to Anthropic best practices?",
+                question: "A software engineering team is building a high-volume log parsing microservice using Claude Haiku. Despite providing detailed zero-shot instructions, Haiku occasionally fails to format the response as strict JSON. What is the MOST cost-effective architectural fix according to Anthropic best practices?",
                 options: [
-                    "Switch immediately to Claude Opus using Zero-Shot prompting.",
-                    "Add 1 or 2 worked JSON examples (One-Shot/Two-Shot) into the prompt template.",
-                    "Write 3 additional paragraphs of instructions describing JSON syntax rules.",
-                    "Fine-tune Claude Haiku by sending the examples via an offline API endpoint."
+                    "A) Upgrade the model tier to Claude Opus zero-shot for all log parsing calls.",
+                    "B) Provide 1 or 2 worked JSON demonstration pairs (few-shot) in the prompt to Haiku.",
+                    "C) Append three additional paragraphs of negative instructions ('DO NOT RETURN PLAIN TEXT').",
+                    "D) Increase temperature to 1.0 to give the model more flexibility in output generation."
                 ],
                 correct: 1,
-                explanation: "CORRECT: Adding 1 or 2 worked examples (One-Shot or Two-Shot) quickly anchors the desired structure for smaller models like Haiku at a fraction of the cost of switching to Opus or fine-tuning."
+                explanation: "Providing 1 or 2 worked examples (Few-Shot / Multi-Shot) to Claude Haiku fixes structural formatting reliably while preserving Haiku's ultra-low latency and minimal token cost."
             },
             {
-                question: "During a CCDV-F exam scenario, a developer notices that adding 10 multi-shot examples fixed a formatting bug but caused an HTTP 400 error during high-context requests. What is the root cause?",
+                question: "Which of the following statements about multi-shot prompting is TRUE regarding API operations and billing?",
                 options: [
-                    "The model's output was truncated due to stop_reason: max_tokens.",
-                    "The prompt exceeded the maximum request token budget limit of the API, throwing a Bad Request error.",
-                    "Multi-shot prompting is not supported on Claude 3 models.",
-                    "The prompt examples permanently corrupted the system prompt cache."
+                    "A) Examples provided in prompts permanently fine-tune Claude's weights without recurring token charges.",
+                    "B) Multi-shot examples are cached by Anthropic for free across all accounts automatically.",
+                    "C) Few-shot demonstration pairs reside in the context window and incur prompt token costs on every API call.",
+                    "D) Multi-shot prompts are only permitted on Claude Sonnet and reject calls on Claude Haiku."
                 ],
-                correct: 1,
-                explanation: "CORRECT: HTTP 400 Bad Request occurs when the client request itself exceeds the API's input token limits. Output truncation (`max_tokens`) returns an HTTP 200 with truncated text."
+                correct: 2,
+                explanation: "Few-shot examples are simply in-context tokens sent in the messages payload. They are processed and billed on every request, which is why minimal prompt discipline is critical for cost management."
             }
         ];
 
-        let currentQuizIdx = 0;
-        let score = 0;
-        let answered = false;
+        let currentQuizIndex = 0;
+        let userScore = 0;
+        let questionAnswered = false;
 
-        function initQuiz() {
-            currentQuizIdx = 0;
-            score = 0;
-            answered = false;
-            document.getElementById('quiz-score').innerText = "0 / 100 PTS";
-            renderQuestion();
-        }
-
-        function renderQuestion() {
-            answered = false;
-            const q = quizData[currentQuizIdx];
-            document.getElementById('quiz-question-box').querySelector('span').innerText = `QUESTION 0${currentQuizIdx + 1} OF 0${quizData.length}`;
+        function renderQuiz() {
+            const q = quizQuestions[currentQuizIndex];
+            document.getElementById('quiz-question-box').querySelector('span').innerText = `QUESTION 0${currentQuizIndex + 1} OF 0${quizQuestions.length}`;
             document.getElementById('quiz-question-text').innerText = q.question;
 
             const optionsContainer = document.getElementById('quiz-options');
             optionsContainer.innerHTML = '';
 
-            q.options.forEach((optText, i) => {
-                const btn = document.createElement('button');
-                btn.className = "w-full text-left p-2.5 bg-bgDark border border-gray-800 hover:border-accentBlue rounded text-xs text-gray-300 font-mono transition flex items-center justify-between group";
-                btn.onclick = () => checkAnswer(i);
-                btn.innerHTML = `
-                    <span><span class="text-accentBlue font-bold mr-2">${String.fromCharCode(65 + i)}.</span> ${optText}</span>
-                    <i class="fa-regular fa-circle text-gray-600 group-hover:text-accentBlue"></i>
-                `;
-                optionsContainer.appendChild(btn);
+            q.options.forEach((optText, index) => {
+                const optButton = document.createElement('button');
+                optButton.className = "w-full text-left p-3 rounded bg-bgDark hover:bg-gray-800 border border-gray-700 text-xs font-mono text-gray-200 transition flex items-center justify-between";
+                optButton.innerText = optText;
+                optButton.onclick = () => selectQuizAnswer(index);
+                optionsContainer.appendChild(optButton);
             });
 
-            document.getElementById('quiz-feedback').className = "hidden";
+            document.getElementById('quiz-feedback').className = "hidden mt-3 p-3 rounded text-xs font-mono flex items-start space-x-2";
+            document.getElementById('btn-quiz-next').classList.add('hidden');
+            questionAnswered = false;
         }
 
-        function checkAnswer(selectedIdx) {
-            if (answered) return;
-            answered = true;
+        function selectQuizAnswer(chosenIndex) {
+            if (questionAnswered) return;
+            questionAnswered = true;
 
-            const q = quizData[currentQuizIdx];
+            const q = quizQuestions[currentQuizIndex];
             const feedbackBox = document.getElementById('quiz-feedback');
-            const optionsContainer = document.getElementById('quiz-options');
-            const optionButtons = optionsContainer.querySelectorAll('button');
+            const options = document.getElementById('quiz-options').children;
 
-            if (selectedIdx === q.correct) {
-                score += 50;
-                document.getElementById('quiz-score').innerText = `${score} / 100 PTS`;
-                optionButtons[selectedIdx].className = "w-full text-left p-2.5 bg-successGreen/20 border border-successGreen rounded text-xs text-successGreen font-mono font-bold flex items-center justify-between";
-                optionButtons[selectedIdx].querySelector('i').className = "fa-solid fa-circle-check text-successGreen";
-
-                feedbackBox.className = "mt-3 p-3 rounded text-xs font-mono bg-successGreen/10 border border-successGreen/30 text-successGreen flex items-start space-x-2";
-                feedbackBox.innerHTML = `<i class="fa-solid fa-circle-check mt-0.5"></i> <div>${q.explanation}</div>`;
+            if (chosenIndex === q.correct) {
+                userScore += 50;
+                playSuccessJingle();
+                document.getElementById('quiz-score').innerText = `${userScore} / 100 PTS`;
+                options[chosenIndex].classList.add('border-successGreen', 'bg-emerald-950/60', 'text-emerald-300');
+                feedbackBox.className = "mt-3 p-3 rounded text-xs font-mono flex items-start space-x-2 bg-emerald-950/80 border border-successGreen text-emerald-200 block";
+                feedbackBox.innerHTML = `<i class="fa-solid fa-circle-check text-successGreen mt-0.5"></i> <span><strong>CORRECT:</strong> ${q.explanation}</span>`;
             } else {
-                optionButtons[selectedIdx].className = "w-full text-left p-2.5 bg-alertRed/20 border border-alertRed rounded text-xs text-alertRed font-mono font-bold flex items-center justify-between";
-                optionButtons[selectedIdx].querySelector('i').className = "fa-solid fa-circle-xmark text-alertRed";
-
-                // Highlight correct one
-                optionButtons[q.correct].className = "w-full text-left p-2.5 bg-successGreen/20 border border-successGreen rounded text-xs text-successGreen font-mono font-bold flex items-center justify-between";
-
-                feedbackBox.className = "mt-3 p-3 rounded text-xs font-mono bg-alertRed/10 border border-alertRed/30 text-alertRed flex items-start space-x-2";
-                feedbackBox.innerHTML = `<i class="fa-solid fa-triangle-exclamation mt-0.5"></i> <div>INCORRECT. ${q.explanation}</div>`;
+                playErrorBuzz();
+                options[chosenIndex].classList.add('border-alertRed', 'bg-red-950/60', 'text-red-300');
+                options[q.correct].classList.add('border-successGreen', 'bg-emerald-950/40');
+                feedbackBox.className = "mt-3 p-3 rounded text-xs font-mono flex items-start space-x-2 bg-red-950/80 border border-alertRed text-red-200 block";
+                feedbackBox.innerHTML = `<i class="fa-solid fa-circle-xmark text-alertRed mt-0.5"></i> <span><strong>INCORRECT:</strong> ${q.explanation}</span>`;
             }
 
-            // Next question timer or finish
-            setTimeout(() => {
-                if (currentQuizIdx < quizData.length - 1) {
-                    currentQuizIdx++;
-                    renderQuestion();
-                }
-            }, 3500);
+            if (currentQuizIndex < quizQuestions.length - 1) {
+                document.getElementById('btn-quiz-next').classList.remove('hidden');
+            }
+        }
+
+        function nextQuizQuestion() {
+            if (currentQuizIndex < quizQuestions.length - 1) {
+                currentQuizIndex++;
+                renderQuiz();
+            }
         }
 
         function resetQuiz() {
-            initQuiz();
+            currentQuizIndex = 0;
+            userScore = 0;
+            document.getElementById('quiz-score').innerText = "0 / 100 PTS";
+            renderQuiz();
         }
+
+        // Initialize Page
+        window.onload = function() {
+            updateSlideUI();
+            renderQuiz();
+        };
     </script>
 </body>
 </html>

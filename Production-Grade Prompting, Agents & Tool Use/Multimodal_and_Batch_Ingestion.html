@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CCDV-F Episode 02: Multimodal & Batch Ingestion</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+    
+    :root {
+      --bg-dark: #0B0F19;
+      --surface-navy: #111827;
+      --surface-card: #1F2937;
+      --border-cyan: rgba(6, 182, 212, 0.3);
+      --accent-blue: #3B82F6;
+      --accent-cyan: #06B6D4;
+      --alert-amber: #F59E0B;
+      --alert-red: #EF4444;
+      --success-green: #10B981;
+      --accent-purple: #8B5CF6;
+      --text-main: #F3F4F6;
+      --text-muted: #9CA3AF;
+      --font-mono: 'Fira Code', monospace;
+      --font-sans: 'Inter', sans-serif;
+    }
+    
+    body {
+      background-color: #030712;
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+    
+    .viewport {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    
+    .deck-container {
+      width: 1280px;
+      height: 720px;
+      background-color: var(--bg-dark);
+      border: 1px solid var(--border-cyan);
+      box-shadow: 0 0 35px rgba(59, 130, 246, 0.15), inset 0 0 15px rgba(0, 0, 0, 0.8);
+      border-radius: 12px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .deck-header {
+      height: 48px;
+      background-color: rgba(17, 24, 39, 0.85);
+      border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+    }
+    
+    .deck-header .brand {
+      color: var(--accent-blue);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+    }
+    
+    .deck-header .status {
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .badge-exam {
+      background: rgba(59, 130, 246, 0.15);
+      border: 1px solid rgba(59, 130, 246, 0.4);
+      color: var(--accent-blue);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+    }
+
+    .slides-wrapper { flex: 1; position: relative; overflow: hidden; }
+    
+    .slide-container {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      padding: 36px 48px;
+      display: none;
+      flex-direction: column;
+      opacity: 0;
+      transition: opacity 0.2s ease-in-out;
+    }
+    
+    .slide-container.active { display: flex; opacity: 1; }
+
+    .slide-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--accent-blue);
+      letter-spacing: 1.5px;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+    
+    .slide-title {
+      font-size: 26px;
+      font-weight: 800;
+      color: #FFFFFF;
+      margin-bottom: 20px;
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .deck-footer {
+      height: 52px;
+      background-color: rgba(17, 24, 39, 0.9);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+    }
+    
+    .nav-btn {
+      background: var(--surface-card);
+      border: 1px solid var(--border-cyan);
+      color: var(--text-main);
+      padding: 6px 14px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+    
+    .nav-btn:hover:not(:disabled) {
+      background: var(--accent-blue);
+      color: #fff;
+    }
+    
+    .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+    .code-box {
+      background: #060913;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 14px 18px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      line-height: 1.6;
+      color: #E2E8F0;
+      overflow-x: auto;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      height: 100%;
+    }
+
+    .feature-card {
+      background: var(--surface-card);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 16px 20px;
+    }
+
+    .quiz-option {
+      background: var(--surface-card);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 10px 14px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.2s;
+    }
+    .quiz-option:hover { border-color: var(--accent-blue); background: rgba(59, 130, 246, 0.05); }
+    .quiz-option.selected-correct { background: rgba(16, 185, 129, 0.15); border-color: var(--success-green); color: #A7F3D0; }
+    .quiz-option.selected-wrong { background: rgba(239, 68, 68, 0.15); border-color: var(--alert-red); color: #FCA5A5; }
+  </style>
+</head>
+<body>
+
+  <div class="viewport">
+    <div class="deck-container">
+      
+      <!-- Top Terminal Header -->
+      <header class="deck-header">
+        <div class="brand">
+          <i class="fa-solid fa-file-image"></i>
+          <span>CCDV-F // MODULE 02: MULTIMODAL &amp; BATCH INGESTION</span>
+        </div>
+        <div class="status">
+          <a href="../index.html" style="color: var(--text-muted); text-decoration: none; margin-right: 12px;">
+            <i class="fa-solid fa-arrow-left"></i> Hub
+          </a>
+          <span class="badge-exam"><i class="fa-solid fa-shield-halved"></i> EXAM FOCUS</span>
+          <span><i class="fa-solid fa-layer-group"></i> 50% BATCH DISCOUNT &amp; PDFS</span>
+        </div>
+      </header>
+
+      <!-- Slides Content Area -->
+      <main class="slides-wrapper">
+
+        <!-- SLIDE 1: Cover -->
+        <section class="slide-container active" id="slide-1">
+          <div style="margin: auto; text-align: center; max-width: 800px;">
+            <div class="slide-eyebrow">// HIGH-VOLUME &amp; MULTIMODAL INGESTION</div>
+            <h1 style="font-size: 38px; font-weight: 800; color: #fff; margin: 12px 0 16px; font-family: var(--font-mono);">
+              Multimodal &amp; Batch Ingestion
+            </h1>
+            <p style="color: var(--text-muted); font-size: 16px; line-height: 1.6; margin-bottom: 24px;">
+              Structuring images and native PDF document blocks, utilizing the Files API for persistent assets, and unlocking 50% cost savings with the Message Batches API.
+            </p>
+            <div style="display: inline-flex; gap: 12px;">
+              <span class="badge-exam"><i class="fa-solid fa-clock"></i> ~15 MIN SESSION</span>
+              <span class="badge-exam" style="border-color: var(--accent-blue); color: var(--accent-blue);"><i class="fa-solid fa-box-archive"></i> 8 SLIDES + CALCULATOR</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 2: Images & PDFs in Message Blocks -->
+        <section class="slide-container" id="slide-2">
+          <div class="slide-eyebrow">// MULTIMODAL STRUCTURE</div>
+          <h2 class="slide-title"><i class="fa-solid fa-image text-cyan-400"></i> Images &amp; PDFs in Messages API</h2>
+          <div class="grid-2">
+            <div class="code-box">
+              <span style="color: #6B7280;"># Sending an image and a PDF to Claude</span><br>
+              messages = [{<br>
+              &nbsp;&nbsp;<span style="color: #06B6D4;">"role"</span>: <span style="color: #10B981;">"user"</span>,<br>
+              &nbsp;&nbsp;<span style="color: #06B6D4;">"content"</span>: [<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;{<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #06B6D4;">"type"</span>: <span style="color: #10B981;">"image"</span>,<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #06B6D4;">"source"</span>: {<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #06B6D4;">"type"</span>: <span style="color: #10B981;">"base64"</span>,<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #06B6D4;">"media_type"</span>: <span style="color: #10B981;">"image/jpeg"</span>,<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #06B6D4;">"data"</span>: b64_img_data<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;},<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;{<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #06B6D4;">"type"</span>: <span style="color: #10B981;">"document"</span>,<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #06B6D4;">"source"</span>: {<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #06B6D4;">"type"</span>: <span style="color: #10B981;">"base64"</span>,<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #06B6D4;">"media_type"</span>: <span style="color: #10B981;">"application/pdf"</span>,<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #06B6D4;">"data"</span>: b64_pdf_data<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;},<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;{<span style="color: #06B6D4;">"type"</span>: <span style="color: #10B981;">"text"</span>, <span style="color: #06B6D4;">"text"</span>: <span style="color: #FBBF24;">"Extract total from invoice."</span>}<br>
+              &nbsp;&nbsp;]<br>
+              }]
+            </div>
+            <div style="font-size: 13px; line-height: 1.6; display: flex; flex-direction: column; gap: 12px;">
+              <div class="feature-card" style="border-left: 3px solid var(--accent-cyan);">
+                <strong style="color: var(--accent-cyan);">Supported Image Formats:</strong>
+                <p style="margin-top: 4px; color: var(--text-muted);">
+                  JPEG, PNG, GIF, and WebP. Maximum size 5MB per image for direct upload.
+                </p>
+              </div>
+              <div class="feature-card" style="border-left: 3px solid var(--alert-amber);">
+                <strong style="color: var(--alert-amber);">Native PDF Support (Document Block):</strong>
+                <p style="margin-top: 4px; color: var(--text-muted);">
+                  Claude accepts PDFs directly using <code>type: "document"</code> with <code>media_type: "application/pdf"</code>. Claude analyzes text, tables, and visual charts natively!
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 3: The Message Batches API -->
+        <section class="slide-container" id="slide-3">
+          <div class="slide-eyebrow">// COST &amp; SCALE OPTIMIZATION</div>
+          <h2 class="slide-title"><i class="fa-solid fa-boxes-stacked text-green-400"></i> The Message Batches API: 50% Cost Savings</h2>
+          <div class="grid-2">
+            <div style="font-size: 13px; line-height: 1.6; display: flex; flex-direction: column; gap: 12px;">
+              <p>
+                For non-interactive pipelines (e.g. overnight batch evals, historical ticket labeling, bulk document translation), synchronous API calls waste budget.
+              </p>
+              <div class="feature-card" style="border-left: 3px solid var(--success-green); background: rgba(16, 185, 129, 0.08);">
+                <strong style="color: var(--success-green); font-size: 14px;">50% Discount on All Tokens:</strong>
+                <p style="margin-top: 4px; color: #D1D5DB;">
+                  Message Batches cut input and output token prices by <strong>exactly 50%</strong> compared to standard synchronous calls.
+                </p>
+              </div>
+              <div class="feature-card" style="border-left: 3px solid var(--accent-blue);">
+                <strong style="color: var(--accent-blue);">24-Hour SLA (Turnaround):</strong>
+                <p style="margin-top: 4px; color: var(--text-muted);">
+                  Batches are processed asynchronously and guaranteed to complete within 24 hours (most finish in minutes to hours).
+                </p>
+              </div>
+            </div>
+            <div class="code-box">
+              <span style="color: #6B7280;"># Submitting a Message Batch</span><br>
+              batch = client.messages.batches.create(<br>
+              &nbsp;&nbsp;requests=[<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;{<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #06B6D4;">"custom_id"</span>: <span style="color: #10B981;">"request-001"</span>,<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #06B6D4;">"params"</span>: {<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #06B6D4;">"model"</span>: <span style="color: #10B981;">"claude-3-5-sonnet-20241022"</span>,<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #06B6D4;">"max_tokens"</span>: 1024,<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #06B6D4;">"messages"</span>: [{<span style="color: #06B6D4;">"role"</span>:<span style="color: #10B981;">"user"</span>, <span style="color: #06B6D4;">"content"</span>: task_1}]<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;},<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;{<span style="color: #06B6D4;">"custom_id"</span>: <span style="color: #10B981;">"request-002"</span>, <span style="color: #06B6D4;">"params"</span>: {...}}<br>
+              &nbsp;&nbsp;]<br>
+              )<br>
+              print(batch.id) <span style="color: #6B7280;"># msgbatch_xyz</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 4: Polling & Retrieving Batch Results -->
+        <section class="slide-container" id="slide-4">
+          <div class="slide-eyebrow">// ASYNC RETRIEVAL PATTERNS</div>
+          <h2 class="slide-title"><i class="fa-solid fa-arrows-rotate text-purple-400"></i> Polling &amp; Retrieving Batch Results</h2>
+          <div class="grid-2">
+            <div style="font-size: 13px; line-height: 1.6; display: flex; flex-direction: column; gap: 12px;">
+              <p>
+                Because batches execute asynchronously, client applications poll status or listen to webhook events.
+              </p>
+              <div class="feature-card" style="border-left: 3px solid var(--accent-purple);">
+                <strong style="color: var(--accent-purple);">Processing Status Lifecycle:</strong>
+                <p style="margin-top: 4px; color: var(--text-muted);">
+                  <code>in_progress</code> &rarr; <code>canceling</code> &rarr; <code>ended</code>.
+                </p>
+              </div>
+              <div class="feature-card" style="border-left: 3px solid var(--success-green);">
+                <strong style="color: var(--success-green);">Individual Result Statuses:</strong>
+                <p style="margin-top: 4px; color: var(--text-muted);">
+                  Each request in the batch returns <code>succeeded</code>, <code>errored</code>, <code>canceled</code>, or <code>expired</code>. One failed item does not fail the batch!
+                </p>
+              </div>
+            </div>
+            <div class="code-box">
+              <span style="color: #6B7280;"># Checking Batch Status &amp; Streaming Results</span><br>
+              batch = client.messages.batches.retrieve(batch_id)<br><br>
+              <span style="color: #8B5CF6;">if</span> batch.processing_status == <span style="color: #10B981;">"ended"</span>:<br>
+              &nbsp;&nbsp;<span style="color: #8B5CF6;">for</span> result <span style="color: #8B5CF6;">in</span> client.messages.batches.results(batch_id):<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;req_id = result.custom_id<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #8B5CF6;">if</span> result.result.type == <span style="color: #10B981;">"succeeded"</span>:<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;response = result.result.message<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;save_output(req_id, response)<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #8B5CF6;">elif</span> result.result.type == <span style="color: #EF4444;">"errored"</span>:<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;logger.error(f<span style="color: #FBBF24;">"Request {req_id} failed: {result.result.error}"</span>)
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 5: Interactive Batch Cost Calculator -->
+        <section class="slide-container" id="slide-5">
+          <div class="slide-eyebrow">// INTERACTIVE LAB</div>
+          <h2 class="slide-title"><i class="fa-solid fa-calculator text-blue-400"></i> Synchronous vs Batch Cost Calculator</h2>
+          <div class="grid-2">
+            <div style="font-size: 13px; display: flex; flex-direction: column; gap: 14px;">
+              <p style="color: var(--text-muted);">
+                Calculate the cost savings of moving a 50,000-document labeling pipeline from Synchronous API to Message Batches API:
+              </p>
+              <div style="display: flex; flex-direction: column; gap: 8px;">
+                <label style="color: #fff; font-family: var(--font-mono); font-size: 12px;">
+                  Documents to process: <strong id="doc-count" style="color: var(--accent-blue);">50,000</strong>
+                </label>
+                <input type="range" min="10000" max="200000" step="10000" value="50000" oninput="updateBatchCalc(this.value)" style="width: 100%; accent-color: var(--accent-blue);">
+              </div>
+              <div class="feature-card" style="border-left: 3px solid var(--success-green);">
+                <strong style="color: var(--success-green); font-size: 14px;">Total Savings: 50% Guaranteed</strong>
+                <p style="color: var(--text-muted); font-size: 12px; margin-top: 4px;">
+                  Ideal when downstream consumer can wait up to 24 hours for completion.
+                </p>
+              </div>
+            </div>
+            <div class="code-box" style="display: flex; flex-direction: column; justify-content: center;">
+              <div style="font-size: 13px; margin-bottom: 8px; color: var(--text-muted);">Pricing Comparison (Claude 3.5 Sonnet):</div>
+              <div style="color: #FCA5A5; font-size: 14px; margin-bottom: 6px;">
+                Standard Sync API: <strong id="sync-cost">$225.00</strong>
+              </div>
+              <div style="color: #A7F3D0; font-size: 16px; font-weight: bold; margin-bottom: 8px;">
+                Message Batches API: <strong id="batch-cost">$112.50</strong>
+              </div>
+              <div style="color: #06B6D4; font-size: 12px;">
+                Your Net Savings: <strong id="net-savings">$112.50 USD</strong>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 6: Production Pitfalls -->
+        <section class="slide-container" id="slide-6">
+          <div class="slide-eyebrow">// PRODUCTION PITFALLS</div>
+          <h2 class="slide-title"><i class="fa-solid fa-radiation text-red-400"></i> The Three Batch &amp; Multimodal Traps</h2>
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; font-size: 13px;">
+            <div class="feature-card" style="border-top: 3px solid var(--alert-red);">
+              <strong style="color: var(--alert-red);"><i class="fa-solid fa-clock"></i> 1. Polling Too Aggressively</strong>
+              <p style="color: var(--text-muted); font-size: 12px; margin-top: 6px;">
+                Polling <code>batches.retrieve()</code> in a tight 1-second loop hits rate limits. Poll with exponential backoff (e.g. every 60s).
+              </p>
+            </div>
+            <div class="feature-card" style="border-top: 3px solid var(--alert-amber);">
+              <strong style="color: var(--alert-amber);"><i class="fa-solid fa-weight-hanging"></i> 2. Massive Base64 Payload Bloat</strong>
+              <p style="color: var(--text-muted); font-size: 12px; margin-top: 6px;">
+                Base64 encoding expands raw binary files by 33%. For recurring large reference assets, use the Files API.
+              </p>
+            </div>
+            <div class="feature-card" style="border-top: 3px solid var(--accent-cyan);">
+              <strong style="color: var(--accent-cyan);"><i class="fa-solid fa-hourglass-end"></i> 3. SLA Misalignment</strong>
+              <p style="color: var(--text-muted); font-size: 12px; margin-top: 6px;">
+                Never use Message Batches for user-facing interactive requests. Batches are strictly for asynchronous non-realtime jobs.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 7: Exam Practice Question -->
+        <section class="slide-container" id="slide-7">
+          <div class="slide-eyebrow">// CCDV-F EXAM SIMULATION</div>
+          <h2 class="slide-title"><i class="fa-solid fa-graduation-cap text-blue-400"></i> Practice Exam Question</h2>
+          <div style="max-width: 900px; margin: 0 auto; width: 100%;">
+            <div style="font-size: 14px; font-weight: 600; color: #fff; margin-bottom: 14px; line-height: 1.5; font-family: var(--font-mono);">
+              An organization needs to classify 200,000 archived support tickets over the weekend to build an internal knowledge base. The results are not needed until Monday morning. What is the most cost-effective and architecturally sound approach?
+            </div>
+            <div class="quiz-option" onclick="checkAnswer(this, false)">
+              <span style="font-weight: bold; color: var(--accent-blue);">A.</span> Spin up 100 concurrent synchronous threads with streaming enabled.
+            </div>
+            <div class="quiz-option" onclick="checkAnswer(this, true)">
+              <span style="font-weight: bold; color: var(--accent-blue);">B.</span> Submit the requests using the Message Batches API to receive a 50% cost discount with a 24-hour SLA.
+            </div>
+            <div class="quiz-option" onclick="checkAnswer(this, false)">
+              <span style="font-weight: bold; color: var(--accent-blue);">C.</span> Concatenate all 200,000 tickets into a single prompt using Extended Thinking.
+            </div>
+            <div class="quiz-option" onclick="checkAnswer(this, false)">
+              <span style="font-weight: bold; color: var(--accent-blue);">D.</span> Send the tickets as base64-encoded PDF files.
+            </div>
+
+            <div id="quiz-explanation" style="display: none; margin-top: 14px; padding: 12px 16px; background: rgba(16, 185, 129, 0.1); border: 1px solid var(--success-green); border-radius: 6px; font-size: 12px; color: #A7F3D0;">
+              <strong>Correct! Option B:</strong> The Message Batches API is purpose-built for large-scale, asynchronous, non-interactive workloads, providing a 50% discount across all tokens within a 24-hour turnaround SLA.
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 8: Summary -->
+        <section class="slide-container" id="slide-8">
+          <div class="slide-eyebrow">// CERTIFICATION CHEAT SHEET</div>
+          <h2 class="slide-title"><i class="fa-solid fa-award text-blue-400"></i> Multimodal &amp; Batch Takeaways</h2>
+          <div class="grid-2" style="font-size: 13px;">
+            <div class="feature-card" style="border-left: 3px solid var(--accent-blue); display: flex; flex-direction: column; gap: 8px;">
+              <strong style="color: var(--accent-blue);">1. 50% Token Discount</strong>
+              <p style="color: var(--text-muted);">
+                Message Batches API cuts costs in half for asynchronous jobs within a 24-hour SLA.
+              </p>
+              <strong style="color: var(--accent-blue); margin-top: 6px;">2. Native PDF Document Blocks</strong>
+              <p style="color: var(--text-muted);">
+                Send PDFs with <code>type: "document"</code> and <code>application/pdf</code> directly to Claude.
+              </p>
+            </div>
+            <div class="feature-card" style="border-left: 3px solid var(--success-green); display: flex; flex-direction: column; gap: 8px;">
+              <strong style="color: var(--success-green);">3. Individual Request Resilience</strong>
+              <p style="color: var(--text-muted);">
+                Batches contain individual request outcomes (<code>succeeded</code>, <code>errored</code>); one bad input does not fail the batch.
+              </p>
+              <strong style="color: var(--success-green); margin-top: 6px;">4. Custom ID Tracking</strong>
+              <p style="color: var(--text-muted);">
+                Use <code>custom_id</code> on each request in the batch to match outputs back to your database records.
+              </p>
+            </div>
+          </div>
+        </section>
+
+      </main>
+
+      <!-- Bottom Navigation Footer -->
+      <footer class="deck-footer">
+        <div style="color: var(--text-muted);">
+          CCDV-F EXAM PREPARATION &bull; LESSON 07 OF 08
+        </div>
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <span>SLIDE <strong id="current-slide-num" style="color: #fff;">1</strong> / 8</span>
+          <div style="display: flex; gap: 6px;">
+            <button id="btn-prev" class="nav-btn" onclick="prevSlide()"><i class="fa-solid fa-chevron-left"></i></button>
+            <button id="btn-next" class="nav-btn" onclick="nextSlide()"><i class="fa-solid fa-chevron-right"></i></button>
+          </div>
+        </div>
+      </footer>
+
+    </div>
+  </div>
+
+  <script>
+    let currentSlide = 1;
+    const totalSlides = 8;
+
+    function updateDeckState() {
+      document.querySelectorAll('.slide-container').forEach(s => s.classList.remove('active'));
+      const active = document.getElementById(`slide-${currentSlide}`);
+      if (active) active.classList.add('active');
+      document.getElementById('current-slide-num').innerText = currentSlide;
+      document.getElementById('btn-prev').disabled = (currentSlide === 1);
+      document.getElementById('btn-next').disabled = (currentSlide === totalSlides);
+    }
+
+    function nextSlide() { if (currentSlide < totalSlides) { currentSlide++; updateDeckState(); } }
+    function prevSlide() { if (currentSlide > 1) { currentSlide--; updateDeckState(); } }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
+      else if (e.key === 'ArrowLeft') prevSlide();
+    });
+
+    function updateBatchCalc(val) {
+      document.getElementById('doc-count').innerText = Number(val).toLocaleString();
+      const syncVal = (val * 0.0045).toFixed(2);
+      const batchVal = (syncVal / 2).toFixed(2);
+      document.getElementById('sync-cost').innerText = `$${syncVal}`;
+      document.getElementById('batch-cost').innerText = `$${batchVal}`;
+      document.getElementById('net-savings').innerText = `$${batchVal} USD`;
+    }
+
+    function checkAnswer(el, isCorrect) {
+      document.querySelectorAll('#slide-7 .quiz-option').forEach(opt => {
+        opt.classList.remove('selected-correct', 'selected-wrong');
+      });
+      if (isCorrect) {
+        el.classList.add('selected-correct');
+        document.getElementById('quiz-explanation').style.display = 'block';
+      } else {
+        el.classList.add('selected-wrong');
+        document.getElementById('quiz-explanation').style.display = 'none';
+      }
+    }
+
+    updateDeckState();
+  </script>
+</body>
+</html>

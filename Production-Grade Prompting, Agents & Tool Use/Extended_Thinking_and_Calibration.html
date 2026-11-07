@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CCDV-F Episode 02: Extended Thinking & Reasoning Calibration</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+    
+    :root {
+      --bg-dark: #0B0F19;
+      --surface-navy: #111827;
+      --surface-card: #1F2937;
+      --border-cyan: rgba(6, 182, 212, 0.3);
+      --accent-blue: #3B82F6;
+      --accent-cyan: #06B6D4;
+      --alert-amber: #F59E0B;
+      --alert-red: #EF4444;
+      --success-green: #10B981;
+      --accent-purple: #8B5CF6;
+      --text-main: #F3F4F6;
+      --text-muted: #9CA3AF;
+      --font-mono: 'Fira Code', monospace;
+      --font-sans: 'Inter', sans-serif;
+    }
+    
+    body {
+      background-color: #030712;
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+    
+    .viewport {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    
+    .deck-container {
+      width: 1280px;
+      height: 720px;
+      background-color: var(--bg-dark);
+      border: 1px solid var(--border-cyan);
+      box-shadow: 0 0 35px rgba(139, 92, 246, 0.15), inset 0 0 15px rgba(0, 0, 0, 0.8);
+      border-radius: 12px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .deck-header {
+      height: 48px;
+      background-color: rgba(17, 24, 39, 0.85);
+      border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+    }
+    
+    .deck-header .brand {
+      color: var(--accent-purple);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+    }
+    
+    .deck-header .status {
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .badge-exam {
+      background: rgba(139, 92, 246, 0.15);
+      border: 1px solid rgba(139, 92, 246, 0.4);
+      color: var(--accent-purple);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+    }
+
+    .slides-wrapper {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .slide-container {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      padding: 36px 48px;
+      display: none;
+      flex-direction: column;
+      opacity: 0;
+      transition: opacity 0.2s ease-in-out;
+    }
+    
+    .slide-container.active {
+      display: flex;
+      opacity: 1;
+    }
+
+    .slide-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--accent-purple);
+      letter-spacing: 1.5px;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+    
+    .slide-title {
+      font-size: 26px;
+      font-weight: 800;
+      color: #FFFFFF;
+      margin-bottom: 20px;
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .deck-footer {
+      height: 52px;
+      background-color: rgba(17, 24, 39, 0.9);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+    }
+    
+    .nav-btn {
+      background: var(--surface-card);
+      border: 1px solid var(--border-cyan);
+      color: var(--text-main);
+      padding: 6px 14px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+    
+    .nav-btn:hover:not(:disabled) {
+      background: var(--accent-purple);
+      color: #fff;
+    }
+    
+    .nav-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    .code-box {
+      background: #060913;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 14px 18px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      line-height: 1.6;
+      color: #E2E8F0;
+      overflow-x: auto;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      height: 100%;
+    }
+
+    .feature-card {
+      background: var(--surface-card);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 16px 20px;
+    }
+
+    .quiz-option {
+      background: var(--surface-card);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 10px 14px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.2s;
+    }
+    .quiz-option:hover { border-color: var(--accent-purple); background: rgba(139, 92, 246, 0.05); }
+    .quiz-option.selected-correct { background: rgba(16, 185, 129, 0.15); border-color: var(--success-green); color: #A7F3D0; }
+    .quiz-option.selected-wrong { background: rgba(239, 68, 68, 0.15); border-color: var(--alert-red); color: #FCA5A5; }
+  </style>
+</head>
+<body>
+
+  <div class="viewport">
+    <div class="deck-container">
+      
+      <!-- Top Terminal Header -->
+      <header class="deck-header">
+        <div class="brand">
+          <i class="fa-solid fa-brain"></i>
+          <span>CCDV-F // MODULE 02: EXTENDED THINKING &amp; CALIBRATION</span>
+        </div>
+        <div class="status">
+          <a href="../index.html" style="color: var(--text-muted); text-decoration: none; margin-right: 12px;">
+            <i class="fa-solid fa-arrow-left"></i> Hub
+          </a>
+          <span class="badge-exam"><i class="fa-solid fa-shield-halved"></i> EXAM FOCUS</span>
+          <span><i class="fa-solid fa-microchip"></i> REASONING BUDGET &amp; REDACTION</span>
+        </div>
+      </header>
+
+      <!-- Slides Content Area -->
+      <main class="slides-wrapper">
+
+        <!-- SLIDE 1: Cover -->
+        <section class="slide-container active" id="slide-1">
+          <div style="margin: auto; text-align: center; max-width: 800px;">
+            <div class="slide-eyebrow">// REASONING CAPABILITY SPECIFICATION</div>
+            <h1 style="font-size: 38px; font-weight: 800; color: #fff; margin: 12px 0 16px; font-family: var(--font-mono);">
+              Extended Thinking &amp; Calibration
+            </h1>
+            <p style="color: var(--text-muted); font-size: 16px; line-height: 1.6; margin-bottom: 24px;">
+              Mastering the thinking budget parameter, temperature constraints, preserving reasoning blocks across multi-turn tool loops, and handling redacted thinking blocks safely.
+            </p>
+            <div style="display: inline-flex; gap: 12px;">
+              <span class="badge-exam"><i class="fa-solid fa-clock"></i> ~15 MIN SESSION</span>
+              <span class="badge-exam" style="border-color: var(--accent-purple); color: var(--accent-purple);"><i class="fa-solid fa-brain"></i> 8 SLIDES + BUDGET SIMULATOR</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 2: What is Extended Thinking -->
+        <section class="slide-container" id="slide-2">
+          <div class="slide-eyebrow">// API ARCHITECTURE</div>
+          <h2 class="slide-title"><i class="fa-solid fa-gears text-purple-400"></i> Extended Thinking: The 3 Strict API Rules</h2>
+          <div class="grid-2">
+            <div class="code-box">
+              <span style="color: #6B7280;"># Enabling Extended Thinking in Messages API</span><br>
+              response = client.messages.create(<br>
+              &nbsp;&nbsp;model=<span style="color: #10B981;">"claude-3-7-sonnet-20250219"</span>,<br>
+              &nbsp;&nbsp;<span style="color: #06B6D4;">max_tokens</span>=<span style="color: #FBBF24;">4096</span>,<br>
+              &nbsp;&nbsp;<span style="color: #06B6D4; font-weight: bold;">thinking</span>={<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #06B6D4;">"type"</span>: <span style="color: #10B981;">"enabled"</span>,<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #06B6D4;">"budget_tokens"</span>: <span style="color: #FBBF24;">2048</span>  <span style="color: #6B7280;"># &gt;= 1024</span><br>
+              &nbsp;&nbsp;},<br>
+              &nbsp;&nbsp;<span style="color: #6B7280;"># temperature CANNOT be modified (fixed 1.0)</span><br>
+              &nbsp;&nbsp;messages=[{<span style="color: #06B6D4;">"role"</span>: <span style="color: #10B981;">"user"</span>, <span style="color: #06B6D4;">"content"</span>: prompt}]<br>
+              )
+            </div>
+            <div style="font-size: 13px; line-height: 1.6; display: flex; flex-direction: column; gap: 12px;">
+              <div class="feature-card" style="border-left: 3px solid var(--accent-purple);">
+                <strong style="color: var(--accent-purple);">Rule 1: Minimum Budget is 1,024</strong>
+                <p style="margin-top: 4px; color: var(--text-muted);">
+                  <code>budget_tokens</code> sets the target ceiling for reasoning tokens. The API rejects any value lower than 1,024 with an HTTP 400 error.
+                </p>
+              </div>
+              <div class="feature-card" style="border-left: 3px solid var(--alert-amber);">
+                <strong style="color: var(--alert-amber);">Rule 2: max_tokens MUST Exceed budget_tokens</strong>
+                <p style="margin-top: 4px; color: var(--text-muted);">
+                  Output tokens include both thinking AND final answer. Therefore, <code>max_tokens</code> must always be strictly greater than <code>budget_tokens</code>!
+                </p>
+              </div>
+              <div class="feature-card" style="border-left: 3px solid var(--alert-red);">
+                <strong style="color: var(--alert-red);">Rule 3: Temperature Locked to 1.0</strong>
+                <p style="margin-top: 4px; color: var(--text-muted);">
+                  When thinking is enabled, setting <code>temperature</code> to anything other than 1.0 throws an immediate API validation error.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 3: Multi-turn Thinking Block Roundtrip -->
+        <section class="slide-container" id="slide-3">
+          <div class="slide-eyebrow">// CRITICAL EXAM TRAP</div>
+          <h2 class="slide-title"><i class="fa-solid fa-arrows-spin text-cyan-400"></i> Multi-Turn Thinking Block Persistence</h2>
+          <div class="grid-2">
+            <div style="font-size: 13px; line-height: 1.6; display: flex; flex-direction: column; gap: 12px;">
+              <div class="feature-card" style="border-left: 3px solid var(--alert-red); background: rgba(239, 68, 68, 0.08);">
+                <strong style="color: var(--alert-red);"><i class="fa-solid fa-triangle-exclamation"></i> The #1 Bug Planted in Module 2:</strong>
+                <p style="margin-top: 6px; color: #FCA5A5;">
+                  Filtering out thinking blocks when storing the assistant turn:
+                  <code style="display: block; margin-top: 4px; color: #fff;">[b for b in blocks if b["type"] != "thinking"] # CRASHES!</code>
+                </p>
+              </div>
+              <div class="feature-card" style="border-left: 3px solid var(--success-green);">
+                <strong style="color: var(--success-green);"><i class="fa-solid fa-check"></i> The Production Fix:</strong>
+                <p style="margin-top: 4px; color: var(--text-muted);">
+                  The Anthropic Messages API <strong>requires</strong> the assistant message in multi-turn tool loops to include the original thinking blocks unmodified. Stripping them breaks conversational trajectory validation!
+                </p>
+              </div>
+            </div>
+            <div class="code-box">
+              <span style="color: #6B7280;"># Correct multi-turn agent history preservation:</span><br>
+              assistant_content = []<br>
+              <span style="color: #8B5CF6;">for</span> block <span style="color: #8B5CF6;">in</span> response.content:<br>
+              &nbsp;&nbsp;<span style="color: #6B7280;"># DO NOT FILTER OUT THINKING BLOCKS!</span><br>
+              &nbsp;&nbsp;<span style="color: #8B5CF6;">if</span> block.type == <span style="color: #10B981;">"thinking"</span>:<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;assistant_content.append({<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #06B6D4;">"type"</span>: <span style="color: #10B981;">"thinking"</span>,<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #06B6D4;">"thinking"</span>: block.thinking,<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #06B6D4;">"signature"</span>: block.signature<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;})<br>
+              &nbsp;&nbsp;<span style="color: #8B5CF6;">elif</span> block.type == <span style="color: #10B981;">"tool_use"</span>:<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;assistant_content.append(block)<br><br>
+              messages.append({<br>
+              &nbsp;&nbsp;<span style="color: #06B6D4;">"role"</span>: <span style="color: #10B981;">"assistant"</span>,<br>
+              &nbsp;&nbsp;<span style="color: #06B6D4;">"content"</span>: assistant_content<br>
+              })
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 4: Redacted Thinking Blocks -->
+        <section class="slide-container" id="slide-4">
+          <div class="slide-eyebrow">// SAFETY &amp; COMPLIANCE</div>
+          <h2 class="slide-title"><i class="fa-solid fa-eye-slash text-amber-400"></i> Redacted Thinking (redacted_thinking)</h2>
+          <div class="grid-2">
+            <div style="font-size: 13px; line-height: 1.6; display: flex; flex-direction: column; gap: 12px;">
+              <p>
+                In certain safety evaluations or privacy-sensitive contexts, Anthropic's safety classifier may determine that internal reasoning cannot be displayed to the end developer.
+              </p>
+              <div class="feature-card" style="border-left: 3px solid var(--alert-amber);">
+                <strong style="color: var(--alert-amber);">Opaque Token Block:</strong>
+                <p style="margin-top: 4px; color: var(--text-muted);">
+                  The response content contains a block with <code>type: "redacted_thinking"</code> containing encrypted cryptographic data.
+                </p>
+              </div>
+              <div class="feature-card" style="border-left: 3px solid var(--accent-cyan);">
+                <strong style="color: var(--accent-cyan);">Client Contract:</strong>
+                <p style="margin-top: 4px; color: var(--text-muted);">
+                  Your code must treat <code>redacted_thinking</code> as an opaque pass-through object and include it unchanged in conversational history when calling subsequent turns.
+                </p>
+              </div>
+            </div>
+            <div class="code-box">
+              <span style="color: #6B7280;"># Shape of a Redacted Thinking Block</span><br>
+              {<br>
+              &nbsp;&nbsp;<span style="color: #06B6D4;">"type"</span>: <span style="color: #F59E0B;">"redacted_thinking"</span>,<br>
+              &nbsp;&nbsp;<span style="color: #06B6D4;">"data"</span>: <span style="color: #10B981;">"EkwBCgIQABIgM..."</span>  <span style="color: #6B7280;"># Encrypted blob</span><br>
+              }<br><br>
+              <span style="color: #6B7280;"># Handling in stream assembler:</span><br>
+              <span style="color: #8B5CF6;">if</span> block.type <span style="color: #8B5CF6;">in</span> (<span style="color: #10B981;">"thinking"</span>, <span style="color: #10B981;">"redacted_thinking"</span>):<br>
+              &nbsp;&nbsp;<span style="color: #6B7280;"># Preserve both unchanged in message history!</span><br>
+              &nbsp;&nbsp;history.append(block)
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 5: Interactive Thinking Budget Calibrator -->
+        <section class="slide-container" id="slide-5">
+          <div class="slide-eyebrow">// INTERACTIVE LAB</div>
+          <h2 class="slide-title"><i class="fa-solid fa-sliders text-purple-400"></i> Thinking Budget &amp; Latency Calibrator</h2>
+          <div class="grid-2">
+            <div style="font-size: 13px; display: flex; flex-direction: column; gap: 14px;">
+              <p style="color: var(--text-muted);">
+                Calibrate <code>budget_tokens</code> based on the task complexity:
+              </p>
+              <div style="display: flex; flex-direction: column; gap: 8px;">
+                <label style="color: #fff; font-family: var(--font-mono); font-size: 12px;">
+                  Budget Tokens: <strong id="budget-val" style="color: var(--accent-purple);">2048</strong>
+                </label>
+                <input type="range" id="budget-slider" min="1024" max="16384" step="512" value="2048" oninput="updateBudget(this.value)" style="width: 100%; accent-color: var(--accent-purple);">
+              </div>
+              <div class="feature-card" id="calibrator-feedback" style="border-left: 3px solid var(--accent-purple);">
+                <strong style="color: var(--accent-purple);">Moderate Reasoning Task:</strong>
+                <p style="color: var(--text-muted); font-size: 12px; margin-top: 4px;">
+                  Ideal for complex JSON extraction, math word problems, or multi-step tool call planning. Latency overhead: ~2-4s.
+                </p>
+              </div>
+            </div>
+            <div class="code-box">
+              <span style="color: #6B7280;"># Calculated Payload Parameters:</span><br>
+              thinking = {<br>
+              &nbsp;&nbsp;<span style="color: #06B6D4;">"type"</span>: <span style="color: #10B981;">"enabled"</span>,<br>
+              &nbsp;&nbsp;<span style="color: #06B6D4;">"budget_tokens"</span>: <span id="code-budget" style="color: #FBBF24;">2048</span><br>
+              }<br>
+              max_tokens = <span id="code-max" style="color: #10B981;">6144</span> <span style="color: #6B7280;"># (budget + 4096 buffer)</span><br>
+              temperature = <span style="color: #EF4444;">1.0</span> <span style="color: #6B7280;"># (Locked by API)</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 6: When NOT to Use Extended Thinking -->
+        <section class="slide-container" id="slide-6">
+          <div class="slide-eyebrow">// COST &amp; LATENCY TRADEOFFS</div>
+          <h2 class="slide-title"><i class="fa-solid fa-scale-unbalanced text-amber-400"></i> When NOT to Enable Extended Thinking</h2>
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; font-size: 13px;">
+            <div class="feature-card" style="border-top: 3px solid var(--alert-red);">
+              <strong style="color: var(--alert-red);"><i class="fa-solid fa-bolt"></i> Low Latency SLAs</strong>
+              <p style="color: var(--text-muted); font-size: 12px; margin-top: 6px;">
+                Thinking generates hundreds to thousands of reasoning tokens before the first answer token streams. Unsuited for real-time autocomplete.
+              </p>
+            </div>
+            <div class="feature-card" style="border-top: 3px solid var(--alert-amber);">
+              <strong style="color: var(--alert-amber);"><i class="fa-solid fa-coins"></i> High-Volume Classification</strong>
+              <p style="color: var(--text-muted); font-size: 12px; margin-top: 6px;">
+                Simple classification into 3 fixed labels does not need reasoning. Output constraints and few-shot examples are 10x faster and cheaper.
+              </p>
+            </div>
+            <div class="feature-card" style="border-top: 3px solid var(--accent-cyan);">
+              <strong style="color: var(--accent-cyan);"><i class="fa-solid fa-filter"></i> Budget Constraints</strong>
+              <p style="color: var(--text-muted); font-size: 12px; margin-top: 6px;">
+                Reasoning tokens count toward billable output tokens. Calibrate the budget rather than maxing it out blindly!
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 7: Exam Practice Question -->
+        <section class="slide-container" id="slide-7">
+          <div class="slide-eyebrow">// CCDV-F EXAM SIMULATION</div>
+          <h2 class="slide-title"><i class="fa-solid fa-graduation-cap text-purple-400"></i> Exam Practice Question</h2>
+          <div style="max-width: 900px; margin: 0 auto; width: 100%;">
+            <div style="font-size: 14px; font-weight: 600; color: #fff; margin-bottom: 14px; line-height: 1.5; font-family: var(--font-mono);">
+              A developer implements an agent that uses Claude 3.7 Sonnet with Extended Thinking enabled. On the second turn of a tool-use conversation, the API returns an HTTP 400 Client Error. What is the most likely cause?
+            </div>
+            <div class="quiz-option" onclick="checkAnswer(this, false)">
+              <span style="font-weight: bold; color: var(--accent-purple);">A.</span> The developer set max_tokens higher than budget_tokens.
+            </div>
+            <div class="quiz-option" onclick="checkAnswer(this, true)">
+              <span style="font-weight: bold; color: var(--accent-purple);">B.</span> The developer stripped the thinking content blocks from the assistant message before sending turn 2.
+            </div>
+            <div class="quiz-option" onclick="checkAnswer(this, false)">
+              <span style="font-weight: bold; color: var(--accent-purple);">C.</span> The developer forgot to pass temperature: 0.0.
+            </div>
+            <div class="quiz-option" onclick="checkAnswer(this, false)">
+              <span style="font-weight: bold; color: var(--accent-purple);">D.</span> The developer set budget_tokens to 2048 instead of 512.
+            </div>
+
+            <div id="quiz-explanation" style="display: none; margin-top: 14px; padding: 12px 16px; background: rgba(16, 185, 129, 0.1); border: 1px solid var(--success-green); border-radius: 6px; font-size: 12px; color: #A7F3D0;">
+              <strong>Correct! Option B:</strong> The Anthropic Messages API strictly enforces that all thinking blocks emitted by Claude must be preserved in the assistant message history for subsequent turns. Stripping them triggers an immediate HTTP 400 error.
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 8: Certification Summary -->
+        <section class="slide-container" id="slide-8">
+          <div class="slide-eyebrow">// CERTIFICATION CHEAT SHEET</div>
+          <h2 class="slide-title"><i class="fa-solid fa-award text-purple-400"></i> Extended Thinking Rules for CCDV-F Exam</h2>
+          <div class="grid-2" style="font-size: 13px;">
+            <div class="feature-card" style="border-left: 3px solid var(--accent-purple); display: flex; flex-direction: column; gap: 8px;">
+              <strong style="color: var(--accent-purple);">1. Syntax &amp; Thresholds</strong>
+              <p style="color: var(--text-muted);">
+                <code>thinking: {"type": "enabled", "budget_tokens": N}</code> with <code>N &gt;= 1024</code>.
+              </p>
+              <strong style="color: var(--accent-purple); margin-top: 6px;">2. Temperature Rule</strong>
+              <p style="color: var(--text-muted);">
+                Always locked to 1.0. Do not alter or pass any other value.
+              </p>
+            </div>
+            <div class="feature-card" style="border-left: 3px solid var(--accent-cyan); display: flex; flex-direction: column; gap: 8px;">
+              <strong style="color: var(--accent-cyan);">3. Block Persistence</strong>
+              <p style="color: var(--text-muted);">
+                Never strip <code>thinking</code> or <code>redacted_thinking</code> blocks across tool turns.
+              </p>
+              <strong style="color: var(--accent-cyan); margin-top: 6px;">4. max_tokens Ceiling</strong>
+              <p style="color: var(--text-muted);">
+                <code>max_tokens</code> must always exceed <code>budget_tokens</code> to leave room for final content.
+              </p>
+            </div>
+          </div>
+        </section>
+
+      </main>
+
+      <!-- Bottom Navigation Footer -->
+      <footer class="deck-footer">
+        <div style="color: var(--text-muted);">
+          CCDV-F EXAM PREPARATION &bull; LESSON 03 OF 08
+        </div>
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <span>SLIDE <strong id="current-slide-num" style="color: #fff;">1</strong> / 8</span>
+          <div style="display: flex; gap: 6px;">
+            <button id="btn-prev" class="nav-btn" onclick="prevSlide()"><i class="fa-solid fa-chevron-left"></i></button>
+            <button id="btn-next" class="nav-btn" onclick="nextSlide()"><i class="fa-solid fa-chevron-right"></i></button>
+          </div>
+        </div>
+      </footer>
+
+    </div>
+  </div>
+
+  <script>
+    let currentSlide = 1;
+    const totalSlides = 8;
+
+    function updateDeckState() {
+      document.querySelectorAll('.slide-container').forEach(s => s.classList.remove('active'));
+      const active = document.getElementById(`slide-${currentSlide}`);
+      if (active) active.classList.add('active');
+      document.getElementById('current-slide-num').innerText = currentSlide;
+      document.getElementById('btn-prev').disabled = (currentSlide === 1);
+      document.getElementById('btn-next').disabled = (currentSlide === totalSlides);
+    }
+
+    function nextSlide() { if (currentSlide < totalSlides) { currentSlide++; updateDeckState(); } }
+    function prevSlide() { if (currentSlide > 1) { currentSlide--; updateDeckState(); } }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
+      else if (e.key === 'ArrowLeft') prevSlide();
+    });
+
+    function updateBudget(val) {
+      document.getElementById('budget-val').innerText = val;
+      document.getElementById('code-budget').innerText = val;
+      const maxVal = parseInt(val) + 4096;
+      document.getElementById('code-max').innerText = maxVal;
+
+      const card = document.getElementById('calibrator-feedback');
+      if (val < 2048) {
+        card.innerHTML = `
+          <strong style="color: var(--accent-cyan);">Light Reasoning (~1k tokens):</strong>
+          <p style="color: var(--text-muted); font-size: 12px; margin-top: 4px;">
+            Fastest thinking mode. Good for verifying code syntax or single tool disambiguation.
+          </p>
+        `;
+      } else if (val < 8192) {
+        card.innerHTML = `
+          <strong style="color: var(--accent-purple);">Moderate Reasoning (2k - 8k tokens):</strong>
+          <p style="color: var(--text-muted); font-size: 12px; margin-top: 4px;">
+            Sweet spot for deep debugging, complex architectural tradeoffs, and multi-step tool sequences.
+          </p>
+        `;
+      } else {
+        card.innerHTML = `
+          <strong style="color: var(--alert-amber);">Heavy Mathematical / Architectural Search (8k+ tokens):</strong>
+          <p style="color: var(--text-muted); font-size: 12px; margin-top: 4px;">
+            Maximum depth for algorithmic proofs and comprehensive code refactoring. High latency &amp; token spend.
+          </p>
+        `;
+      }
+    }
+
+    function checkAnswer(el, isCorrect) {
+      document.querySelectorAll('#slide-7 .quiz-option').forEach(opt => {
+        opt.classList.remove('selected-correct', 'selected-wrong');
+      });
+      if (isCorrect) {
+        el.classList.add('selected-correct');
+        document.getElementById('quiz-explanation').style.display = 'block';
+      } else {
+        el.classList.add('selected-wrong');
+        document.getElementById('quiz-explanation').style.display = 'none';
+      }
+    }
+
+    updateDeckState();
+  </script>
+</body>
+</html>

@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CCDV-F Episode 02: Agent Construction & HITL Checkpoints</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+    
+    :root {
+      --bg-dark: #0B0F19;
+      --surface-navy: #111827;
+      --surface-card: #1F2937;
+      --border-cyan: rgba(6, 182, 212, 0.3);
+      --accent-blue: #3B82F6;
+      --accent-cyan: #06B6D4;
+      --alert-amber: #F59E0B;
+      --alert-red: #EF4444;
+      --success-green: #10B981;
+      --accent-purple: #8B5CF6;
+      --text-main: #F3F4F6;
+      --text-muted: #9CA3AF;
+      --font-mono: 'Fira Code', monospace;
+      --font-sans: 'Inter', sans-serif;
+    }
+    
+    body {
+      background-color: #030712;
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+    
+    .viewport {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    
+    .deck-container {
+      width: 1280px;
+      height: 720px;
+      background-color: var(--bg-dark);
+      border: 1px solid var(--border-cyan);
+      box-shadow: 0 0 35px rgba(245, 158, 11, 0.15), inset 0 0 15px rgba(0, 0, 0, 0.8);
+      border-radius: 12px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .deck-header {
+      height: 48px;
+      background-color: rgba(17, 24, 39, 0.85);
+      border-bottom: 1px solid rgba(245, 158, 11, 0.2);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+    }
+    
+    .deck-header .brand {
+      color: var(--alert-amber);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+    }
+    
+    .deck-header .status {
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .badge-exam {
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      color: var(--alert-amber);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+    }
+
+    .slides-wrapper { flex: 1; position: relative; overflow: hidden; }
+    
+    .slide-container {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      padding: 36px 48px;
+      display: none;
+      flex-direction: column;
+      opacity: 0;
+      transition: opacity 0.2s ease-in-out;
+    }
+    
+    .slide-container.active { display: flex; opacity: 1; }
+
+    .slide-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--alert-amber);
+      letter-spacing: 1.5px;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+    
+    .slide-title {
+      font-size: 26px;
+      font-weight: 800;
+      color: #FFFFFF;
+      margin-bottom: 20px;
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .deck-footer {
+      height: 52px;
+      background-color: rgba(17, 24, 39, 0.9);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+    }
+    
+    .nav-btn {
+      background: var(--surface-card);
+      border: 1px solid var(--border-cyan);
+      color: var(--text-main);
+      padding: 6px 14px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+    
+    .nav-btn:hover:not(:disabled) {
+      background: var(--alert-amber);
+      color: #000;
+    }
+    
+    .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+    .code-box {
+      background: #060913;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 14px 18px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      line-height: 1.6;
+      color: #E2E8F0;
+      overflow-x: auto;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      height: 100%;
+    }
+
+    .feature-card {
+      background: var(--surface-card);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 16px 20px;
+    }
+
+    .quiz-option {
+      background: var(--surface-card);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 10px 14px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.2s;
+    }
+    .quiz-option:hover { border-color: var(--alert-amber); background: rgba(245, 158, 11, 0.05); }
+    .quiz-option.selected-correct { background: rgba(16, 185, 129, 0.15); border-color: var(--success-green); color: #A7F3D0; }
+    .quiz-option.selected-wrong { background: rgba(239, 68, 68, 0.15); border-color: var(--alert-red); color: #FCA5A5; }
+  </style>
+</head>
+<body>
+
+  <div class="viewport">
+    <div class="deck-container">
+      
+      <!-- Top Terminal Header -->
+      <header class="deck-header">
+        <div class="brand">
+          <i class="fa-solid fa-robot"></i>
+          <span>CCDV-F // MODULE 02: AGENT CONSTRUCTION &amp; HITL</span>
+        </div>
+        <div class="status">
+          <a href="../index.html" style="color: var(--text-muted); text-decoration: none; margin-right: 12px;">
+            <i class="fa-solid fa-arrow-left"></i> Hub
+          </a>
+          <span class="badge-exam"><i class="fa-solid fa-shield-halved"></i> EXAM FOCUS</span>
+          <span><i class="fa-solid fa-person-circle-check"></i> AUTONOMOUS LOOPS &amp; GATES</span>
+        </div>
+      </header>
+
+      <!-- Slides Content Area -->
+      <main class="slides-wrapper">
+
+        <!-- SLIDE 1: Cover -->
+        <section class="slide-container active" id="slide-1">
+          <div style="margin: auto; text-align: center; max-width: 800px;">
+            <div class="slide-eyebrow">// AGENTIC SYSTEMS DESIGN</div>
+            <h1 style="font-size: 38px; font-weight: 800; color: #fff; margin: 12px 0 16px; font-family: var(--font-mono);">
+              Agent Construction &amp; HITL Checkpoints
+            </h1>
+            <p style="color: var(--text-muted); font-size: 16px; line-height: 1.6; margin-bottom: 24px;">
+              Distinguishing workflows from autonomous agents, implementing robust loop termination guards, and placing Human-in-the-Loop (HITL) checkpoints for irreversible actions.
+            </p>
+            <div style="display: inline-flex; gap: 12px;">
+              <span class="badge-exam"><i class="fa-solid fa-clock"></i> ~22 MIN SESSION</span>
+              <span class="badge-exam" style="border-color: var(--alert-amber); color: var(--alert-amber);"><i class="fa-solid fa-code-commit"></i> 8 SLIDES + SIMULATOR</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 2: Workflows vs Agents -->
+        <section class="slide-container" id="slide-2">
+          <div class="slide-eyebrow">// ARCHITECTURAL CLASSIFICATION</div>
+          <h2 class="slide-title"><i class="fa-solid fa-diagram-project text-amber-400"></i> Workflows vs Autonomous Agents</h2>
+          <div class="grid-2">
+            <div class="feature-card" style="border-left: 3px solid var(--accent-cyan); display: flex; flex-direction: column; gap: 8px; font-size: 13px;">
+              <strong style="color: var(--accent-cyan); font-size: 15px;"><i class="fa-solid fa-network-wired"></i> Workflow Patterns</strong>
+              <p style="color: var(--text-muted);">
+                Code orchestrates the execution path deterministically via fixed routing or chaining.
+              </p>
+              <ul style="margin: 4px 0 0 16px; color: #D1D5DB; space-y-1;">
+                <li><strong>Prompt Chaining:</strong> Step A output feeds into Step B prompt.</li>
+                <li><strong>Routing:</strong> Classifier sends input to specialized prompts.</li>
+                <li><strong>Parallelization:</strong> Multiple sub-tasks run concurrently.</li>
+              </ul>
+              <p style="color: var(--success-green); font-size: 12px; margin-top: 4px;">
+                Predictable latency, lower cost, easiest to evaluate.
+              </p>
+            </div>
+            <div class="feature-card" style="border-left: 3px solid var(--alert-amber); display: flex; flex-direction: column; gap: 8px; font-size: 13px;">
+              <strong style="color: var(--alert-amber); font-size: 15px;"><i class="fa-solid fa-infinity"></i> Autonomous Agent Loops</strong>
+              <p style="color: var(--text-muted);">
+                The LLM dynamically controls its own control flow and tool selection in a loop until it reaches its objective.
+              </p>
+              <ul style="margin: 4px 0 0 16px; color: #D1D5DB; space-y-1;">
+                <li>LLM inspects tool output and decides next action.</li>
+                <li>Adapts trajectory if a tool returns an error.</li>
+                <li>Requires turn limits &amp; circuit breakers.</li>
+              </ul>
+              <p style="color: var(--alert-amber); font-size: 12px; margin-top: 4px;">
+                Higher flexibility, but requires safety guardrails.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 3: The Production Agent Loop Anatomy -->
+        <section class="slide-container" id="slide-3">
+          <div class="slide-eyebrow">// IMPLEMENTATION PATTERN</div>
+          <h2 class="slide-title"><i class="fa-solid fa-rotate text-cyan-400"></i> The Production Agent Loop Blueprint</h2>
+          <div class="grid-2">
+            <div class="code-box">
+              <span style="color: #6B7280;"># Bulletproof Production Agent Loop</span><br>
+              MAX_TURNS = 10<br>
+              turn_count = 0<br><br>
+              <span style="color: #8B5CF6;">while</span> turn_count &lt; MAX_TURNS:<br>
+              &nbsp;&nbsp;turn_count += 1<br>
+              &nbsp;&nbsp;response = client.messages.create(...)<br><br>
+              &nbsp;&nbsp;<span style="color: #6B7280;"># 1. Exit condition: Task complete</span><br>
+              &nbsp;&nbsp;<span style="color: #8B5CF6;">if</span> response.stop_reason == <span style="color: #10B981;">"end_turn"</span>:<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #8B5CF6;">return</span> extract_text(response)<br><br>
+              &nbsp;&nbsp;<span style="color: #6B7280;"># 2. Tool turn execution</span><br>
+              &nbsp;&nbsp;<span style="color: #8B5CF6;">if</span> response.stop_reason == <span style="color: #10B981;">"tool_use"</span>:<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;results = execute_tools_parallel(response)<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;messages.append({<span style="color: #06B6D4;">"role"</span>: <span style="color: #10B981;">"assistant"</span>, <span style="color: #06B6D4;">"content"</span>: response.content})<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;messages.append({<span style="color: #06B6D4;">"role"</span>: <span style="color: #10B981;">"user"</span>, <span style="color: #06B6D4;">"content"</span>: results})<br><br>
+              <span style="color: #8B5CF6;">raise</span> AgentMaxTurnsExceeded(<span style="color: #FBBF24;">"Circuit breaker triggered"</span>)
+            </div>
+            <div style="font-size: 13px; line-height: 1.6; display: flex; flex-direction: column; gap: 12px;">
+              <div class="feature-card" style="border-left: 3px solid var(--alert-red);">
+                <strong style="color: var(--alert-red);">Circuit Breaker (MAX_TURNS):</strong>
+                <p style="margin-top: 4px; color: var(--text-muted);">
+                  Without a hard max turn counter, an agent trapped in a hallucination or permission loop will burn tokens until billing limits trigger.
+                </p>
+              </div>
+              <div class="feature-card" style="border-left: 3px solid var(--success-green);">
+                <strong style="color: var(--success-green);">Clean Exit on "end_turn":</strong>
+                <p style="margin-top: 4px; color: var(--text-muted);">
+                  When Claude determines all information is gathered, <code>stop_reason</code> returns <code>"end_turn"</code>. Return the synthesized response to the user.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 4: Human-in-the-Loop (HITL) Checkpoints -->
+        <section class="slide-container" id="slide-4">
+          <div class="slide-eyebrow">// SAFETY &amp; GOVERNANCE</div>
+          <h2 class="slide-title"><i class="fa-solid fa-hand text-red-400"></i> Human-in-the-Loop (HITL) Checkpoints</h2>
+          <div class="grid-2">
+            <div style="font-size: 13px; line-height: 1.6; display: flex; flex-direction: column; gap: 12px;">
+              <p>
+                In production, tools have differing blast radiuses: read-only queries (safe) versus mutating financial or operational state (destructive/irreversible).
+              </p>
+              <div class="feature-card" style="border-left: 3px solid var(--alert-red); background: rgba(239, 68, 68, 0.08);">
+                <strong style="color: var(--alert-red);">Irreversible Actions:</strong>
+                <ul style="margin: 4px 0 0 16px; color: #FCA5A5;">
+                  <li>Executing refunds or bank transfers</li>
+                  <li>Deleting user accounts or databases</li>
+                  <li>Sending outbound emails to customers</li>
+                </ul>
+              </div>
+              <div class="feature-card" style="border-left: 3px solid var(--success-green);">
+                <strong style="color: var(--success-green);">Approval Gate Pattern:</strong>
+                <p style="margin-top: 4px; color: var(--text-muted);">
+                  Pause execution, serialize agent state to Redis/DB, prompt human operator for approval, and resume on callback!
+                </p>
+              </div>
+            </div>
+            <div class="code-box">
+              <span style="color: #6B7280;"># Placing an Approval Gate</span><br>
+              DESTRUCTIVE_TOOLS = {<span style="color: #10B981;">"transfer_funds"</span>, <span style="color: #10B981;">"delete_record"</span>}<br><br>
+              <span style="color: #8B5CF6;">for</span> block <span style="color: #8B5CF6;">in</span> response.content:<br>
+              &nbsp;&nbsp;<span style="color: #8B5CF6;">if</span> block.type == <span style="color: #10B981;">"tool_use"</span> <span style="color: #8B5CF6;">and</span> block.name <span style="color: #8B5CF6;">in</span> DESTRUCTIVE_TOOLS:<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;approval_token = save_pending_action(block)<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;notify_human_operator(block.name, block.input, approval_token)<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #8B5CF6;">return</span> {<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #06B6D4;">"status"</span>: <span style="color: #FBBF24;">"WAITING_FOR_HUMAN_APPROVAL"</span>,<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #06B6D4;">"action"</span>: block.name<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;}
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 5: Interactive HITL Simulator -->
+        <section class="slide-container" id="slide-5">
+          <div class="slide-eyebrow">// INTERACTIVE LAB</div>
+          <h2 class="slide-title"><i class="fa-solid fa-gamepad text-amber-400"></i> Agent Flight Simulator with HITL Gate</h2>
+          <div class="grid-2">
+            <div style="font-size: 13px; display: flex; flex-direction: column; gap: 12px;">
+              <p style="color: var(--text-muted);">
+                Simulate an autonomous agent tasked with processing a customer support ticket requesting a $500 refund.
+              </p>
+              <button onclick="startAgentFlight()" class="nav-btn" style="justify-content: center;">
+                <i class="fa-solid fa-play"></i> Launch Agent Task
+              </button>
+              <div id="hitl-action-buttons" style="display: none; gap: 10px;">
+                <button onclick="resolveGate(true)" class="nav-btn" style="background: var(--success-green); color: #000; flex: 1; justify-content: center;">
+                  <i class="fa-solid fa-check"></i> Approve Refund
+                </button>
+                <button onclick="resolveGate(false)" class="nav-btn" style="background: var(--alert-red); color: #fff; flex: 1; justify-content: center;">
+                  <i class="fa-solid fa-xmark"></i> Reject Action
+                </button>
+              </div>
+            </div>
+            <div class="code-box" id="agent-flight-log" style="font-size: 11px; min-height: 220px;">
+              <span style="color: #6B7280;">// Agent loop telemetry will stream here...</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 6: Production Failure Modes -->
+        <section class="slide-container" id="slide-6">
+          <div class="slide-eyebrow">// PRODUCTION PITFALLS</div>
+          <h2 class="slide-title"><i class="fa-solid fa-triangle-exclamation text-red-400"></i> The Three Fatal Agent Loop Traps</h2>
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; font-size: 13px;">
+            <div class="feature-card" style="border-top: 3px solid var(--alert-red);">
+              <strong style="color: var(--alert-red);"><i class="fa-solid fa-infinity"></i> 1. Missing Max Turns</strong>
+              <p style="color: var(--text-muted); font-size: 12px; margin-top: 6px;">
+                The loop runs <code>while True:</code> with no hard limit. A cyclic tool error burns tokens infinitely.
+              </p>
+            </div>
+            <div class="feature-card" style="border-top: 3px solid var(--alert-amber);">
+              <strong style="color: var(--alert-amber);"><i class="fa-solid fa-link-slash"></i> 2. Ignored Tool Errors</strong>
+              <p style="color: var(--text-muted); font-size: 12px; margin-top: 6px;">
+                Discarding exceptions or returning empty strings instead of <code>is_error: True</code> causes Claude to repeat the same failed call.
+              </p>
+            </div>
+            <div class="feature-card" style="border-top: 3px solid var(--accent-cyan);">
+              <strong style="color: var(--accent-cyan);"><i class="fa-solid fa-fire"></i> 3. Ungated Destructive Tools</strong>
+              <p style="color: var(--text-muted); font-size: 12px; margin-top: 6px;">
+                Allowing an agent to execute irreversible deletions or money transfers autonomously without human confirmation.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 7: Exam Practice Question -->
+        <section class="slide-container" id="slide-7">
+          <div class="slide-eyebrow">// CCDV-F EXAM SIMULATION</div>
+          <h2 class="slide-title"><i class="fa-solid fa-graduation-cap text-amber-400"></i> Practice Exam Question</h2>
+          <div style="max-width: 900px; margin: 0 auto; width: 100%;">
+            <div style="font-size: 14px; font-weight: 600; color: #fff; margin-bottom: 14px; line-height: 1.5; font-family: var(--font-mono);">
+              When should an architect implement an autonomous Agent Loop rather than a deterministic Workflow pattern (such as Prompt Chaining or Routing)?
+            </div>
+            <div class="quiz-option" onclick="checkAnswer(this, false)">
+              <span style="font-weight: bold; color: var(--alert-amber);">A.</span> When latency and cost predictability are the primary engineering objectives.
+            </div>
+            <div class="quiz-option" onclick="checkAnswer(this, true)">
+              <span style="font-weight: bold; color: var(--alert-amber);">B.</span> When the sequence of steps and tools needed to solve the problem cannot be predetermined in advance.
+            </div>
+            <div class="quiz-option" onclick="checkAnswer(this, false)">
+              <span style="font-weight: bold; color: var(--alert-amber);">C.</span> When the integration performs simple text extraction with no external APIs.
+            </div>
+            <div class="quiz-option" onclick="checkAnswer(this, false)">
+              <span style="font-weight: bold; color: var(--alert-amber);">D.</span> Only when Claude 3.5 Haiku is used.
+            </div>
+
+            <div id="quiz-explanation" style="display: none; margin-top: 14px; padding: 12px 16px; background: rgba(16, 185, 129, 0.1); border: 1px solid var(--success-green); border-radius: 6px; font-size: 12px; color: #A7F3D0;">
+              <strong>Correct! Option B:</strong> Workflows excel when tasks have fixed, predictable steps. Autonomous agents are required when the problem demands dynamic exploration where the model decides next actions based on intermediate tool outputs.
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 8: Summary -->
+        <section class="slide-container" id="slide-8">
+          <div class="slide-eyebrow">// CERTIFICATION CHEAT SHEET</div>
+          <h2 class="slide-title"><i class="fa-solid fa-award text-amber-400"></i> Agent Rules for CCDV-F Exam</h2>
+          <div class="grid-2" style="font-size: 13px;">
+            <div class="feature-card" style="border-left: 3px solid var(--alert-amber); display: flex; flex-direction: column; gap: 8px;">
+              <strong style="color: var(--alert-amber);">1. Turn Limits are Mandatory</strong>
+              <p style="color: var(--text-muted);">
+                Always enforce a hard <code>MAX_TURNS</code> circuit breaker to prevent infinite token burn.
+              </p>
+              <strong style="color: var(--alert-amber); margin-top: 6px;">2. stop_reason Logic</strong>
+              <p style="color: var(--text-muted);">
+                Exit loop on <code>"end_turn"</code>; execute tools on <code>"tool_use"</code>.
+              </p>
+            </div>
+            <div class="feature-card" style="border-left: 3px solid var(--accent-cyan); display: flex; flex-direction: column; gap: 8px;">
+              <strong style="color: var(--accent-cyan);">3. HITL for Irreversible Actions</strong>
+              <p style="color: var(--text-muted);">
+                Never execute financial, deleting, or public dispatch tools without human approval gates.
+              </p>
+              <strong style="color: var(--accent-cyan); margin-top: 6px;">4. Workflow vs Agent Tradeoff</strong>
+              <p style="color: var(--text-muted);">
+                Favor deterministic workflows for known paths; reserve autonomous loops for open exploration.
+              </p>
+            </div>
+          </div>
+        </section>
+
+      </main>
+
+      <!-- Bottom Navigation Footer -->
+      <footer class="deck-footer">
+        <div style="color: var(--text-muted);">
+          CCDV-F EXAM PREPARATION &bull; LESSON 06 OF 08
+        </div>
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <span>SLIDE <strong id="current-slide-num" style="color: #fff;">1</strong> / 8</span>
+          <div style="display: flex; gap: 6px;">
+            <button id="btn-prev" class="nav-btn" onclick="prevSlide()"><i class="fa-solid fa-chevron-left"></i></button>
+            <button id="btn-next" class="nav-btn" onclick="nextSlide()"><i class="fa-solid fa-chevron-right"></i></button>
+          </div>
+        </div>
+      </footer>
+
+    </div>
+  </div>
+
+  <script>
+    let currentSlide = 1;
+    const totalSlides = 8;
+
+    function updateDeckState() {
+      document.querySelectorAll('.slide-container').forEach(s => s.classList.remove('active'));
+      const active = document.getElementById(`slide-${currentSlide}`);
+      if (active) active.classList.add('active');
+      document.getElementById('current-slide-num').innerText = currentSlide;
+      document.getElementById('btn-prev').disabled = (currentSlide === 1);
+      document.getElementById('btn-next').disabled = (currentSlide === totalSlides);
+    }
+
+    function nextSlide() { if (currentSlide < totalSlides) { currentSlide++; updateDeckState(); } }
+    function prevSlide() { if (currentSlide > 1) { currentSlide--; updateDeckState(); } }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
+      else if (e.key === 'ArrowLeft') prevSlide();
+    });
+
+    function startAgentFlight() {
+      const log = document.getElementById('agent-flight-log');
+      log.innerHTML = `<div>[TURN 1] User: "Process $500 refund for broken widget (Order #90210)."</div>`;
+      setTimeout(() => {
+        log.innerHTML += `<div>[TURN 1] Claude calls tool: <code>lookup_order({"order_id":"ORD-90210"})</code></div>`;
+        log.innerHTML += `<div>[TURN 1] Tool returns: {"order_id":"ORD-90210","status":"delivered","amount":500}</div>`;
+      }, 700);
+
+      setTimeout(() => {
+        log.innerHTML += `<div>[TURN 2] Claude intends to call: <span style="color:#EF4444;font-weight:bold;">issue_refund({"order_id":"ORD-90210","amount":500})</span></div>`;
+        log.innerHTML += `<div style="color:#F59E0B;font-weight:bold;">[GATE TRIGGERED] 'issue_refund' is an irreversible tool! Execution paused. Awaiting human approval...</div>`;
+        document.getElementById('hitl-action-buttons').style.display = 'flex';
+      }, 1500);
+    }
+
+    function resolveGate(approved) {
+      const log = document.getElementById('agent-flight-log');
+      document.getElementById('hitl-action-buttons').style.display = 'none';
+      if (approved) {
+        log.innerHTML += `<div style="color:#10B981;">[HUMAN OPERATOR] Action APPROVED. Dispatching tool to payment gateway...</div>`;
+        log.innerHTML += `<div>[TURN 3] Tool returns: {"refund_id":"RF-772","status":"succeeded"}</div>`;
+        log.innerHTML += `<div style="color:#06B6D4;">[TURN 3] Claude: "Your refund of $500 for Order #90210 has been processed successfully."</div>`;
+      } else {
+        log.innerHTML += `<div style="color:#EF4444;">[HUMAN OPERATOR] Action REJECTED. Returning cancellation to agent...</div>`;
+        log.innerHTML += `<div>[TURN 3] Tool returns: {"is_error": true, "message": "Refund rejected by manager"}</div>`;
+        log.innerHTML += `<div style="color:#06B6D4;">[TURN 3] Claude: "I am unable to process the refund directly as manager authorization was declined."</div>`;
+      }
+    }
+
+    function checkAnswer(el, isCorrect) {
+      document.querySelectorAll('#slide-7 .quiz-option').forEach(opt => {
+        opt.classList.remove('selected-correct', 'selected-wrong');
+      });
+      if (isCorrect) {
+        el.classList.add('selected-correct');
+        document.getElementById('quiz-explanation').style.display = 'block';
+      } else {
+        el.classList.add('selected-wrong');
+        document.getElementById('quiz-explanation').style.display = 'none';
+      }
+    }
+
+    updateDeckState();
+  </script>
+</body>
+</html>

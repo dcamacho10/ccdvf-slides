@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CCDV-F Episode 02: Module 2 Comprehensive Recap Deck</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+    
+    :root {
+      --bg-dark: #0B0F19;
+      --surface-navy: #111827;
+      --surface-card: #1F2937;
+      --border-cyan: rgba(6, 182, 212, 0.3);
+      --accent-blue: #3B82F6;
+      --accent-cyan: #06B6D4;
+      --alert-amber: #F59E0B;
+      --alert-red: #EF4444;
+      --success-green: #10B981;
+      --accent-purple: #8B5CF6;
+      --text-main: #F3F4F6;
+      --text-muted: #9CA3AF;
+      --font-mono: 'Fira Code', monospace;
+      --font-sans: 'Inter', sans-serif;
+    }
+    
+    body {
+      background-color: #030712;
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+    
+    .viewport {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    
+    .deck-container {
+      width: 1280px;
+      height: 720px;
+      background-color: var(--bg-dark);
+      border: 1px solid var(--border-cyan);
+      box-shadow: 0 0 35px rgba(6, 182, 212, 0.2), inset 0 0 15px rgba(0, 0, 0, 0.8);
+      border-radius: 12px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .deck-header {
+      height: 48px;
+      background-color: rgba(17, 24, 39, 0.85);
+      border-bottom: 1px solid rgba(6, 182, 212, 0.2);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+    }
+    
+    .deck-header .brand {
+      color: var(--accent-cyan);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+    }
+    
+    .deck-header .status {
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .badge-exam {
+      background: rgba(6, 182, 212, 0.15);
+      border: 1px solid rgba(6, 182, 212, 0.4);
+      color: var(--accent-cyan);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+    }
+
+    .slides-wrapper { flex: 1; position: relative; overflow: hidden; }
+    
+    .slide-container {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      padding: 36px 48px;
+      display: none;
+      flex-direction: column;
+      opacity: 0;
+      transition: opacity 0.2s ease-in-out;
+    }
+    
+    .slide-container.active { display: flex; opacity: 1; }
+
+    .slide-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--accent-cyan);
+      letter-spacing: 1.5px;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+    
+    .slide-title {
+      font-size: 26px;
+      font-weight: 800;
+      color: #FFFFFF;
+      margin-bottom: 20px;
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .deck-footer {
+      height: 52px;
+      background-color: rgba(17, 24, 39, 0.9);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+    }
+    
+    .nav-btn {
+      background: var(--surface-card);
+      border: 1px solid var(--border-cyan);
+      color: var(--text-main);
+      padding: 6px 14px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+    
+    .nav-btn:hover:not(:disabled) {
+      background: var(--accent-cyan);
+      color: #000;
+    }
+    
+    .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+    .code-box {
+      background: #060913;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 14px 18px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      line-height: 1.6;
+      color: #E2E8F0;
+      overflow-x: auto;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      height: 100%;
+    }
+
+    .feature-card {
+      background: var(--surface-card);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 16px 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="viewport">
+    <div class="deck-container">
+      
+      <!-- Top Terminal Header -->
+      <header class="deck-header">
+        <div class="brand">
+          <i class="fa-solid fa-graduation-cap"></i>
+          <span>CCDV-F // MODULE 02: COMPREHENSIVE SYNTHESIS DECK</span>
+        </div>
+        <div class="status">
+          <a href="../index.html" style="color: var(--text-muted); text-decoration: none; margin-right: 12px;">
+            <i class="fa-solid fa-arrow-left"></i> Hub
+          </a>
+          <span class="badge-exam"><i class="fa-solid fa-shield-halved"></i> MASTER EXAM RECAP</span>
+          <span><i class="fa-solid fa-microchip"></i> 10 CORE PRODUCTION RULES</span>
+        </div>
+      </header>
+
+      <!-- Slides Content Area -->
+      <main class="slides-wrapper">
+
+        <!-- SLIDE 1: Cover -->
+        <section class="slide-container active" id="slide-1">
+          <div style="margin: auto; text-align: center; max-width: 800px;">
+            <div class="slide-eyebrow">// CERTIFICATION MASTER SYNTHESIS</div>
+            <h1 style="font-size: 38px; font-weight: 800; color: #fff; margin: 12px 0 16px; font-family: var(--font-mono);">
+              Module 2 Recap: Production Integration
+            </h1>
+            <p style="color: var(--text-muted); font-size: 16px; line-height: 1.6; margin-bottom: 24px;">
+              The definitive summary of prompt structure, tool schemas, streaming lifecycles, context limits, agent loops, and batch ingestion needed to clear the CCDV-F Developer Certification.
+            </p>
+            <div style="display: inline-flex; gap: 12px;">
+              <span class="badge-exam"><i class="fa-solid fa-clock"></i> ~12 MIN REVIEW</span>
+              <span class="badge-exam" style="border-color: var(--accent-cyan); color: var(--accent-cyan);"><i class="fa-solid fa-list-check"></i> 7 SYNTHESIS SLIDES</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 2: Prompting & Structured Outputs -->
+        <section class="slide-container" id="slide-2">
+          <div class="slide-eyebrow">// SYNTHESIS PART 1</div>
+          <h2 class="slide-title"><i class="fa-solid fa-terminal text-cyan-400"></i> 1. Prompting Craft &amp; Structured Outputs</h2>
+          <div class="grid-2" style="font-size: 13px;">
+            <div class="feature-card" style="border-left: 3px solid var(--accent-cyan); display: flex; flex-direction: column; gap: 8px;">
+              <strong style="color: var(--accent-cyan);">The 4 Prompt Techniques:</strong>
+              <ul style="margin: 4px 0 0 16px; color: var(--text-muted); space-y-1.5;">
+                <li><strong>System Prompts:</strong> Persistent behavioral contract across all turns.</li>
+                <li><strong>XML Tags:</strong> Clean demarcations between instructions, examples, and data.</li>
+                <li><strong>Few-shot Examples:</strong> Exact casing, format, and schema demonstration.</li>
+                <li><strong>Output Constraints:</strong> Disallow conversational prose / preambles.</li>
+              </ul>
+            </div>
+            <div class="feature-card" style="border-left: 3px solid var(--success-green); display: flex; flex-direction: column; gap: 8px;">
+              <strong style="color: var(--success-green);">API Structured Outputs:</strong>
+              <ul style="margin: 4px 0 0 16px; color: var(--text-muted); space-y-1.5;">
+                <li>Constrained decoding guarantees schema conformance at generation time.</li>
+                <li>First-call grammar compilation latency is cached for 24 hours.</li>
+                <li>Injected schema system prompt counts toward billable input tokens.</li>
+                <li>Cannot combine with assistant message prefilling.</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 3: Tools & Schemas -->
+        <section class="slide-container" id="slide-3">
+          <div class="slide-eyebrow">// SYNTHESIS PART 2</div>
+          <h2 class="slide-title"><i class="fa-solid fa-wrench text-amber-400"></i> 2. Tool-Use &amp; Schema Design</h2>
+          <div class="grid-2" style="font-size: 13px;">
+            <div class="feature-card" style="border-left: 3px solid var(--alert-amber); display: flex; flex-direction: column; gap: 8px;">
+              <strong style="color: var(--alert-amber);">The Single User Turn Mandate:</strong>
+              <p style="color: var(--text-muted);">
+                When Claude executes multiple parallel tools in one assistant turn, all <code>tool_result</code> blocks <strong>MUST be bundled into a SINGLE user turn</strong>.
+              </p>
+              <strong style="color: var(--alert-amber); margin-top: 6px;">Error Reporting with is_error:</strong>
+              <p style="color: var(--text-muted);">
+                Always return <code>is_error: True</code> in <code>tool_result</code> when exceptions occur so Claude can adapt instead of crashing the agent.
+              </p>
+            </div>
+            <div class="feature-card" style="border-left: 3px solid var(--accent-purple); display: flex; flex-direction: column; gap: 8px;">
+              <strong style="color: var(--accent-purple);">tool_choice Spectrum:</strong>
+              <ul style="margin: 4px 0 0 16px; color: var(--text-muted); space-y-1;">
+                <li><code>"auto"</code>: Model decides between text response and tool calls.</li>
+                <li><code>"any"</code>: Forces model to invoke at least one tool.</li>
+                <li><code>{"type":"tool","name":"..."}</code>: Forces exact named tool call.</li>
+              </ul>
+              <strong style="color: var(--accent-purple); margin-top: 6px;">strict: true:</strong>
+              <p style="color: var(--text-muted);">
+                Guarantees tool arguments match your JSON Schema with zero hallucinated keys.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 4: Extended Thinking & Streaming -->
+        <section class="slide-container" id="slide-4">
+          <div class="slide-eyebrow">// SYNTHESIS PART 3</div>
+          <h2 class="slide-title"><i class="fa-solid fa-brain text-purple-400"></i> 3. Extended Thinking &amp; Streaming</h2>
+          <div class="grid-2" style="font-size: 13px;">
+            <div class="feature-card" style="border-left: 3px solid var(--accent-purple); display: flex; flex-direction: column; gap: 8px;">
+              <strong style="color: var(--accent-purple);">Extended Thinking Rules:</strong>
+              <ul style="margin: 4px 0 0 16px; color: var(--text-muted); space-y-1;">
+                <li><code>budget_tokens</code> must be &gt;= 1,024 tokens.</li>
+                <li>Temperature is locked to 1.0 (API error if altered).</li>
+                <li><code>max_tokens</code> must exceed <code>budget_tokens</code>.</li>
+                <li><strong>Never strip thinking blocks</strong> in multi-turn tool loops.</li>
+                <li>Treat <code>redacted_thinking</code> as an opaque pass-through block.</li>
+              </ul>
+            </div>
+            <div class="feature-card" style="border-left: 3px solid var(--accent-cyan); display: flex; flex-direction: column; gap: 8px;">
+              <strong style="color: var(--accent-cyan);">Streaming Protocol:</strong>
+              <ul style="margin: 4px 0 0 16px; color: var(--text-muted); space-y-1;">
+                <li>Buffer <code>input_json_delta</code> chunks until <code>content_block_stop</code>.</li>
+                <li>Final <code>stop_reason</code> arrives in <code>message_delta</code> event.</li>
+                <li>Never persist turns until <code>message_stop</code> is confirmed.</li>
+                <li>Discard unfinalized partial tool blocks if network resets mid-stream.</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 5: Context, Memory & Agents -->
+        <section class="slide-container" id="slide-5">
+          <div class="slide-eyebrow">// SYNTHESIS PART 4</div>
+          <h2 class="slide-title"><i class="fa-solid fa-infinity text-green-400"></i> 4. Context, Memory &amp; Agent Loops</h2>
+          <div class="grid-2" style="font-size: 13px;">
+            <div class="feature-card" style="border-left: 3px solid var(--success-green); display: flex; flex-direction: column; gap: 8px;">
+              <strong style="color: var(--success-green);">Context &amp; Memory Hygiene:</strong>
+              <ul style="margin: 4px 0 0 16px; color: var(--text-muted); space-y-1;">
+                <li>Prompt Caching yields 90% discount on static prefixes (&gt;=1024 tokens).</li>
+                <li>Never replay raw prior session transcripts in-context.</li>
+                <li>Compress history into structured XML summaries.</li>
+                <li>Use Subagents to isolate exploratory tool outputs from main thread.</li>
+              </ul>
+            </div>
+            <div class="feature-card" style="border-left: 3px solid var(--alert-red); display: flex; flex-direction: column; gap: 8px;">
+              <strong style="color: var(--alert-red);">Agent Loops &amp; HITL:</strong>
+              <ul style="margin: 4px 0 0 16px; color: var(--text-muted); space-y-1;">
+                <li>Hard <code>MAX_TURNS</code> circuit breaker prevents runaway token spend.</li>
+                <li>Clean loop exit when <code>stop_reason == "end_turn"</code>.</li>
+                <li>Place Human-in-the-Loop gates on all destructive or mutating actions.</li>
+                <li>Prefer deterministic workflows when execution path is known.</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 6: Batch API & Multimodal -->
+        <section class="slide-container" id="slide-6">
+          <div class="slide-eyebrow">// SYNTHESIS PART 5</div>
+          <h2 class="slide-title"><i class="fa-solid fa-boxes-stacked text-blue-400"></i> 5. Batch Ingestion &amp; Multimodal</h2>
+          <div class="grid-2" style="font-size: 13px;">
+            <div class="feature-card" style="border-left: 3px solid var(--accent-blue); display: flex; flex-direction: column; gap: 8px;">
+              <strong style="color: var(--accent-blue);">Message Batches API:</strong>
+              <ul style="margin: 4px 0 0 16px; color: var(--text-muted); space-y-1;">
+                <li>50% cost discount across input and output tokens.</li>
+                <li>24-hour turnaround SLA for non-interactive workloads.</li>
+                <li>Track requests with unique <code>custom_id</code> values.</li>
+                <li>Individual request failures do not fail the entire batch.</li>
+              </ul>
+            </div>
+            <div class="feature-card" style="border-left: 3px solid var(--accent-cyan); display: flex; flex-direction: column; gap: 8px;">
+              <strong style="color: var(--accent-cyan);">Multimodal Support:</strong>
+              <ul style="margin: 4px 0 0 16px; color: var(--text-muted); space-y-1;">
+                <li>Native PDF document blocks with <code>type: "document"</code>.</li>
+                <li>Supported image types: JPEG, PNG, GIF, WebP.</li>
+                <li>Use the Files API for persistent reusable reference documents.</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 7: Final Clearance -->
+        <section class="slide-container" id="slide-7">
+          <div style="margin: auto; text-align: center; max-width: 800px;">
+            <div class="slide-eyebrow">// READY FOR DEPLOYMENT</div>
+            <h1 style="font-size: 34px; font-weight: 800; color: #fff; margin: 12px 0 16px; font-family: var(--font-mono);">
+              Module 02 Complete!
+            </h1>
+            <p style="color: var(--text-muted); font-size: 15px; line-height: 1.6; margin-bottom: 24px;">
+              You have mastered the entire production stack of Claude Developer Foundations. Put your skills to the ultimate test in the <strong>Incident #502 Cumulative Debug War Room</strong>!
+            </p>
+            <div style="display: flex; justify-content: center; gap: 14px;">
+              <a href="Cumulative_Debug_War_Room.html" class="nav-btn" style="background: var(--accent-cyan); color: #000; font-weight: bold; padding: 10px 20px; font-size: 13px; text-decoration: none;">
+                <i class="fa-solid fa-shield-alert"></i> Launch Incident #502 War Room
+              </a>
+              <a href="../index.html" class="nav-btn" style="padding: 10px 20px; font-size: 13px; text-decoration: none;">
+                <i class="fa-solid fa-arrow-left"></i> Return to Hub
+              </a>
+            </div>
+          </div>
+        </section>
+
+      </main>
+
+      <!-- Bottom Navigation Footer -->
+      <footer class="deck-footer">
+        <div style="color: var(--text-muted);">
+          CCDV-F EXAM PREPARATION &bull; LESSON 08 OF 08
+        </div>
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <span>SLIDE <strong id="current-slide-num" style="color: #fff;">1</strong> / 7</span>
+          <div style="display: flex; gap: 6px;">
+            <button id="btn-prev" class="nav-btn" onclick="prevSlide()"><i class="fa-solid fa-chevron-left"></i></button>
+            <button id="btn-next" class="nav-btn" onclick="nextSlide()"><i class="fa-solid fa-chevron-right"></i></button>
+          </div>
+        </div>
+      </footer>
+
+    </div>
+  </div>
+
+  <script>
+    let currentSlide = 1;
+    const totalSlides = 7;
+
+    function updateDeckState() {
+      document.querySelectorAll('.slide-container').forEach(s => s.classList.remove('active'));
+      const active = document.getElementById(`slide-${currentSlide}`);
+      if (active) active.classList.add('active');
+      document.getElementById('current-slide-num').innerText = currentSlide;
+      document.getElementById('btn-prev').disabled = (currentSlide === 1);
+      document.getElementById('btn-next').disabled = (currentSlide === totalSlides);
+    }
+
+    function nextSlide() { if (currentSlide < totalSlides) { currentSlide++; updateDeckState(); } }
+    function prevSlide() { if (currentSlide > 1) { currentSlide--; updateDeckState(); } }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
+      else if (e.key === 'ArrowLeft') prevSlide();
+    });
+
+    updateDeckState();
+  </script>
+</body>
+</html>
