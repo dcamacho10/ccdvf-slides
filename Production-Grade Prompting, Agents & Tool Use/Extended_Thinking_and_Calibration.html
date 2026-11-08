@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>CCDV-F Episode 02: Extended Thinking & Reasoning Calibration</title>
   
   <!-- Fonts -->
@@ -35,16 +35,13 @@
       background-color: #030712;
       color: var(--text-main);
       font-family: var(--font-sans);
-      display: flex;
-      justify-content: center;
-      align-items: center;
       min-height: 100vh;
-      overflow: hidden;
+      overflow-x: hidden;
     }
     
     .viewport {
       width: 100vw;
-      height: 100vh;
+      min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -52,13 +49,14 @@
     }
     
     .deck-container {
-      width: 1280px;
-      height: 720px;
+      width: 100%;
+      max-width: 1280px;
+      aspect-ratio: 16 / 9;
+      max-height: calc(100vh - 40px);
       background-color: var(--bg-dark);
       border: 1px solid var(--border-cyan);
       box-shadow: 0 0 35px rgba(139, 92, 246, 0.15), inset 0 0 15px rgba(0, 0, 0, 0.8);
       border-radius: 12px;
-      position: relative;
       overflow: hidden;
       display: flex;
       flex-direction: column;
@@ -104,6 +102,7 @@
       flex: 1;
       position: relative;
       overflow: hidden;
+      min-height: 0;
     }
     
     .slide-container {
@@ -192,7 +191,8 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 20px;
-      height: 100%;
+      flex: 1;
+      min-height: 0;
     }
 
     .feature-card {
@@ -218,6 +218,75 @@
     .quiz-option:hover { border-color: var(--accent-purple); background: rgba(139, 92, 246, 0.05); }
     .quiz-option.selected-correct { background: rgba(16, 185, 129, 0.15); border-color: var(--success-green); color: #A7F3D0; }
     .quiz-option.selected-wrong { background: rgba(239, 68, 68, 0.15); border-color: var(--alert-red); color: #FCA5A5; }
+
+    /* ─── Mobile Adaptive Layout ─────────────────────────────── */
+    @media (max-width: 768px), (orientation: portrait) {
+      body {
+        overflow-y: auto !important;
+        user-select: text !important;
+      }
+      .viewport {
+        width: 100% !important;
+        min-height: 100dvh !important;
+        padding: 0 !important;
+        align-items: flex-start !important;
+      }
+      .deck-container {
+        width: 100% !important;
+        max-width: 100% !important;
+        height: auto !important;
+        min-height: 100dvh !important;
+        aspect-ratio: auto !important;
+        max-height: none !important;
+        border-radius: 0 !important;
+        border-left: none !important;
+        border-right: none !important;
+      }
+      .slides-wrapper {
+        overflow-y: auto !important;
+        height: auto !important;
+        min-height: calc(100dvh - 100px) !important;
+      }
+      .slide-container {
+        position: relative !important;
+        width: 100% !important;
+        height: auto !important;
+        min-height: calc(100dvh - 100px) !important;
+        padding: 20px 16px !important;
+        overflow-y: auto !important;
+      }
+      .slide-container.active {
+        display: flex !important;
+      }
+      .grid-2 {
+        grid-template-columns: 1fr !important;
+        height: auto !important;
+      }
+      .slide-title {
+        font-size: 18px !important;
+        margin-bottom: 12px !important;
+      }
+      .deck-header {
+        height: auto !important;
+        padding: 8px 12px !important;
+        font-size: 11px !important;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .deck-footer {
+        height: auto !important;
+        padding: 8px 12px !important;
+        font-size: 11px !important;
+      }
+      .deck-header .brand span,
+      .deck-header .status span:not(.badge-exam) {
+        display: none;
+      }
+      /* 3-col grids collapse to 1 col */
+      [style*="grid-template-columns: repeat(3, 1fr)"] {
+        grid-template-columns: 1fr !important;
+      }
+    }
   </style>
 </head>
 <body>
