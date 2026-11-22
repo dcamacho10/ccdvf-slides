@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>CCDV-F Incident #403-MCP: Enterprise Integration War Room</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Fonts: Fira Code & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-dark: #0B0F19;
+            --surface-navy: #111827;
+            --surface-card: #1F2937;
+            --electric-blue: #3B82F6;
+            --cyan-glow: #06B6D4;
+            --amber-warn: #F59E0B;
+            --emerald-pass: #10B981;
+            --rose-fail: #EF4444;
+            --purple-agent: #8B5CF6;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: #E5E7EB;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(6, 182, 212, 0.06) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(139, 92, 246, 0.06) 0%, transparent 40%);
+        }
+
+        .font-mono {
+            font-family: 'Fira Code', monospace;
+        }
+
+        .glow-cyan { box-shadow: 0 0 20px rgba(6, 182, 212, 0.25); }
+        .glow-purple { box-shadow: 0 0 20px rgba(139, 92, 246, 0.25); }
+        .glow-amber { box-shadow: 0 0 20px rgba(245, 158, 11, 0.25); }
+        .glow-emerald { box-shadow: 0 0 20px rgba(16, 185, 129, 0.25); }
+        .glow-rose { box-shadow: 0 0 20px rgba(239, 68, 68, 0.25); }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0B0F19; }
+        ::-webkit-scrollbar-thumb { background: #1F2937; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3B82F6; }
+
+        .scanlines {
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.2) 50%);
+            background-size: 100% 4px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between scanlines">
+
+    <!-- Top War Room Header Bar -->
+    <header class="w-full bg-slate-900/90 backdrop-blur-md border-b border-gray-800 px-4 lg:px-8 py-3 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <a href="../index.html" class="text-gray-400 hover:text-cyan-400 transition text-xs font-mono flex items-center gap-1.5 mr-2">
+                    <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Hub
+                </a>
+                <span class="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping"></span>
+                <span class="font-mono text-xs md:text-sm text-white font-bold tracking-wider flex items-center gap-2">
+                    <i data-lucide="shield-alert" class="w-4 h-4 text-rose-500"></i> CCDV-F WAR ROOM // INCIDENT #403-MCP
+                </span>
+                <span class="hidden sm:inline-block bg-rose-950/80 text-rose-300 border border-rose-800 text-[10px] font-mono px-2 py-0.5 rounded">
+                    4 CRITICAL ENTERPRISE FAILURES
+                </span>
+            </div>
+
+            <!-- Header Stats & Telemetry -->
+            <div class="flex items-center space-x-4 font-mono text-xs">
+                <div class="flex items-center gap-1.5 text-gray-400">
+                    <i data-lucide="target" class="w-3.5 h-3.5 text-cyan-400"></i>
+                    <span>DEFECTS SOLVED: <strong id="bugs-found-count" class="text-white">0 / 4</strong></span>
+                </div>
+                <div class="flex items-center gap-1.5 text-gray-400">
+                    <i data-lucide="zap" class="w-3.5 h-3.5 text-amber-400"></i>
+                    <span>OPS SCORE: <strong id="ops-score" class="text-amber-400">0 XP</strong></span>
+                </div>
+                <button onclick="toggleAudio()" id="audio-toggle-btn" class="bg-gray-800 hover:bg-gray-700 text-gray-300 px-2.5 py-1 rounded text-xs transition flex items-center gap-1">
+                    <i data-lucide="volume-2" id="audio-icon" class="w-3.5 h-3.5 text-cyan-400"></i>
+                    <span id="audio-label" class="hidden md:inline">SFX: ON</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Grid -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 lg:px-8 py-6 space-y-6">
+
+        <!-- Incident Intro Briefing -->
+        <section class="bg-gray-900/90 border border-gray-800 rounded-xl p-5 relative overflow-hidden">
+            <div class="absolute -right-16 -top-16 w-52 h-52 bg-rose-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+                <div class="space-y-1">
+                    <div class="flex items-center gap-2">
+                        <span class="bg-cyan-950 text-cyan-400 border border-cyan-800 text-[10px] font-mono px-2 py-0.5 rounded font-semibold">
+                            CUMULATIVE DEBUG MISSION
+                        </span>
+                        <span class="text-xs font-mono text-gray-400">Module 3: Claude Code, MCP & Integration</span>
+                    </div>
+                    <h1 class="text-xl sm:text-2xl font-extrabold text-white font-mono tracking-tight">
+                        Incident #403-MCP: The ApexCorp Enterprise Migration Outage
+                    </h1>
+                    <p class="text-xs sm:text-sm text-gray-300 max-w-4xl leading-relaxed">
+                        ApexCorp attempted an organization-wide rollout of Claude Code and MCP. Production crashed immediately: an unconstrained permission mode wiped staging configs, a bloated <code>CLAUDE.md</code> diluted security rules, a skill crashed on non-Mac environments, and a committed <code>.mcp.json</code> leaked database credentials without an audit trail. Repair all four layers to bring systems back online!
+                    </p>
+                </div>
+
+                <!-- Navigation Tabs -->
+                <div class="flex items-center gap-2 font-mono text-xs w-full lg:w-auto shrink-0">
+                    <button onclick="switchTab('stage1')" id="tab-stage1" class="flex-1 lg:flex-initial px-4 py-2.5 rounded-lg bg-cyan-600 text-white font-bold transition flex items-center justify-center gap-2 shadow-lg glow-cyan">
+                        <i data-lucide="crosshair" class="w-4 h-4"></i> Stage 1: Defect Hunter
+                    </button>
+                    <button onclick="switchTab('stage2')" id="tab-stage2" class="flex-1 lg:flex-initial px-4 py-2.5 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-300 font-semibold transition flex items-center justify-center gap-2">
+                        <i data-lucide="wrench" class="w-4 h-4"></i> Stage 2: Code Surgeon
+                    </button>
+                    <button onclick="switchTab('exam')" id="tab-exam" class="flex-1 lg:flex-initial px-4 py-2.5 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-300 font-semibold transition flex items-center justify-center gap-2">
+                        <i data-lucide="graduation-cap" class="w-4 h-4"></i> Exam Simulation
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- STAGE 1: DEFECT HUNTER VIEW -->
+        <section id="view-stage1" class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                
+                <!-- Bug 1 Card -->
+                <div id="card-bug-1" class="bg-gray-900 border border-gray-800 hover:border-amber-500/60 rounded-xl p-4 transition flex flex-col justify-between space-y-3">
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="bg-amber-950 text-amber-400 border border-amber-800 text-[10px] font-mono px-2 py-0.5 rounded uppercase">Defect 01 // Permissions</span>
+                            <span id="badge-bug-1" class="text-rose-400 font-mono text-[11px] flex items-center gap-1"><i data-lucide="alert-circle" class="w-3 h-3"></i> ACTIVE</span>
+                        </div>
+                        <h3 class="text-sm font-bold text-white font-mono flex items-center gap-2">
+                            <i data-lucide="shield-off" class="w-4 h-4 text-amber-400"></i> Unconstrained bypassPermissions
+                        </h3>
+                        <p class="text-xs text-gray-400 leading-relaxed">
+                            Claude Code was launched in <code>bypassPermissions</code> without deterministic deny rules, allowing destructive shell execution.
+                        </p>
+                    </div>
+                    <button onclick="openInspectModal('bug1')" class="w-full bg-amber-500/10 hover:bg-amber-500 hover:text-black text-amber-400 border border-amber-500/40 px-3 py-1.5 rounded text-xs font-mono font-semibold transition flex items-center justify-center gap-2">
+                        <i data-lucide="search" class="w-3.5 h-3.5"></i> Inspect Trace
+                    </button>
+                </div>
+
+                <!-- Bug 2 Card -->
+                <div id="card-bug-2" class="bg-gray-900 border border-gray-800 hover:border-cyan-500/60 rounded-xl p-4 transition flex flex-col justify-between space-y-3">
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="bg-cyan-950 text-cyan-400 border border-cyan-800 text-[10px] font-mono px-2 py-0.5 rounded uppercase">Defect 02 // Context</span>
+                            <span id="badge-bug-2" class="text-rose-400 font-mono text-[11px] flex items-center gap-1"><i data-lucide="alert-circle" class="w-3 h-3"></i> ACTIVE</span>
+                        </div>
+                        <h3 class="text-sm font-bold text-white font-mono flex items-center gap-2">
+                            <i data-lucide="file-x" class="w-4 h-4 text-cyan-400"></i> 2,500-Line CLAUDE.md Dilution
+                        </h3>
+                        <p class="text-xs text-gray-400 leading-relaxed">
+                            A massive prompt file causes forgotten safety rules; delegated Explore subagents ignore database constraints completely.
+                        </p>
+                    </div>
+                    <button onclick="openInspectModal('bug2')" class="w-full bg-cyan-500/10 hover:bg-cyan-500 hover:text-black text-cyan-400 border border-cyan-500/40 px-3 py-1.5 rounded text-xs font-mono font-semibold transition flex items-center justify-center gap-2">
+                        <i data-lucide="search" class="w-3.5 h-3.5"></i> Inspect Trace
+                    </button>
+                </div>
+
+                <!-- Bug 3 Card -->
+                <div id="card-bug-3" class="bg-gray-900 border border-gray-800 hover:border-purple-500/60 rounded-xl p-4 transition flex flex-col justify-between space-y-3">
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="bg-purple-950 text-purple-400 border border-purple-800 text-[10px] font-mono px-2 py-0.5 rounded uppercase">Defect 03 // Workflows</span>
+                            <span id="badge-bug-3" class="text-rose-400 font-mono text-[11px] flex items-center gap-1"><i data-lucide="alert-circle" class="w-3 h-3"></i> ACTIVE</span>
+                        </div>
+                        <h3 class="text-sm font-bold text-white font-mono flex items-center gap-2">
+                            <i data-lucide="plug-2" class="w-4 h-4 text-purple-400"></i> Hardcoded Paths in SKILL.md
+                        </h3>
+                        <p class="text-xs text-gray-400 leading-relaxed">
+                            Skill assumed local macOS paths (<code>/Users/dev/bin</code>) and interactive prompts, failing in Linux containers and Agent SDK.
+                        </p>
+                    </div>
+                    <button onclick="openInspectModal('bug3')" class="w-full bg-purple-500/10 hover:bg-purple-500 hover:text-white text-purple-400 border border-purple-500/40 px-3 py-1.5 rounded text-xs font-mono font-semibold transition flex items-center justify-center gap-2">
+                        <i data-lucide="search" class="w-3.5 h-3.5"></i> Inspect Trace
+                    </button>
+                </div>
+
+                <!-- Bug 4 Card -->
+                <div id="card-bug-4" class="bg-gray-900 border border-gray-800 hover:border-emerald-500/60 rounded-xl p-4 transition flex flex-col justify-between space-y-3">
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="bg-emerald-950 text-emerald-400 border border-emerald-800 text-[10px] font-mono px-2 py-0.5 rounded uppercase">Defect 04 // MCP &amp; Auth</span>
+                            <span id="badge-bug-4" class="text-rose-400 font-mono text-[11px] flex items-center gap-1"><i data-lucide="alert-circle" class="w-3 h-3"></i> ACTIVE</span>
+                        </div>
+                        <h3 class="text-sm font-bold text-white font-mono flex items-center gap-2">
+                            <i data-lucide="key" class="w-4 h-4 text-emerald-400"></i> Committed Secrets &amp; No Audit
+                        </h3>
+                        <p class="text-xs text-gray-400 leading-relaxed">
+                            Static database admin tokens hardcoded into committed <code>.mcp.json</code> with zero PostToolUse compliance logging.
+                        </p>
+                    </div>
+                    <button onclick="openInspectModal('bug4')" class="w-full bg-emerald-500/10 hover:bg-emerald-500 hover:text-black text-emerald-400 border border-emerald-500/40 px-3 py-1.5 rounded text-xs font-mono font-semibold transition flex items-center justify-center gap-2">
+                        <i data-lucide="search" class="w-3.5 h-3.5"></i> Inspect Trace
+                    </button>
+                </div>
+            </div>
+
+            <!-- Terminal Output Console -->
+            <div class="bg-black/80 border border-gray-800 rounded-xl p-4 font-mono text-xs text-gray-300 space-y-2">
+                <div class="flex items-center justify-between border-b border-gray-800 pb-2">
+                    <span class="text-gray-400 flex items-center gap-2"><i data-lucide="terminal" class="w-4 h-4 text-cyan-400"></i> APEXCORP ENTERPRISE TELEMETRY CONSOLE</span>
+                    <span class="text-[10px] text-amber-400 animate-pulse">STREAMING TELEMETRY (LIVE)</span>
+                </div>
+                <div class="space-y-1 text-gray-400" id="telemetry-log">
+                    <div>[02:14:01 UTC] <span class="text-rose-400">[CRITICAL]</span> Claude Code running in bypassPermissions without deny rules.</div>
+                    <div>[02:14:08 UTC] <span class="text-amber-400">[WARN]</span> CLAUDE.md context exceeds 2,500 lines; Explore subagent skipped rule context.</div>
+                    <div>[02:14:15 UTC] <span class="text-rose-400">[CRITICAL]</span> SKILL.md failed: /Users/dev/bin/check.sh not found in CI Docker container.</div>
+                    <div>[02:14:22 UTC] <span class="text-rose-400">[SECURITY]</span> Live token detected in committed .mcp.json; SOC2 audit logging missing!</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- STAGE 2: CODE SURGEON VIEW -->
+        <section id="view-stage2" class="hidden space-y-4">
+            <div class="bg-gray-900 border border-gray-800 rounded-xl p-5 space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-800 pb-3">
+                    <h2 class="text-base font-bold text-white font-mono flex items-center gap-2">
+                        <i data-lucide="git-pull-request" class="w-4 h-4 text-cyan-400"></i> Code Surgeon: Multi-Layer Remediation Suite
+                    </h2>
+                    <span class="text-xs font-mono text-gray-400">Select the correct patch for each layer below:</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Layer 1 Repair -->
+                    <div class="bg-gray-950 border border-gray-800 p-4 rounded-lg space-y-3">
+                        <span class="text-xs font-mono font-bold text-amber-400 block">// LAYER 1: PERMISSION &amp; DENY RULES</span>
+                        <p class="text-xs text-gray-300">How to secure the development environment?</p>
+                        <div class="space-y-2 text-xs font-mono">
+                            <button onclick="applyFix(1, 'A')" id="btn-fix-1-A" class="w-full text-left p-2.5 rounded bg-gray-900 hover:bg-gray-800 border border-gray-700 transition">
+                                A. Run with `--dangerously-skip-permissions` to remove prompts.
+                            </button>
+                            <button onclick="applyFix(1, 'B')" id="btn-fix-1-B" class="w-full text-left p-2.5 rounded bg-gray-900 hover:bg-gray-800 border border-gray-700 transition">
+                                B. Configure `managed-settings.json` with `default` mode and non-overridable `deny` rules for destructive shell commands.
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Layer 2 Repair -->
+                    <div class="bg-gray-950 border border-gray-800 p-4 rounded-lg space-y-3">
+                        <span class="text-xs font-mono font-bold text-cyan-400 block">// LAYER 2: CONTEXT ARCHITECTURE</span>
+                        <p class="text-xs text-gray-300">How to prevent context dilution and ensure subagents follow rules?</p>
+                        <div class="space-y-2 text-xs font-mono">
+                            <button onclick="applyFix(2, 'A')" id="btn-fix-2-A" class="w-full text-left p-2.5 rounded bg-gray-900 hover:bg-gray-800 border border-gray-700 transition">
+                                A. Keep CLAUDE.md under 100 lines for globals; move domain rules to `.claude/rules/` with path globs; enforce hard gates via PreToolUse hooks (exit 2).
+                            </button>
+                            <button onclick="applyFix(2, 'B')" id="btn-fix-2-B" class="w-full text-left p-2.5 rounded bg-gray-900 hover:bg-gray-800 border border-gray-700 transition">
+                                B. Paste all rules into the user prompt turn every time Claude asks a question.
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Layer 3 Repair -->
+                    <div class="bg-gray-950 border border-gray-800 p-4 rounded-lg space-y-3">
+                        <span class="text-xs font-mono font-bold text-purple-400 block">// LAYER 3: WORKFLOW PACKAGING</span>
+                        <p class="text-xs text-gray-300">How to make the database audit skill portable across runtimes?</p>
+                        <div class="space-y-2 text-xs font-mono">
+                            <button onclick="applyFix(3, 'A')" id="btn-fix-3-A" class="w-full text-left p-2.5 rounded bg-gray-900 hover:bg-gray-800 border border-gray-700 transition">
+                                A. Bundle relative scripts inside the skill folder; remove interactive TTY prompts; explicitly configure subagents when skills are needed.
+                            </button>
+                            <button onclick="applyFix(3, 'B')" id="btn-fix-3-B" class="w-full text-left p-2.5 rounded bg-gray-900 hover:bg-gray-800 border border-gray-700 transition">
+                                B. Instruct teammates to create a symlink from `/Users/dev/` to their root drive.
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Layer 4 Repair -->
+                    <div class="bg-gray-950 border border-gray-800 p-4 rounded-lg space-y-3">
+                        <span class="text-xs font-mono font-bold text-emerald-400 block">// LAYER 4: MCP GOVERNANCE &amp; SECURITY</span>
+                        <p class="text-xs text-gray-300">How to secure the MCP server and pass the SOC2 compliance audit?</p>
+                        <div class="space-y-2 text-xs font-mono">
+                            <button onclick="applyFix(4, 'A')" id="btn-fix-4-A" class="w-full text-left p-2.5 rounded bg-gray-900 hover:bg-gray-800 border border-gray-700 transition">
+                                A. Use git-crypt to encrypt the committed `.mcp.json` file.
+                            </button>
+                            <button onclick="applyFix(4, 'B')" id="btn-fix-4-B" class="w-full text-left p-2.5 rounded bg-gray-900 hover:bg-gray-800 border border-gray-700 transition">
+                                B. Inject secrets via `${ENV_VARS}`; deploy OAuth for user attribution; implement a deterministic `PostToolUse` hook to stream audit records to SIEM.
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="repair-success-banner" class="hidden bg-emerald-950/80 border border-emerald-500/60 p-4 rounded-lg text-xs font-mono text-emerald-300 flex items-center justify-between">
+                    <span class="flex items-center gap-2">
+                        <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i>
+                        ALL 4 ARCHITECTURAL DEFECTS REPAIRED! APEXCORP INTEGRATION IS SECURE &amp; CERTIFIED.
+                    </span>
+                    <button onclick="switchTab('exam')" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded transition">
+                        Proceed to Exam Quiz &rarr;
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- STAGE 3: EXAM SIMULATION VIEW -->
+        <section id="view-exam" class="hidden space-y-4">
+            <div class="bg-gray-900 border border-gray-800 rounded-xl p-5 space-y-4">
+                <div class="border-b border-gray-800 pb-3">
+                    <h2 class="text-base font-bold text-white font-mono flex items-center gap-2">
+                        <i data-lucide="award" class="w-4 h-4 text-amber-400"></i> CCDV-F Module 3 Exam Drill
+                    </h2>
+                    <p class="text-xs text-gray-400">Answer this high-difficulty scenario testing the integration of permission modes, hooks, and subagent lifecycles:</p>
+                </div>
+
+                <div class="bg-gray-950 border border-gray-800 p-4 rounded-lg space-y-3 text-xs">
+                    <p class="text-gray-200 leading-relaxed font-mono">
+                        <strong>Exam Question:</strong> An architect configures Claude Code with a <code>PreToolUse</code> hook that inspects shell commands and an enterprise <code>managed-settings.json</code> with <code>"defaultMode": "acceptEdits"</code>. When Claude Code executes a task that requires editing <code>src/database.ts</code> and executing <code>npx prisma migrate dev</code>, what is the exact execution flow?
+                    </p>
+
+                    <div class="space-y-2 font-mono">
+                        <div class="p-3 rounded bg-gray-900 border border-gray-700 hover:border-cyan-500 cursor-pointer" onclick="checkExamQuiz(this, false)">
+                            A. Both the file edit and the shell command are automatically approved without user prompts because `acceptEdits` covers all operations.
+                        </div>
+                        <div class="p-3 rounded bg-gray-900 border border-gray-700 hover:border-cyan-500 cursor-pointer" onclick="checkExamQuiz(this, true)">
+                            B. The edit to `src/database.ts` is auto-approved by `acceptEdits`, but the shell command pauses for interactive user confirmation; before the shell executes, the PreToolUse hook runs and can deterministically block it with exit code 2.
+                        </div>
+                        <div class="p-3 rounded bg-gray-900 border border-gray-700 hover:border-cyan-500 cursor-pointer" onclick="checkExamQuiz(this, false)">
+                            C. The PreToolUse hook replaces the need for user confirmation dialogs entirely.
+                        </div>
+                        <div class="p-3 rounded bg-gray-900 border border-gray-700 hover:border-cyan-500 cursor-pointer" onclick="checkExamQuiz(this, false)">
+                            D. The shell command executes first in a background Explore subagent without project rules.
+                        </div>
+                    </div>
+
+                    <div id="exam-feedback" class="hidden mt-3 p-3 rounded bg-emerald-950/80 border border-emerald-500/60 text-emerald-300 font-mono text-xs">
+                        <strong>Correct! Option B:</strong> In `acceptEdits`, file writes in the repo are auto-approved, but shell commands still trigger a human confirmation prompt. Once approved by the user, the `PreToolUse` hook executes deterministically and can block execution by exiting with code 2!
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modal for Trace Inspection -->
+    <div id="inspect-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-gray-900 border border-gray-700 rounded-xl max-w-2xl w-full p-5 space-y-4 font-mono text-xs shadow-2xl">
+            <div class="flex items-center justify-between border-b border-gray-800 pb-3">
+                <span id="modal-title" class="font-bold text-white text-sm">Defect Trace</span>
+                <button onclick="closeInspectModal()" class="text-gray-400 hover:text-white"><i data-lucide="x" class="w-4 h-4"></i></button>
+            </div>
+            <div id="modal-content" class="bg-black/90 p-4 rounded border border-gray-800 text-gray-300 space-y-2 overflow-x-auto">
+                <!-- Dynamic trace content -->
+            </div>
+            <div class="flex justify-end">
+                <button onclick="closeInspectModal()" class="bg-cyan-600 hover:bg-cyan-500 text-white px-4 py-1.5 rounded transition">
+                    Acknowledge Defect
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let solvedBugs = { 1: false, 2: false, 3: false, 4: false };
+        let score = 0;
+        let sfx = true;
+
+        function toggleAudio() {
+            sfx = !sfx;
+            document.getElementById('audio-label').innerText = sfx ? 'SFX: ON' : 'SFX: OFF';
+            document.getElementById('audio-icon').classList.toggle('text-cyan-400', sfx);
+            document.getElementById('audio-icon').classList.toggle('text-gray-500', !sfx);
+        }
+
+        function switchTab(tab) {
+            document.getElementById('view-stage1').classList.toggle('hidden', tab !== 'stage1');
+            document.getElementById('view-stage2').classList.toggle('hidden', tab !== 'stage2');
+            document.getElementById('view-exam').classList.toggle('hidden', tab !== 'exam');
+
+            ['stage1', 'stage2', 'exam'].forEach(t => {
+                const btn = document.getElementById(`tab-${t}`);
+                if (t === tab) {
+                    btn.className = "flex-1 lg:flex-initial px-4 py-2.5 rounded-lg bg-cyan-600 text-white font-bold transition flex items-center justify-center gap-2 shadow-lg glow-cyan";
+                } else {
+                    btn.className = "flex-1 lg:flex-initial px-4 py-2.5 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-300 font-semibold transition flex items-center justify-center gap-2";
+                }
+            });
+            lucide.createIcons();
+        }
+
+        function openInspectModal(bugKey) {
+            const modal = document.getElementById('inspect-modal');
+            const title = document.getElementById('modal-title');
+            const content = document.getElementById('modal-content');
+
+            if (bugKey === 'bug1') {
+                title.innerText = 'DEFECT 01: bypassPermissions Active Without Deny Rules';
+                content.innerHTML = `
+                    <span style="color:#EF4444;">[FAIL] .claude/settings.json contains:</span><br>
+                    { "defaultMode": "bypassPermissions", "deny": [] }<br><br>
+                    <span style="color:#F59E0B;">Incident Impact:</span><br>
+                    Agent executed unprompted <code>rm -rf /etc/shared/*</code> during refactoring script.<br>
+                    Zero human oversight gate intervened.
+                `;
+            } else if (bugKey === 'bug2') {
+                title.innerText = 'DEFECT 02: Monolithic CLAUDE.md & Subagent Context Loss';
+                content.innerHTML = `
+                    <span style="color:#EF4444;">[FAIL] CLAUDE.md token count: 18,400 tokens (2,500 lines)</span><br><br>
+                    <span style="color:#F59E0B;">Incident Impact:</span><br>
+                    • Attention dilution: database isolation rules ignored at turn 8.<br>
+                    • Built-in Explore subagent skipped CLAUDE.md and git status completely.
+                `;
+            } else if (bugKey === 'bug3') {
+                title.innerText = 'DEFECT 03: Host Path Coupling in SKILL.md';
+                content.innerHTML = `
+                    <span style="color:#EF4444;">[FAIL] SKILL.md references host path:</span><br>
+                    <code>exec /Users/alice/bin/db-check.sh</code><br><br>
+                    <span style="color:#F59E0B;">Incident Impact:</span><br>
+                    Linux CI/CD runner crashed with FileNotFoundError; headless Messages API hung on interactive prompt.
+                `;
+            } else if (bugKey === 'bug4') {
+                title.innerText = 'DEFECT 04: Plaintext Secrets in .mcp.json & Missing Audit Trail';
+                content.innerHTML = `
+                    <span style="color:#EF4444;">[FAIL] Committed git file .mcp.json exposes:</span><br>
+                    <code>"Authorization": "Bearer sk-live-master-secret-994"</code><br><br>
+                    <span style="color:#F59E0B;">Incident Impact:</span><br>
+                    No PostToolUse hook to log who executed queries; SOC2 Type II audit failed immediately.
+                `;
+            }
+
+            modal.classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function closeInspectModal() {
+            document.getElementById('inspect-modal').classList.add('hidden');
+        }
+
+        function applyFix(bugId, option) {
+            const correctOpts = { 1: 'B', 2: 'A', 3: 'A', 4: 'B' };
+            const isCorrect = (option === correctOpts[bugId]);
+
+            const btn = document.getElementById(`btn-fix-${bugId}-${option}`);
+            if (isCorrect) {
+                btn.classList.remove('bg-gray-900', 'border-gray-700');
+                btn.classList.add('bg-emerald-950', 'border-emerald-500', 'text-emerald-300');
+                if (!solvedBugs[bugId]) {
+                    solvedBugs[bugId] = true;
+                    score += 250;
+                    updateStats();
+                }
+            } else {
+                btn.classList.remove('bg-gray-900', 'border-gray-700');
+                btn.classList.add('bg-rose-950', 'border-rose-500', 'text-rose-300');
+            }
+
+            checkAllRepairs();
+        }
+
+        function updateStats() {
+            const count = Object.values(solvedBugs).filter(Boolean).length;
+            document.getElementById('bugs-found-count').innerText = `${count} / 4`;
+            document.getElementById('ops-score').innerText = `${score} XP`;
+
+            for (let i = 1; i <= 4; i++) {
+                if (solvedBugs[i]) {
+                    const badge = document.getElementById(`badge-bug-${i}`);
+                    if (badge) {
+                        badge.className = 'text-emerald-400 font-mono text-[11px] flex items-center gap-1';
+                        badge.innerHTML = '<i data-lucide="check" class="w-3 h-3"></i> REPAIRED';
+                    }
+                }
+            }
+            lucide.createIcons();
+        }
+
+        function checkAllRepairs() {
+            const allSolved = Object.values(solvedBugs).every(Boolean);
+            if (allSolved) {
+                document.getElementById('repair-success-banner').classList.remove('hidden');
+                lucide.createIcons();
+            }
+        }
+
+        function checkExamQuiz(el, isCorrect) {
+            document.querySelectorAll('#view-exam div[onclick]').forEach(d => {
+                d.classList.remove('border-emerald-500', 'bg-emerald-950/60', 'border-rose-500', 'bg-rose-950/60');
+            });
+
+            if (isCorrect) {
+                el.classList.add('border-emerald-500', 'bg-emerald-950/60');
+                document.getElementById('exam-feedback').classList.remove('hidden');
+            } else {
+                el.classList.add('border-rose-500', 'bg-rose-950/60');
+                document.getElementById('exam-feedback').classList.add('hidden');
+            }
+            lucide.createIcons();
+        }
+
+        window.onload = function() {
+            lucide.createIcons();
+        };
+    </script>
+</body>
+</html>

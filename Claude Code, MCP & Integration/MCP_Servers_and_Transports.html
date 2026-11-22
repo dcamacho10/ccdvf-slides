@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>CCDV-F | Module 3: MCP Servers & Transports</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+    
+    :root {
+      --bg-dark: #0B0F19;
+      --surface-navy: #111827;
+      --surface-card: #1F2937;
+      --border-cyan: rgba(6, 182, 212, 0.3);
+      --accent-blue: #3B82F6;
+      --accent-cyan: #06B6D4;
+      --alert-amber: #F59E0B;
+      --alert-red: #EF4444;
+      --success-green: #10B981;
+      --accent-purple: #8B5CF6;
+      --text-main: #F3F4F6;
+      --text-muted: #9CA3AF;
+      --font-mono: 'Fira Code', monospace;
+      --font-sans: 'Inter', sans-serif;
+    }
+    
+    body {
+      background-color: #030712;
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    
+    .viewport {
+      width: 100vw;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    
+    .deck-container {
+      width: 100%;
+      max-width: 1280px;
+      aspect-ratio: 16 / 9;
+      max-height: calc(100vh - 40px);
+      background-color: var(--bg-dark);
+      border: 1px solid rgba(59, 130, 246, 0.35);
+      box-shadow: 0 0 35px rgba(59, 130, 246, 0.15), inset 0 0 15px rgba(0, 0, 0, 0.8);
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .deck-header {
+      height: 48px;
+      background-color: rgba(17, 24, 39, 0.95);
+      border-bottom: 1px solid rgba(59, 130, 246, 0.25);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+    }
+    
+    .deck-header .brand {
+      color: var(--accent-blue);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+    }
+    
+    .deck-header .status {
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .badge-exam {
+      background: rgba(59, 130, 246, 0.15);
+      border: 1px solid rgba(59, 130, 246, 0.4);
+      color: var(--accent-blue);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+    }
+
+    .slides-wrapper {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      min-height: 0;
+    }
+    
+    .slide-container {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      padding: 32px 44px;
+      display: none;
+      flex-direction: column;
+      opacity: 0;
+      transition: opacity 0.2s ease-in-out;
+      overflow-y: auto;
+    }
+    
+    .slide-container.active {
+      display: flex;
+      opacity: 1;
+    }
+
+    .slide-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--accent-blue);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 6px;
+    }
+
+    .slide-title {
+      font-size: 24px;
+      font-weight: 800;
+      color: #FFFFFF;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .feature-card {
+      background: var(--surface-card);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 16px 20px;
+    }
+
+    .code-box {
+      background: #060913;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 14px 18px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      line-height: 1.6;
+      overflow-x: auto;
+    }
+
+    .nav-btn {
+      background: var(--surface-navy);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: var(--text-main);
+      padding: 6px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      transition: all 0.2s;
+    }
+
+    .nav-btn:hover:not(:disabled) {
+      background: var(--accent-blue);
+      color: #fff;
+    }
+
+    .nav-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    .quiz-option {
+      background: var(--surface-card);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 12px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-bottom: 10px;
+      font-size: 13px;
+      transition: all 0.2s;
+    }
+
+    .quiz-option:hover {
+      border-color: var(--accent-blue);
+    }
+
+    .quiz-option.selected-correct {
+      border-color: var(--success-green);
+      background: rgba(16, 185, 129, 0.15);
+      color: #A7F3D0;
+    }
+
+    .quiz-option.selected-wrong {
+      border-color: var(--alert-red);
+      background: rgba(239, 68, 68, 0.15);
+      color: #FCA5A5;
+    }
+
+    .deck-footer {
+      height: 52px;
+      background-color: rgba(17, 24, 39, 0.95);
+      border-top: 1px solid rgba(59, 130, 246, 0.25);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+    }
+
+    @media (max-width: 768px) {
+      .viewport { padding: 0 !important; }
+      .deck-container {
+        border-radius: 0 !important;
+        border: none !important;
+        max-height: none !important;
+        aspect-ratio: auto !important;
+        min-height: 100dvh !important;
+      }
+      .deck-header {
+        position: sticky; top: 0; z-index: 100;
+        height: 44px; padding: 0 12px;
+      }
+      .slide-container {
+        position: relative !important;
+        height: auto !important; min-height: calc(100dvh - 98px) !important;
+        padding: 16px !important;
+      }
+      .grid-2, .grid-3 { grid-template-columns: 1fr !important; }
+      .deck-footer {
+        position: sticky; bottom: 0; z-index: 100;
+        height: 54px; padding: 0 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="viewport">
+    <div class="deck-container">
+      
+      <!-- Deck Header -->
+      <header class="deck-header">
+        <div class="brand">
+          <i class="fa-solid fa-network-wired"></i>
+          <span>CCDV-F // MODULE 3: MCP SERVERS & TRANSPORTS</span>
+        </div>
+        <div class="status">
+          <a href="../index.html" style="color:var(--text-muted); text-decoration:none; font-size:11px; margin-right:8px;">
+            <i class="fa-solid fa-arrow-left"></i> HUB
+          </a>
+          <span class="badge-exam"><i class="fa-solid fa-certificate"></i> EXAM LESSON 4</span>
+        </div>
+      </header>
+
+      <!-- Slides Wrapper -->
+      <main class="slides-wrapper">
+
+        <!-- SLIDE 1: Cover / Mission Briefing -->
+        <section class="slide-container active" id="slide-1">
+          <div class="slide-eyebrow">// MISSION BRIEFING &bull; INCIDENT #404-MCP</div>
+          <h1 class="slide-title">
+            <i class="fa-solid fa-triangle-exclamation" style="color: var(--accent-blue);"></i>
+            The Committed Subprocess Crash
+          </h1>
+          
+          <div class="grid-2">
+            <div class="feature-card" style="border-left: 3px solid var(--accent-blue); display: flex; flex-direction: column; justify-content: space-between;">
+              <div>
+                <span style="font-family: var(--font-mono); font-size: 11px; color: var(--accent-blue); display: block; margin-bottom: 8px;">
+                  APEXCORP INFRASTRUCTURE INCIDENT REPORT
+                </span>
+                <p style="font-size: 14px; line-height: 1.6; color: var(--text-main); margin-bottom: 12px;">
+                  ApexCorp committed a project-scoped <code>.mcp.json</code> configured with a <code>stdio</code> transport launching a local Node.js server with raw production API keys embedded in the JSON.
+                </p>
+                <p style="font-size: 13px; line-height: 1.6; color: var(--text-muted);">
+                  When cloned by Python engineers, the agent loop crashed on missing <code>npx</code> binaries, while the hardcoded secret was harvested by public repository scanners within 18 minutes.
+                </p>
+              </div>
+              <div style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 6px; padding: 10px 14px; font-size: 12px; color: var(--accent-blue); font-family: var(--font-mono);">
+                <i class="fa-solid fa-skull-crossbones mr-2"></i> ERROR: stdio transport spawns a local process on every clone; secrets in .mcp.json violate source control governance.
+              </div>
+            </div>
+
+            <div class="code-box">
+<span style="color: #6B7280;">// .mcp.json (Committed to Git — Critical Flaws)</span>
+{
+  <span style="color: #06B6D4;">"mcpServers"</span>: {
+    <span style="color: #06B6D4;">"db-service"</span>: {
+      <span style="color: #06B6D4;">"type"</span>: <span style="color: #10B981;">"stdio"</span>,
+      <span style="color: #06B6D4;">"command"</span>: <span style="color: #EF4444;">"npx"</span>,  <span style="color: #6B7280;">// ❌ Assumes Node/npx is installed on every teammate machine!</span>
+      <span style="color: #06B6D4;">"args"</span>: [<span style="color: #10B981;">"-y"</span>, <span style="color: #10B981;">"@apex/db-server"</span>],
+      <span style="color: #06B6D4;">"env"</span>: {
+        <span style="color: #06B6D4;">"DB_KEY"</span>: <span style="color: #EF4444;">"sk-prod-live-9923847"</span>  <span style="color: #6B7280;">// ❌ COMMITTED LIVE SECRET!</span>
+      }
+    }
+  }
+}
+
+<span style="color: #6B7280;">// Teammate Terminal Crash:</span>
+$ claude "check database status"
+<span style="color: #EF4444;">[MCP Server Error] 'npx' executable not found in PATH</span>
+<span style="color: #EF4444;">GitGuardian Alert: High Severity Secret exposed in commit 8d4a9</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 2: Root Cause Analysis -->
+        <section class="slide-container" id="slide-2">
+          <div class="slide-eyebrow">// ROOT CAUSE ANALYSIS</div>
+          <h2 class="slide-title"><i class="fa-solid fa-magnifying-glass" style="color: var(--accent-blue);"></i> Transports, Scopes &amp; Secrets</h2>
+          <div class="grid-3">
+            <div class="feature-card" style="border-top: 3px solid var(--alert-red);">
+              <h3 style="font-size: 14px; font-weight: bold; color: var(--alert-red); margin-bottom: 8px;">1. Stdio Local Dependency</h3>
+              <p style="font-size: 12px; color: var(--text-muted); line-height: 1.5;">
+                A <code>stdio</code> server runs as a local subprocess. Every teammate cloning the repo must have the server's runtime (Node, Python, Docker) installed locally.
+              </p>
+            </div>
+            <div class="feature-card" style="border-top: 3px solid var(--alert-amber);">
+              <h3 style="font-size: 14px; font-weight: bold; color: var(--alert-amber); margin-bottom: 8px;">2. Committed Credentials</h3>
+              <p style="font-size: 12px; color: var(--text-muted); line-height: 1.5;">
+                <code>.mcp.json</code> at repo root travels with code in version control. Never hardcode live secrets; reference environment variables (e.g. <code>${DB_KEY}</code>).
+              </p>
+            </div>
+            <div class="feature-card" style="border-top: 3px solid var(--accent-cyan);">
+              <h3 style="font-size: 14px; font-weight: bold; color: var(--accent-cyan); margin-bottom: 8px;">3. Unbounded Context Costs</h3>
+              <p style="font-size: 12px; color: var(--text-muted); line-height: 1.5;">
+                MCP tools return large schema definitions and responses. Without prompt caching breakpoints, every turn repays full input token costs.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 3: The 3 MCP Primitives -->
+        <section class="slide-container" id="slide-3">
+          <div class="slide-eyebrow">// MCP PROTOCOL</div>
+          <h2 class="slide-title"><i class="fa-solid fa-shapes" style="color: var(--accent-cyan);"></i> The Three Core Primitives</h2>
+          <div class="grid-3">
+            <div class="feature-card" style="border-top: 3px solid var(--accent-cyan);">
+              <h3 style="font-size: 14px; font-weight: bold; color: var(--accent-cyan); margin-bottom: 6px;"><i class="fa-solid fa-wrench mr-2"></i> Tools</h3>
+              <p style="font-size: 12px; color: var(--text-muted); line-height: 1.5; margin-bottom: 8px;">
+                Executable functions called by Claude to perform actions or side-effects.
+              </p>
+              <span style="font-size: 11px; font-family: var(--font-mono); color: var(--text-muted);">
+                Example: <code>query_database(sql)</code>, <code>send_slack_message(channel)</code>.
+              </span>
+            </div>
+            <div class="feature-card" style="border-top: 3px solid var(--accent-blue);">
+              <h3 style="font-size: 14px; font-weight: bold; color: var(--accent-blue); margin-bottom: 6px;"><i class="fa-solid fa-database mr-2"></i> Resources</h3>
+              <p style="font-size: 12px; color: var(--text-muted); line-height: 1.5; margin-bottom: 8px;">
+                Read-only structured data or files provided to the model as context.
+              </p>
+              <span style="font-size: 11px; font-family: var(--font-mono); color: var(--text-muted);">
+                Example: <code>postgres://schema/users</code>, <code>file:///logs/today.log</code>.
+              </span>
+            </div>
+            <div class="feature-card" style="border-top: 3px solid var(--accent-purple);">
+              <h3 style="font-size: 14px; font-weight: bold; color: var(--accent-purple); margin-bottom: 6px;"><i class="fa-solid fa-comment-dots mr-2"></i> Prompts</h3>
+              <p style="font-size: 12px; color: var(--text-muted); line-height: 1.5; margin-bottom: 8px;">
+                Pre-packaged prompt templates served dynamically by the server to guide the user.
+              </p>
+              <span style="font-size: 11px; font-family: var(--font-mono); color: var(--text-muted);">
+                Example: <code>debug-incident-template</code>.
+              </span>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 4: Transports Compared -->
+        <section class="slide-container" id="slide-4">
+          <div class="slide-eyebrow">// TRANSPORT DECISION</div>
+          <h2 class="slide-title"><i class="fa-solid fa-arrows-split-up-and-left" style="color: var(--accent-blue);"></i> stdio vs HTTP / SSE Transports</h2>
+          <div class="grid-2">
+            <div class="feature-card">
+              <h3 style="font-size: 14px; font-weight: bold; color: var(--accent-cyan); margin-bottom: 8px;">stdio Transport</h3>
+              <div style="font-size: 12px; line-height: 1.6; color: var(--text-main);">
+                • Spawns server as a <strong>local subprocess</strong> on the same machine.<br>
+                • Communicates via stdin/stdout streams.<br>
+                • <strong>Pros:</strong> Zero network overhead, private to host.<br>
+                • <strong style="color: var(--alert-amber);">Cons:</strong> Requires local runtime (Node/Python/Go) on every teammate's machine. Cannot be shared remotely.
+              </div>
+            </div>
+            <div class="feature-card">
+              <h3 style="font-size: 14px; font-weight: bold; color: var(--accent-purple); margin-bottom: 8px;">HTTP / SSE Transport</h3>
+              <div style="font-size: 12px; line-height: 1.6; color: var(--text-main);">
+                • Connects to a <strong>remotely hosted</strong> server over HTTPS/SSE.<br>
+                • Centralized service maintained by DevOps/Infra team.<br>
+                • <strong>Pros:</strong> Zero local runtime dependencies for developers; centralized credentials and monitoring.<br>
+                • <strong style="color: var(--alert-amber);">Cons:</strong> Requires network connectivity and enterprise OAuth/token authentication.
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 5: Configuration Scopes -->
+        <section class="slide-container" id="slide-5">
+          <div class="slide-eyebrow">// SCOPE ARCHITECTURE</div>
+          <h2 class="slide-title"><i class="fa-solid fa-folder-tree" style="color: var(--accent-cyan);"></i> The Three Configuration Scopes</h2>
+          <div class="feature-card" style="font-size: 12px; overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left;">
+              <thead>
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.1); color: var(--accent-blue);">
+                  <th style="padding: 10px;">Scope</th>
+                  <th style="padding: 10px;">File Path</th>
+                  <th style="padding: 10px;">Version Control</th>
+                  <th style="padding: 10px;">Intended Use Case</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                  <td style="padding: 10px; font-family: var(--font-mono); color: var(--accent-cyan);">Project Scope</td>
+                  <td style="padding: 10px; font-family: var(--font-mono);">.mcp.json (Repo Root)</td>
+                  <td style="padding: 10px; color: var(--success-green);">Committed to Git</td>
+                  <td style="padding: 10px;">Servers the whole team uses automatically when cloning.</td>
+                </tr>
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                  <td style="padding: 10px; font-family: var(--font-mono); color: var(--accent-purple);">User Scope</td>
+                  <td style="padding: 10px; font-family: var(--font-mono);">~/.claude/mcp.json</td>
+                  <td style="padding: 10px; color: var(--text-muted);">Personal Machine Only</td>
+                  <td style="padding: 10px;">Personal developer tools (GitHub CLI, custom local scrapers).</td>
+                </tr>
+                <tr>
+                  <td style="padding: 10px; font-family: var(--font-mono); color: var(--alert-red);">Enterprise Scope</td>
+                  <td style="padding: 10px; font-family: var(--font-mono);">managed-settings.json</td>
+                  <td style="padding: 10px; color: var(--alert-red);">Admin Deployed (Locked)</td>
+                  <td style="padding: 10px;">Mandatory organization-wide servers with enforced auth &amp; audits.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- SLIDE 6: Prompt Caching & MCP Optimization -->
+        <section class="slide-container" id="slide-6">
+          <div class="slide-eyebrow">// COST & LATENCY OPTIMIZATION</div>
+          <h2 class="slide-title"><i class="fa-solid fa-gauge-high" style="color: var(--success-green);"></i> Prompt Caching in MCP &amp; API</h2>
+          <div class="grid-2">
+            <div class="feature-card">
+              <h3 style="font-size: 14px; font-weight: bold; color: var(--success-green); margin-bottom: 8px;">Cache Lifetime &amp; Thresholds</h3>
+              <div style="font-size: 12px; line-height: 1.6; color: var(--text-main);">
+                <p style="margin-bottom: 8px;">
+                  Large tool definitions and system instructions can be cached at breakpoints to reduce cost by up to <strong>90%</strong> and latency by <strong>85%</strong>.
+                </p>
+                <div style="background: rgba(16, 185, 129, 0.1); border-left: 3px solid var(--success-green); padding: 8px 12px; margin-bottom: 8px;">
+                  <strong>Default Lifetime:</strong> 5 minutes from last read (resets on each read).<br>
+                  <strong>Opt-in Extended:</strong> 1 hour lifetime (<code>ttl: "1h"</code> on breakpoint).
+                </div>
+                <p style="color: var(--alert-amber); font-size: 11px;">
+                  ⚠ Minimum Token Threshold: 1,024 tokens. Prompts shorter than 1,024 tokens are never cached!
+                </p>
+              </div>
+            </div>
+            <div class="code-box">
+<span style="color: #6B7280;">// Setting Cache Breakpoint with 1-hour TTL</span>
+{
+  <span style="color: #06B6D4;">"type"</span>: <span style="color: #10B981;">"text"</span>,
+  <span style="color: #06B6D4;">"text"</span>: <span style="color: #10B981;">"Comprehensive enterprise database schema definitions..."</span>,
+  <span style="color: #06B6D4;">"cache_control"</span>: {
+    <span style="color: #06B6D4;">"type"</span>: <span style="color: #10B981;">"ephemeral"</span>,
+    <span style="color: #06B6D4;">"ttl"</span>: <span style="color: #10B981;">"1h"</span>  <span style="color: #6B7280;">// Opt-in 1-hour lifetime for long pauses</span>
+  }
+}
+
+<span style="color: #6B7280;">// Token Cost Profile:</span>
+Cache Write: 1.25x base input token price
+Cache Read:  <span style="color: #10B981;">0.10x base input token price (90% savings!)</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 7: Securing Secrets in .mcp.json -->
+        <section class="slide-container" id="slide-7">
+          <div class="slide-eyebrow">// CREDENTIAL HYGIENE</div>
+          <h2 class="slide-title"><i class="fa-solid fa-key" style="color: var(--alert-amber);"></i> Never Commit Live Secrets</h2>
+          <div class="grid-2">
+            <div class="feature-card">
+              <h3 style="font-size: 14px; font-weight: bold; color: var(--alert-red); margin-bottom: 8px;">The Leak Mechanism</h3>
+              <p style="font-size: 12px; color: var(--text-muted); line-height: 1.6; margin-bottom: 12px;">
+                Because <code>.mcp.json</code> is committed to version control, any raw token written in the JSON file is immediately broadcast to git history and remote mirrors.
+              </p>
+              <h3 style="font-size: 14px; font-weight: bold; color: var(--success-green); margin-bottom: 8px;">The Compliant Fix</h3>
+              <p style="font-size: 12px; color: var(--text-muted); line-height: 1.6;">
+                Reference environment variables in <code>.mcp.json</code>. Each developer supplies their own credentials through their local environment or secret manager.
+              </p>
+            </div>
+            <div class="code-box">
+<span style="color: #6B7280;">// Compliant .mcp.json Pattern</span>
+{
+  <span style="color: #06B6D4;">"mcpServers"</span>: {
+    <span style="color: #06B6D4;">"warehouse"</span>: {
+      <span style="color: #06B6D4;">"type"</span>: <span style="color: #10B981;">"http"</span>,
+      <span style="color: #06B6D4;">"url"</span>: <span style="color: #10B981;">"https://mcp.internal.apexcorp.com"</span>,
+      <span style="color: #06B6D4;">"headers"</span>: {
+        <span style="color: #06B6D4;">"Authorization"</span>: <span style="color: #10B981;">"Bearer ${APEX_MCP_TOKEN}"</span>
+      }
+    }
+  }
+}
+<span style="color: #6B7280;">// Safe: APEX_MCP_TOKEN injected from environment only!</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 8: Interactive Simulator -->
+        <section class="slide-container" id="slide-8">
+          <div class="slide-eyebrow">// INTERACTIVE LAB</div>
+          <h2 class="slide-title"><i class="fa-solid fa-flask" style="color: var(--accent-blue);"></i> MCP Transport &amp; Cache Calculator</h2>
+          <div class="grid-2">
+            <div class="feature-card" style="display: flex; flex-direction: column; gap: 12px;">
+              <div>
+                <label style="font-size: 11px; color: var(--text-muted); font-family: var(--font-mono);">
+                  1. SERVER ARCHITECTURE:
+                </label>
+                <div style="display: flex; gap: 6px; margin-top: 4px;">
+                  <button class="nav-btn" onclick="setMcpType('stdio')">stdio (Subprocess)</button>
+                  <button class="nav-btn" onclick="setMcpType('http')">HTTP / Remote</button>
+                </div>
+              </div>
+
+              <div>
+                <label style="font-size: 11px; color: var(--text-muted); font-family: var(--font-mono);">
+                  2. CACHE BREAKPOINT POLICY:
+                </label>
+                <div style="display: flex; gap: 6px; margin-top: 4px;">
+                  <button class="nav-btn" onclick="setCachePolicy('none')">No Cache</button>
+                  <button class="nav-btn" onclick="setCachePolicy('5m')">5-Min Default</button>
+                  <button class="nav-btn" onclick="setCachePolicy('1h')">1-Hour (ttl: 1h)</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="code-box" style="display: flex; flex-direction: column; justify-content: space-between;">
+              <div>
+                <span style="color: #6B7280;">// Architecture Profile Evaluation</span><br>
+                <div id="mcp-eval-output" style="margin-top: 8px; line-height: 1.6;">
+                  Select transport and cache policy on the left to evaluate deployment profile.
+                </div>
+              </div>
+              <div id="mcp-badge" style="margin-top: 8px; padding: 6px 12px; border-radius: 6px; font-size: 11px; font-family: var(--font-mono); background: rgba(255,255,255,0.05); color: #9CA3AF;">
+                ESTIMATE: READY
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 9: CCDV-F Exam Simulation -->
+        <section class="slide-container" id="slide-9">
+          <div class="slide-eyebrow">// CCDV-F EXAM SIMULATION</div>
+          <h2 class="slide-title"><i class="fa-solid fa-circle-question" style="color: var(--accent-blue);"></i> Practice Question: stdio Subprocesses</h2>
+          <div class="feature-card" style="font-size: 13px;">
+            <p style="margin-bottom: 14px; line-height: 1.6; color: var(--text-main);">
+              <strong>Scenario:</strong> A team commits a project-scoped <code>.mcp.json</code> file configuring a <code>stdio</code> MCP server launched with <code>"command": "node"</code>. When teammate Bob clones the repository on a machine with only Python 3.11 installed, what occurs when Claude attempts to invoke a tool from this server?
+            </p>
+
+            <div class="quiz-option" onclick="checkAnswer(this, false)">
+              <span style="font-weight: bold; color: var(--accent-blue);">A.</span> Claude Code proxies the tool call through Anthropic's cloud execution container.
+            </div>
+            <div class="quiz-option" onclick="checkAnswer(this, false)">
+              <span style="font-weight: bold; color: var(--accent-blue);">B.</span> The server configuration falls back to HTTP transport automatically.
+            </div>
+            <div class="quiz-option" onclick="checkAnswer(this, true)">
+              <span style="font-weight: bold; color: var(--accent-blue);">C.</span> The tool call fails because stdio servers spawn a local subprocess on each developer's machine, requiring Node to be locally installed.
+            </div>
+            <div class="quiz-option" onclick="checkAnswer(this, false)">
+              <span style="font-weight: bold; color: var(--accent-blue);">D.</span> Claude compiles Node to WebAssembly on the fly.
+            </div>
+
+            <div id="quiz-explanation" style="display: none; margin-top: 14px; padding: 12px 16px; background: rgba(16, 185, 129, 0.1); border: 1px solid var(--success-green); border-radius: 6px; font-size: 12px; color: #A7F3D0;">
+              <strong>Correct! Option C:</strong> A <code>stdio</code> server executes as a local subprocess on the developer's physical machine. Every teammate cloning the repo must have the required runtime installed locally.
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 10: Summary & Cheat Sheet -->
+        <section class="slide-container" id="slide-10">
+          <div class="slide-eyebrow">// CERTIFICATION CHEAT SHEET</div>
+          <h2 class="slide-title"><i class="fa-solid fa-award" style="color: var(--accent-blue);"></i> Lesson 4 Master Rules for CCDV-F</h2>
+          <div class="grid-2" style="font-size: 13px;">
+            <div class="feature-card" style="border-left: 3px solid var(--accent-blue); display: flex; flex-direction: column; gap: 8px;">
+              <strong style="color: var(--accent-blue);">1. stdio Spawns Locally</strong>
+              <p style="color: var(--text-muted); font-size: 12px;">stdio launches a subprocess on every clone. Teammates must have local runtimes installed.</p>
+              
+              <strong style="color: var(--accent-blue); margin-top: 6px;">2. Never Hardcode Keys in .mcp.json</strong>
+              <p style="color: var(--text-muted); font-size: 12px;">Use <code>${ENV_VAR}</code> references. Project-scoped configs travel with git history.</p>
+            </div>
+            <div class="feature-card" style="border-left: 3px solid var(--success-green); display: flex; flex-direction: column; gap: 8px;">
+              <strong style="color: var(--success-green);">3. Cache TTL: 5m vs 1h</strong>
+              <p style="color: var(--text-muted); font-size: 12px;">Default TTL is 5 minutes from last read. Opt-in 1-hour (<code>ttl: "1h"</code>) for paused workflows.</p>
+              
+              <strong style="color: var(--success-green); margin-top: 6px;">4. 1,024 Token Threshold</strong>
+              <p style="color: var(--text-muted); font-size: 12px;">Prompt caching only activates above 1,024 tokens. Short prompts are never cached.</p>
+            </div>
+          </div>
+        </section>
+
+      </main>
+
+      <!-- Deck Footer -->
+      <footer class="deck-footer">
+        <div style="color: var(--text-muted);">
+          CCDV-F EXAM PREPARATION &bull; MODULE 3 &bull; LESSON 04
+        </div>
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <span>SLIDE <strong id="current-slide-num" style="color: #fff;">1</strong> / 10</span>
+          <div style="display: flex; gap: 6px;">
+            <button id="btn-prev" class="nav-btn" onclick="prevSlide()"><i class="fa-solid fa-chevron-left"></i></button>
+            <button id="btn-next" class="nav-btn" onclick="nextSlide()"><i class="fa-solid fa-chevron-right"></i></button>
+          </div>
+        </div>
+      </footer>
+
+    </div>
+  </div>
+
+  <script>
+    let currentSlide = 1;
+    const totalSlides = 10;
+    let selectedType = 'stdio';
+    let selectedPolicy = '5m';
+
+    function updateDeckState() {
+      document.querySelectorAll('.slide-container').forEach(s => s.classList.remove('active'));
+      const active = document.getElementById(`slide-${currentSlide}`);
+      if (active) active.classList.add('active');
+      document.getElementById('current-slide-num').innerText = currentSlide;
+      document.getElementById('btn-prev').disabled = (currentSlide === 1);
+      document.getElementById('btn-next').disabled = (currentSlide === totalSlides);
+    }
+
+    function nextSlide() { if (currentSlide < totalSlides) { currentSlide++; updateDeckState(); } }
+    function prevSlide() { if (currentSlide > 1) { currentSlide--; updateDeckState(); } }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
+      else if (e.key === 'ArrowLeft') prevSlide();
+    });
+
+    function setMcpType(type) {
+      selectedType = type;
+      renderEval();
+    }
+
+    function setCachePolicy(policy) {
+      selectedPolicy = policy;
+      renderEval();
+    }
+
+    function renderEval() {
+      const out = document.getElementById('mcp-eval-output');
+      const badge = document.getElementById('mcp-badge');
+
+      let transportText = selectedType === 'stdio'
+        ? '<strong style="color:#06B6D4;">Transport: stdio (Subprocess)</strong><br>• Local process spawned on developer machine.<br>• Requires local runtime (Node/Python) on all clones.'
+        : '<strong style="color:#3B82F6;">Transport: HTTP (Remote SSE)</strong><br>• Remote service hosted on network.<br>• Zero local runtime dependency; authenticated via OAuth or env tokens.';
+
+      let cacheText = selectedPolicy === 'none'
+        ? '<br>• <strong style="color:#EF4444;">No Cache:</strong> 100% token re-write cost incurred on every turn.'
+        : selectedPolicy === '5m'
+        ? '<br>• <strong style="color:#10B981;">5-Min TTL Cache:</strong> 90% savings on repeat turns within 5m window.'
+        : '<br>• <strong style="color:#8B5CF6;">1-Hour TTL (ttl: 1h):</strong> Ideal for paused agent loops with long think/review gaps.';
+
+      out.innerHTML = transportText + cacheText;
+
+      badge.style.background = 'rgba(16, 185, 129, 0.2)';
+      badge.style.color = '#10B981';
+      badge.innerText = `STATUS: ${selectedType.toUpperCase()} | CACHE: ${selectedPolicy.toUpperCase()}`;
+    }
+
+    function checkAnswer(el, isCorrect) {
+      document.querySelectorAll('#slide-9 .quiz-option').forEach(opt => {
+        opt.classList.remove('selected-correct', 'selected-wrong');
+      });
+      if (isCorrect) {
+        el.classList.add('selected-correct');
+        document.getElementById('quiz-explanation').style.display = 'block';
+      } else {
+        el.classList.add('selected-wrong');
+        document.getElementById('quiz-explanation').style.display = 'none';
+      }
+    }
+
+    updateDeckState();
+  </script>
+</body>
+</html>

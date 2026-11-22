@@ -1,0 +1,1678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>CCDV-F | Module 3: Claude Code, MCP & Integration</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    :root {
+      --bg-dark: #0B0F19;
+      --surface-navy: #111827;
+      --surface-card: #1F2937;
+      --border-cyan: rgba(6, 182, 212, 0.3);
+      --accent-blue: #3B82F6;
+      --accent-cyan: #06B6D4;
+      --alert-amber: #F59E0B;
+      --alert-red: #EF4444;
+      --success-green: #10B981;
+      --accent-purple: #8B5CF6;
+      --text-main: #F3F4F6;
+      --text-muted: #9CA3AF;
+      --font-mono: 'Fira Code', monospace;
+      --font-sans: 'Inter', sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: #030712;
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      overflow-x: hidden;
+      margin: 0;
+      padding: 0;
+    }
+
+    .viewport {
+      width: 100vw;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .deck-container {
+      width: 100%;
+      max-width: 1280px;
+      aspect-ratio: 16 / 9;
+      max-height: calc(100vh - 40px);
+      background-color: var(--bg-dark);
+      border: 1px solid var(--border-cyan);
+      box-shadow: 0 0 35px rgba(6, 182, 212, 0.15), inset 0 0 15px rgba(0, 0, 0, 0.8);
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .slides-wrapper {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    .slide-container {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      padding: 36px 48px;
+      display: none;
+      flex-direction: column;
+      opacity: 0;
+      transition: opacity 0.2s ease-in-out;
+      box-sizing: border-box;
+    }
+
+    .slide-container.active { display: flex; opacity: 1; }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .deck-header {
+      height: 48px;
+      min-height: 48px;
+      background: var(--surface-navy);
+      border-bottom: 1px solid var(--border-cyan);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      flex-shrink: 0;
+    }
+
+    .deck-footer {
+      height: 52px;
+      min-height: 52px;
+      background: var(--surface-navy);
+      border-top: 1px solid var(--border-cyan);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      flex-shrink: 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--accent-cyan);
+    }
+
+    .brand span {
+      color: var(--text-muted);
+    }
+
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--text-muted);
+    }
+
+    .status a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .status a:hover {
+      color: var(--accent-cyan);
+    }
+
+    .badge-exam {
+      display: inline-block;
+      background: rgba(6, 182, 212, 0.2);
+      color: var(--accent-cyan);
+      border: 1px solid rgba(6, 182, 212, 0.4);
+      border-radius: 20px;
+      padding: 2px 10px;
+      font-size: 10px;
+      font-family: var(--font-mono);
+      letter-spacing: 1px;
+    }
+
+    .footer-left {
+      color: var(--text-muted);
+    }
+
+    .footer-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--text-muted);
+    }
+
+    .nav-btn {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: var(--text-main);
+      padding: 6px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      transition: all 0.2s;
+    }
+
+    .nav-btn:hover:not(:disabled) {
+      background: var(--accent-cyan);
+      border-color: var(--accent-cyan);
+      color: #000;
+    }
+
+    .nav-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    .slide-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--accent-cyan);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 6px;
+    }
+
+    .slide-title {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: var(--font-sans);
+    }
+
+    .feature-card {
+      background: var(--surface-card);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 8px;
+      padding: 16px 20px;
+    }
+
+    .code-box {
+      background: #060913;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      padding: 14px 18px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      line-height: 1.6;
+      overflow-x: auto;
+      overflow-y: auto;
+    }
+
+    .quiz-option {
+      background: var(--surface-card);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      padding: 14px 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      transition: all 0.2s;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+
+    .quiz-option:hover {
+      border-color: var(--accent-cyan);
+      background: rgba(6, 182, 212, 0.05);
+    }
+
+    .quiz-option.selected-correct {
+      border-color: var(--success-green);
+      background: rgba(16, 185, 129, 0.1);
+    }
+
+    .quiz-option.selected-wrong {
+      border-color: var(--alert-red);
+      background: rgba(239, 68, 68, 0.1);
+    }
+
+    .quiz-letter {
+      font-family: var(--font-mono);
+      color: var(--accent-cyan);
+      font-weight: 700;
+      min-width: 20px;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .animate-pulse {
+      animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+
+    /* Slide 1 specific */
+    .incident-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.5);
+      border-radius: 6px;
+      padding: 6px 16px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: #EF4444;
+      margin-bottom: 10px;
+    }
+
+    .timestamp-line {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    .cover-h1 {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--text-main);
+      line-height: 1.25;
+      margin-bottom: 20px;
+      max-width: 820px;
+    }
+
+    .obj-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .obj-card {
+      background: var(--surface-card);
+      border-radius: 8px;
+      padding: 14px 16px;
+    }
+
+    .obj-card-num {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+    }
+
+    .obj-card-title {
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .obj-card-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .role-bar {
+      background: var(--surface-navy);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 6px;
+      padding: 8px 16px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    .cta-bar {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--accent-cyan);
+      letter-spacing: 1px;
+    }
+
+    /* Failure cards */
+    .failure-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      flex: 1;
+    }
+
+    .failure-card {
+      background: var(--surface-card);
+      border-radius: 8px;
+      padding: 14px 18px;
+      border-left: 3px solid var(--alert-red);
+    }
+
+    .failure-card-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--alert-red);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .failure-card p {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-top: 8px;
+    }
+
+    /* Exam reality bar */
+    .exam-bar {
+      background: rgba(6, 182, 212, 0.08);
+      border: 1px solid rgba(6, 182, 212, 0.25);
+      border-radius: 6px;
+      padding: 8px 16px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--accent-cyan);
+      margin-top: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Mode cards */
+    .mode-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .mode-card {
+      background: var(--surface-card);
+      border-radius: 8px;
+      padding: 12px 16px;
+    }
+
+    .mode-card-title {
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .mode-card-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .insight-card {
+      background: rgba(6, 182, 212, 0.08);
+      border: 1px solid rgba(6, 182, 212, 0.3);
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 12px;
+      line-height: 1.5;
+    }
+
+    .insight-card strong {
+      color: var(--accent-cyan);
+    }
+
+    /* Lab styles */
+    .lab-controls {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .lab-select {
+      background: var(--surface-card);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: var(--text-main);
+      border-radius: 6px;
+      padding: 8px 12px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      width: 100%;
+      cursor: pointer;
+    }
+
+    .lab-select:focus {
+      outline: none;
+      border-color: var(--accent-cyan);
+    }
+
+    .lab-label {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .score-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    /* 3-column grid */
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      flex: 1;
+      min-height: 0;
+    }
+
+    /* Cheat sheet */
+    .master-card {
+      background: var(--surface-card);
+      border-radius: 10px;
+      padding: 20px 22px;
+    }
+
+    .master-rule {
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      padding: 12px 0;
+    }
+
+    .master-rule:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .master-rule-title {
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .master-rule-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .closing-bar {
+      background: rgba(6, 182, 212, 0.08);
+      border: 1px solid rgba(6, 182, 212, 0.25);
+      border-radius: 6px;
+      padding: 10px 20px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--accent-cyan);
+      text-align: center;
+      margin-top: 14px;
+    }
+
+    /* Table styles */
+    .matrix-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--font-mono);
+      font-size: 12px;
+    }
+
+    .matrix-table th {
+      background: var(--surface-navy);
+      color: var(--accent-cyan);
+      padding: 10px 14px;
+      text-align: left;
+      border: 1px solid rgba(255,255,255,0.08);
+      font-size: 11px;
+      letter-spacing: 0.5px;
+    }
+
+    .matrix-table td {
+      padding: 10px 14px;
+      border: 1px solid rgba(255,255,255,0.06);
+      color: var(--text-muted);
+      vertical-align: top;
+      font-size: 11px;
+    }
+
+    .matrix-table tr:nth-child(even) td {
+      background: rgba(255,255,255,0.02);
+    }
+
+    @media (max-width: 768px), (orientation: portrait) {
+      body {
+        overflow-y: auto !important;
+        user-select: text !important;
+      }
+      .viewport {
+        width: 100% !important;
+        min-height: 100dvh !important;
+        padding: 0 !important;
+        align-items: flex-start !important;
+      }
+      .deck-container {
+        width: 100% !important;
+        max-width: 100% !important;
+        height: auto !important;
+        min-height: 100dvh !important;
+        aspect-ratio: auto !important;
+        max-height: none !important;
+        border-radius: 0 !important;
+        border-left: none !important;
+        border-right: none !important;
+      }
+      .slides-wrapper {
+        overflow-y: auto !important;
+        height: auto !important;
+        min-height: calc(100dvh - 100px) !important;
+      }
+      .slide-container {
+        position: relative !important;
+        width: 100% !important;
+        height: auto !important;
+        min-height: calc(100dvh - 100px) !important;
+        padding: 20px 16px !important;
+        overflow-y: auto !important;
+      }
+      .slide-container.active {
+        display: flex !important;
+      }
+      .grid-2 {
+        grid-template-columns: 1fr !important;
+        height: auto !important;
+      }
+      .slide-title {
+        font-size: 18px !important;
+        margin-bottom: 12px !important;
+      }
+      .deck-header {
+        height: auto !important;
+        padding: 8px 12px !important;
+        font-size: 11px !important;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .deck-footer {
+        height: auto !important;
+        padding: 8px 12px !important;
+        font-size: 11px !important;
+      }
+      .deck-header .brand span,
+      .deck-header .status span:not(.badge-exam) {
+        display: none;
+      }
+      .obj-cards {
+        grid-template-columns: 1fr !important;
+      }
+      .grid-3 {
+        grid-template-columns: 1fr !important;
+      }
+      [style*="grid-template-columns: repeat(3, 1fr)"] {
+        grid-template-columns: 1fr !important;
+      }
+      .cover-h1 {
+        font-size: 20px !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="viewport">
+    <div class="deck-container">
+
+      <!-- HEADER -->
+      <div class="deck-header">
+        <div class="brand">
+          <i class="fa-solid fa-microchip" style="color: var(--accent-cyan); font-size: 16px;"></i>
+          <span style="color: var(--accent-cyan); font-weight: 700;">CCDV-F</span>
+          <span style="color: var(--text-muted);">/ MODULE 3</span>
+        </div>
+        <div class="status">
+          <a href="../index.html"><i class="fa-solid fa-house" style="font-size: 11px;"></i> Hub</a>
+          <span class="badge-exam">EXAM PREP</span>
+          <span style="color: var(--text-muted);">CLAUDE CODE &amp; MCP</span>
+        </div>
+      </div>
+
+      <!-- SLIDES WRAPPER -->
+      <div class="slides-wrapper">
+
+        <!-- ============================================================ -->
+        <!-- SLIDE 1: INCIDENT BRIEFING -->
+        <!-- ============================================================ -->
+        <div class="slide-container" id="slide-1">
+          <div class="slide-eyebrow">// INCIDENT BRIEFING</div>
+
+          <div class="incident-badge animate-pulse">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            ⚠ CRITICAL INCIDENT #403-MCP
+          </div>
+          <div class="timestamp-line">TIMESTAMP: 2026-11-07 22:25:00 UTC &nbsp;|&nbsp; STATUS: ACTIVE P0 &nbsp;|&nbsp; SYSTEMS AFFECTED: APEX-AI ENGINE v3</div>
+
+          <div class="cover-h1">Claude Code Went Rogue:<br>MCP Secrets Leaked, Production Files Deleted</div>
+
+          <div class="obj-cards">
+            <div class="obj-card" style="border: 1px solid rgba(6, 182, 212, 0.35);">
+              <div class="obj-card-num" style="color: var(--accent-cyan);">OBJ 01 — PERMISSION ARCHITECTURE</div>
+              <div class="obj-card-title" style="color: var(--accent-cyan);">Permission Architecture</div>
+              <div class="obj-card-desc">Master Claude Code's permission modes and configure deny rules that survive any override.</div>
+            </div>
+            <div class="obj-card" style="border: 1px solid rgba(139, 92, 246, 0.35);">
+              <div class="obj-card-num" style="color: var(--accent-purple);">OBJ 02 — DURABLE CONTEXT ENGINEERING</div>
+              <div class="obj-card-title" style="color: var(--accent-purple);">Durable Context Engineering</div>
+              <div class="obj-card-desc">Build CLAUDE.md, rules files, hooks, and subagents that hold up across sessions.</div>
+            </div>
+            <div class="obj-card" style="border: 1px solid rgba(16, 185, 129, 0.35);">
+              <div class="obj-card-num" style="color: var(--success-green);">OBJ 03 — MCP INTEGRATION &amp; ENTERPRISE AUTH</div>
+              <div class="obj-card-title" style="color: var(--success-green);">MCP Integration &amp; Enterprise Auth</div>
+              <div class="obj-card-desc">Deploy MCP servers with proper transport, scope, and zero committed secrets.</div>
+            </div>
+          </div>
+
+          <div class="role-bar">
+            <i class="fa-solid fa-id-badge" style="color: var(--accent-cyan); margin-right: 8px;"></i>
+            ROLE: Lead AI Systems Engineer &nbsp;|&nbsp; Target Certification: CCDV-F
+          </div>
+
+          <div class="cta-bar">
+            <i class="fa-solid fa-arrow-right" style="margin-right: 6px;"></i>
+            PRESS [NEXT →] TO INVESTIGATE ROOT CAUSE
+          </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- SLIDE 2: ROOT CAUSE ANALYSIS -->
+        <!-- ============================================================ -->
+        <div class="slide-container" id="slide-2">
+          <div class="slide-eyebrow">// ROOT CAUSE ANALYSIS</div>
+          <div class="slide-title">
+            <i class="fa-solid fa-magnifying-glass" style="color: var(--alert-red);"></i>
+            Incident #403-MCP: Three Cascading Failures
+          </div>
+
+          <div class="failure-cards">
+            <div class="failure-card">
+              <div class="failure-card-title">
+                <i class="fa-solid fa-circle-xmark"></i>
+                Failure 1: bypassPermissions on Live Codebase
+              </div>
+              <div class="code-box" style="margin-bottom: 8px; padding: 10px 14px;">
+<span style="color:#6B7280">// .claude/settings.json — ApexCorp APEX-AI Engine v3</span>
+{
+  <span style="color:#06B6D4">"defaultMode"</span>: <span style="color:#EF4444">"bypassPermissions"</span>,
+  <span style="color:#06B6D4">"allowedTools"</span>: [<span style="color:#10B981">"*"</span>]
+  <span style="color:#6B7280">// No deny rules. No path restrictions. No guardrails.</span>
+}
+              </div>
+              <p>bypassPermissions removed ALL confirmation prompts, including for file deletions. When the MCP pattern-match ran broader than intended, production config files were deleted without a single safety checkpoint. With no deny rules defined, there was nothing to stop it — the mode that was meant to "speed up development" became a demolition tool.</p>
+            </div>
+
+            <div class="failure-card">
+              <div class="failure-card-title">
+                <i class="fa-solid fa-circle-xmark"></i>
+                Failure 2: Inline API Key in .mcp.json
+              </div>
+              <div class="code-box" style="margin-bottom: 8px; padding: 10px 14px;">
+<span style="color:#6B7280">// .mcp.json — COMMITTED TO REPO (PUBLIC BRANCH)</span>
+{
+  <span style="color:#06B6D4">"headers"</span>: {
+    <span style="color:#06B6D4">"Authorization"</span>: <span style="color:#EF4444">"Bearer sk-prod-abc123..."</span>
+  }
+}
+<span style="color:#6B7280">// Key exposed in git history even after file is overwritten</span>
+              </div>
+              <p>The production API key was hardcoded directly into .mcp.json, which was committed to the shared repository. Even after the team deleted the key from the file, it persisted in git history. The key had to be treated as permanently compromised, requiring full rotation — breaking every downstream consumer simultaneously.</p>
+            </div>
+
+            <div class="failure-card">
+              <div class="failure-card-title">
+                <i class="fa-solid fa-circle-xmark"></i>
+                Failure 3: 847-Line CLAUDE.md Rule Dilution
+              </div>
+              <div class="code-box" style="margin-bottom: 8px; padding: 10px 14px;">
+<span style="color:#6B7280">// Session log — CLAUDE.md rule ignored during incident</span>
+<span style="color:#6B7280">// Line 1-346: coding style, linting config, PR templates...</span>
+<span style="color:#EF4444">Line 347: "Never modify files in /infra/prod/ without approval"</span>
+<span style="color:#6B7280">// Line 348-847: more style rules, API conventions, naming...</span>
+
+<span style="color:#6B7280">// Result: Critical path restriction buried, weight diluted → ignored</span>
+              </div>
+              <p>Critical restrictions buried deep inside a massive CLAUDE.md are probabilistic at best. The model's attention to any specific instruction decreases as file size grows. Path restrictions at line 347 of an 847-line document were effectively invisible — only hooks provide deterministic enforcement.</p>
+            </div>
+          </div>
+
+          <div class="exam-bar">
+            <i class="fa-solid fa-graduation-cap"></i>
+            EXAM REALITY: All three failure modes are tested on CCDV-F. Know how to prevent each one.
+          </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- SLIDE 3: FOUNDATION CONCEPT -->
+        <!-- ============================================================ -->
+        <div class="slide-container" id="slide-3">
+          <div class="slide-eyebrow">// FOUNDATION CONCEPT</div>
+          <div class="slide-title">
+            <i class="fa-solid fa-shield-halved" style="color: var(--accent-cyan);"></i>
+            Permission Modes: Risk Architecture, Not Speed Settings
+          </div>
+
+          <div class="grid-2">
+            <!-- Left: Code box -->
+            <div style="display: flex; flex-direction: column; gap: 12px; min-height: 0;">
+              <div class="code-box" style="flex: 1; overflow-y: auto;">
+<span style="color:#6B7280">// .claude/settings.json — Permission Mode Configuration</span>
+
+<span style="color:#6B7280">// MODE 1: default (safest)</span>
+{
+  <span style="color:#06B6D4">"defaultMode"</span>: <span style="color:#10B981">"default"</span>,
+  <span style="color:#06B6D4">"deny"</span>: [<span style="color:#10B981">"Bash(rm -rf *)"</span>, <span style="color:#10B981">"Write(/infra/prod/**)"</span>]
+}
+
+<span style="color:#6B7280">// MODE 2: acceptEdits (moderate)</span>
+{
+  <span style="color:#06B6D4">"defaultMode"</span>: <span style="color:#FBBF24">"acceptEdits"</span>,
+  <span style="color:#06B6D4">"deny"</span>: [<span style="color:#10B981">"Write(.env*)"</span>, <span style="color:#10B981">"Write(/secrets/**)"</span>]
+}
+
+<span style="color:#6B7280">// MODE 3: plan (read-only planning)</span>
+{
+  <span style="color:#06B6D4">"defaultMode"</span>: <span style="color:#FBBF24">"plan"</span>
+  <span style="color:#6B7280">// Reads and plans only — no writes executed</span>
+}
+
+<span style="color:#6B7280">// MODE 4: bypassPermissions (DANGEROUS)</span>
+{
+  <span style="color:#06B6D4">"defaultMode"</span>: <span style="color:#EF4444">"bypassPermissions"</span>,
+  <span style="color:#6B7280">// MUST have deny rules or this is a loaded gun</span>
+  <span style="color:#06B6D4">"deny"</span>: [
+    <span style="color:#10B981">"Write(/infra/**)"</span>,
+    <span style="color:#10B981">"Write(.env*)"</span>,
+    <span style="color:#10B981">"Bash(rm *)"</span>
+  ]
+}
+
+<span style="color:#6B7280">// Enterprise scope deny — cannot be overridden:</span>
+<span style="color:#6B7280">// managed-settings.json (admin-controlled)</span>
+{
+  <span style="color:#06B6D4">"deny"</span>: [<span style="color:#10B981">"Bash(curl * | bash)"</span>]
+}
+              </div>
+            </div>
+
+            <!-- Right: Mode cards -->
+            <div class="mode-cards" style="overflow-y: auto;">
+              <div class="mode-card" style="border-left: 3px solid var(--success-green);">
+                <div class="mode-card-title" style="color: var(--success-green);">
+                  <i class="fa-solid fa-lock"></i> default
+                </div>
+                <div class="mode-card-desc">Prompts for every tool use. Maximum visibility. Use for unfamiliar codebases or any production-touching work. Slowest but safest.</div>
+              </div>
+              <div class="mode-card" style="border-left: 3px solid var(--success-green);">
+                <div class="mode-card-title" style="color: #60D394;">
+                  <i class="fa-solid fa-pen-to-square"></i> acceptEdits
+                </div>
+                <div class="mode-card-desc">Auto-approves file edits; still prompts for shell commands. Good for iterative development. Pair with deny rules on sensitive paths.</div>
+              </div>
+              <div class="mode-card" style="border-left: 3px solid var(--alert-amber);">
+                <div class="mode-card-title" style="color: var(--alert-amber);">
+                  <i class="fa-solid fa-eye"></i> plan
+                </div>
+                <div class="mode-card-desc">Read and plan only — no writes are executed. Use for audits, code reviews, and architecture analysis without risk of accidental changes.</div>
+              </div>
+              <div class="mode-card" style="border-left: 3px solid var(--alert-red);">
+                <div class="mode-card-title" style="color: var(--alert-red);">
+                  <i class="fa-solid fa-skull-crossbones"></i> bypassPermissions
+                </div>
+                <div class="mode-card-desc">Removes ALL confirmation prompts — including unexpected ones. Only safe in isolated sandboxes with explicit deny rules covering every critical path. Never use on live codebases without deny rules.</div>
+              </div>
+              <div class="insight-card">
+                <strong>Key Exam Insight:</strong> Deny rules <em>always</em> win over allow rules — at any scope. Enterprise-level deny rules in <code style="color: var(--accent-cyan);">managed-settings.json</code> <strong style="color: var(--text-main);">cannot be overridden</strong> by individual developers, even when using bypassPermissions mode.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- SLIDE 4: IMPLEMENTATION PATTERN -->
+        <!-- ============================================================ -->
+        <div class="slide-container" id="slide-4">
+          <div class="slide-eyebrow">// IMPLEMENTATION PATTERN</div>
+          <div class="slide-title">
+            <i class="fa-solid fa-file-code" style="color: var(--accent-cyan);"></i>
+            CLAUDE.md, Rules Files &amp; Hook Enforcement
+          </div>
+
+          <div class="grid-2">
+            <!-- Left: Code -->
+            <div style="display: flex; flex-direction: column; gap: 10px; min-height: 0;">
+              <div class="code-box" style="flex: 1; overflow-y: auto; font-size: 11px;">
+<span style="color:#6B7280">## CLAUDE.md — Project context (probabilistic)</span>
+<span style="color:#6B7280">## Place at repo root or ~/.claude/CLAUDE.md</span>
+
+<span style="color:#8B5CF6"># ApexCorp AI Engine — Project Rules</span>
+
+<span style="color:#8B5CF6">## Critical Path Rules (keep SHORT &amp; first)</span>
+- Never write to /infra/prod/ without explicit approval
+- Never commit credentials inline — use env vars only
+- Always run lint before committing
+
+<span style="color:#8B5CF6">## Tech Stack</span>
+Node.js 20, TypeScript, PostgreSQL, Redis
+
+<span style="color:#6B7280">---</span>
+<span style="color:#6B7280">## Rules file — YAML frontmatter (scoped)</span>
+<span style="color:#6B7280">## .claude/rules/security.md</span>
+
+<span style="color:#10B981">---
+name: security-baseline
+description: Security rules for all sessions
+alwaysApply: true
+---</span>
+
+Never echo secrets to stdout.
+Prefer environment variable references.
+
+<span style="color:#6B7280">---</span>
+<span style="color:#6B7280">## PreToolUse hook — deterministic enforcement</span>
+<span style="color:#6B7280">## .claude/hooks/block-prod-writes.sh</span>
+
+<span style="color:#8B5CF6">#!/bin/bash</span>
+INPUT=$(cat)
+TOOL=$(echo "$INPUT" | jq -r '.tool_name')
+PATH_ARG=$(echo "$INPUT" | jq -r '.tool_input.path // ""')
+
+<span style="color:#8B5CF6">if</span> [[ "$TOOL" == <span style="color:#10B981">"Write"</span> &amp;&amp; "$PATH_ARG" == <span style="color:#10B981">"/infra/prod/"</span>* ]]; <span style="color:#8B5CF6">then</span>
+  echo <span style="color:#EF4444">'{"decision":"block","reason":"prod write blocked"}'</span>
+  exit 0
+<span style="color:#8B5CF6">fi</span>
+echo <span style="color:#10B981">'{"decision":"approve"}'</span>
+              </div>
+            </div>
+
+            <!-- Right: Feature cards -->
+            <div style="display: flex; flex-direction: column; gap: 10px; overflow-y: auto;">
+              <div class="feature-card" style="border-left: 3px solid var(--accent-cyan);">
+                <div style="font-size: 13px; font-weight: 700; color: var(--accent-cyan); margin-bottom: 6px;">
+                  <i class="fa-solid fa-file-lines"></i> CLAUDE.md
+                </div>
+                <div style="font-size: 11px; color: var(--text-muted); line-height: 1.5;">Project memory injected into every session. <strong style="color: var(--alert-amber);">Probabilistic</strong> — dilutes with size. Keep critical rules at the top, under 200 lines total. Supports project, user, and global scopes.</div>
+              </div>
+              <div class="feature-card" style="border-left: 3px solid var(--accent-purple);">
+                <div style="font-size: 13px; font-weight: 700; color: var(--accent-purple); margin-bottom: 6px;">
+                  <i class="fa-solid fa-scroll"></i> Rules Files
+                </div>
+                <div style="font-size: 11px; color: var(--text-muted); line-height: 1.5;">Markdown files with YAML frontmatter. Can be scoped (always apply, path-matched, or on-demand). Loaded from <code style="color: var(--accent-cyan);">.claude/rules/</code>. Cleaner organization than monolithic CLAUDE.md.</div>
+              </div>
+              <div class="feature-card" style="border-left: 3px solid var(--success-green);">
+                <div style="font-size: 13px; font-weight: 700; color: var(--success-green); margin-bottom: 6px;">
+                  <i class="fa-solid fa-bolt"></i> Hooks
+                </div>
+                <div style="font-size: 11px; color: var(--text-muted); line-height: 1.5;"><strong style="color: var(--success-green);">DETERMINISTIC</strong> — fires at every lifecycle event regardless of mode. PreToolUse can block; PostToolUse can audit. Shell scripts that receive tool call JSON via stdin and return a decision.</div>
+              </div>
+              <div class="feature-card" style="border-left: 3px solid var(--alert-amber);">
+                <div style="font-size: 13px; font-weight: 700; color: var(--alert-amber); margin-bottom: 6px;">
+                  <i class="fa-solid fa-robot"></i> Subagents
+                </div>
+                <div style="font-size: 11px; color: var(--text-muted); line-height: 1.5;">Specialized Claude instances spawned for delegated tasks. Can have their own CLAUDE.md, permission mode, and tool scope. Isolate risky operations from the main agent context.</div>
+              </div>
+              <div class="insight-card">
+                <strong>Critical Exam Distinction:</strong> CLAUDE.md instructions are <strong style="color: var(--alert-amber);">probabilistic</strong> — they can be ignored or diluted. PreToolUse hooks are <strong style="color: var(--success-green);">deterministic</strong> — they fire every single time, regardless of context, model decisions, or permission mode.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- SLIDE 5: COST & LATENCY OPTIMIZATION -->
+        <!-- ============================================================ -->
+        <div class="slide-container" id="slide-5">
+          <div class="slide-eyebrow">// COST &amp; LATENCY OPTIMIZATION</div>
+          <div class="slide-title">
+            <i class="fa-solid fa-gauge-high" style="color: var(--accent-cyan);"></i>
+            Prompt Caching &amp; RAG: Defeating the Context-Cost Problem
+          </div>
+
+          <div class="grid-2">
+            <!-- Left: Code -->
+            <div style="display: flex; flex-direction: column; gap: 10px; min-height: 0;">
+              <div class="code-box" style="flex: 1; overflow-y: auto; font-size: 11px;">
+<span style="color:#6B7280">// Prompt Caching — cache_control field placement</span>
+{
+  <span style="color:#06B6D4">"messages"</span>: [
+    {
+      <span style="color:#06B6D4">"role"</span>: <span style="color:#10B981">"user"</span>,
+      <span style="color:#06B6D4">"content"</span>: [
+        {
+          <span style="color:#06B6D4">"type"</span>: <span style="color:#10B981">"text"</span>,
+          <span style="color:#06B6D4">"text"</span>: <span style="color:#10B981">"&lt;large system context...&gt;"</span>,
+          <span style="color:#06B6D4">"cache_control"</span>: {
+            <span style="color:#06B6D4">"type"</span>: <span style="color:#10B981">"ephemeral"</span>
+            <span style="color:#6B7280">// Breakpoint: cache everything above this point</span>
+          }
+        },
+        {
+          <span style="color:#06B6D4">"type"</span>: <span style="color:#10B981">"text"</span>,
+          <span style="color:#06B6D4">"text"</span>: <span style="color:#10B981">"&lt;more stable context...&gt;"</span>,
+          <span style="color:#06B6D4">"cache_control"</span>: { <span style="color:#06B6D4">"type"</span>: <span style="color:#10B981">"ephemeral"</span> }
+          <span style="color:#6B7280">// Max 4 breakpoints per request</span>
+        }
+      ]
+    }
+  ]
+}
+
+<span style="color:#6B7280">// MCP Tool Discovery — server exposes tools dynamically</span>
+<span style="color:#6B7280">// Claude lists available tools from MCP server:</span>
+<span style="color:#8B5CF6">tools/list</span> → returns tool definitions with schemas
+<span style="color:#8B5CF6">tools/call</span> → executes a specific tool by name
+
+<span style="color:#6B7280">// Agentic RAG — model decides when to search</span>
+<span style="color:#8B5CF6">search_codebase</span>(query=<span style="color:#10B981">"auth middleware"</span>) → retrieves chunks
+<span style="color:#6B7280">// vs classical RAG: always pre-retrieves fixed chunks</span>
+              </div>
+            </div>
+
+            <!-- Right: Feature cards -->
+            <div style="display: flex; flex-direction: column; gap: 10px; overflow-y: auto;">
+              <div class="feature-card" style="border-left: 3px solid var(--accent-cyan);">
+                <div style="font-size: 13px; font-weight: 700; color: var(--accent-cyan); margin-bottom: 6px;">
+                  <i class="fa-solid fa-clock-rotate-left"></i> Prompt Caching — TTL Rules
+                </div>
+                <div style="font-size: 11px; color: var(--text-muted); line-height: 1.5;">
+                  <strong style="color: var(--text-main);">5-minute TTL</strong> — ephemeral cache for session context.<br>
+                  <strong style="color: var(--text-main);">1-hour TTL</strong> — extended cache for stable content (Claude.ai).<br>
+                  <strong style="color: var(--text-main);">Minimum 1024 tokens</strong> required to trigger caching.<br>
+                  Cache reads cost ~10% of full token price. Write is 25% more. Saves 90% on repeated large context.
+                </div>
+              </div>
+              <div class="feature-card" style="border-left: 3px solid var(--accent-purple);">
+                <div style="font-size: 13px; font-weight: 700; color: var(--accent-purple); margin-bottom: 6px;">
+                  <i class="fa-solid fa-layer-group"></i> Cache Breakpoint Strategy
+                </div>
+                <div style="font-size: 11px; color: var(--text-muted); line-height: 1.5;">
+                  Place breakpoints after <strong style="color: var(--text-main);">stable content</strong> (system prompts, project docs). Content before each breakpoint is cached. Maximum <strong style="color: var(--alert-amber);">4 breakpoints</strong> per request. Stack breakpoints from largest to smallest stable chunk.
+                </div>
+              </div>
+              <div class="feature-card" style="border-left: 3px solid var(--success-green);">
+                <div style="font-size: 13px; font-weight: 700; color: var(--success-green); margin-bottom: 6px;">
+                  <i class="fa-solid fa-database"></i> Classical RAG vs Agentic RAG
+                </div>
+                <div style="font-size: 11px; color: var(--text-muted); line-height: 1.5;">
+                  <strong style="color: var(--text-main);">Classical RAG:</strong> Always retrieves fixed chunks at query time — static, predictable, cheaper.<br>
+                  <strong style="color: var(--text-main);">Agentic RAG:</strong> Model decides when and what to retrieve using MCP tools — dynamic, context-aware, more accurate for complex queries.
+                </div>
+              </div>
+              <div class="feature-card" style="border-left: 3px solid var(--alert-amber);">
+                <div style="font-size: 13px; font-weight: 700; color: var(--alert-amber); margin-bottom: 6px;">
+                  <i class="fa-solid fa-wrench"></i> MCP Tool Discovery
+                </div>
+                <div style="font-size: 11px; color: var(--text-muted); line-height: 1.5;">
+                  MCP servers expose dynamic tool catalogs. Claude calls <code style="color: var(--accent-cyan);">tools/list</code> to discover available operations, then <code style="color: var(--accent-cyan);">tools/call</code> to execute. This allows servers to add or modify tools without client code changes.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- SLIDE 6: ARCHITECTURAL CLASSIFICATION -->
+        <!-- ============================================================ -->
+        <div class="slide-container" id="slide-6">
+          <div class="slide-eyebrow">// ARCHITECTURAL CLASSIFICATION</div>
+          <div class="slide-title">
+            <i class="fa-solid fa-network-wired" style="color: var(--accent-cyan);"></i>
+            MCP Server Architecture: Transport × Scope Decision Matrix
+          </div>
+
+          <div style="flex: 1; display: flex; flex-direction: column; gap: 14px; min-height: 0;">
+            <!-- Matrix table -->
+            <div style="overflow-x: auto;">
+              <table class="matrix-table">
+                <thead>
+                  <tr>
+                    <th>Transport</th>
+                    <th>Scope</th>
+                    <th>Config File</th>
+                    <th>Use Case</th>
+                    <th>Shareable?</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span style="color: var(--accent-cyan); font-weight: 600;">stdio</span></td>
+                    <td>Local</td>
+                    <td><code>~/.claude.json</code></td>
+                    <td>Personal developer tools, local scripts</td>
+                    <td><span style="color: var(--alert-red);">No — process-local only</span></td>
+                  </tr>
+                  <tr>
+                    <td><span style="color: var(--accent-cyan); font-weight: 600;">stdio</span></td>
+                    <td>Project (via .mcp.json)</td>
+                    <td><code>.mcp.json</code></td>
+                    <td>Looks shareable — but isn't. Command runs locally.</td>
+                    <td><span style="color: var(--alert-amber);">Misleading — do not use for teams</span></td>
+                  </tr>
+                  <tr>
+                    <td><span style="color: var(--success-green); font-weight: 600;">HTTP/SSE</span></td>
+                    <td>Project</td>
+                    <td><code>.mcp.json</code></td>
+                    <td>Team-shared server, CI/CD tools, shared data warehouse</td>
+                    <td><span style="color: var(--success-green);">Yes — all team members</span></td>
+                  </tr>
+                  <tr>
+                    <td><span style="color: var(--success-green); font-weight: 600;">HTTP/SSE</span></td>
+                    <td>Enterprise</td>
+                    <td><code>managed-settings.json</code></td>
+                    <td>Org-wide deployment, centrally managed, admin-controlled</td>
+                    <td><span style="color: var(--success-green);">Yes — entire organization</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="grid-2" style="flex: 1; min-height: 0;">
+              <!-- Code box: correct .mcp.json -->
+              <div class="code-box" style="overflow-y: auto; font-size: 11px;">
+<span style="color:#6B7280">// .mcp.json — CORRECT configuration (env var reference)</span>
+{
+  <span style="color:#06B6D4">"mcpServers"</span>: {
+    <span style="color:#06B6D4">"data-warehouse"</span>: {
+      <span style="color:#06B6D4">"type"</span>: <span style="color:#10B981">"http"</span>,
+      <span style="color:#06B6D4">"url"</span>: <span style="color:#10B981">"https://warehouse.apex.internal/mcp"</span>,
+      <span style="color:#06B6D4">"headers"</span>: {
+        <span style="color:#06B6D4">"Authorization"</span>: <span style="color:#10B981">"Bearer ${WAREHOUSE_MCP_TOKEN}"</span>
+      }
+    },
+    <span style="color:#06B6D4">"local-dev-tools"</span>: {
+      <span style="color:#06B6D4">"type"</span>: <span style="color:#10B981">"stdio"</span>,
+      <span style="color:#06B6D4">"command"</span>: <span style="color:#10B981">"node"</span>,
+      <span style="color:#06B6D4">"args"</span>: [<span style="color:#10B981">"./tools/dev-server.js"</span>]
+      <span style="color:#6B7280">// stdio: local only, not shared with team</span>
+    }
+  }
+}
+              </div>
+
+              <!-- MCP primitives -->
+              <div style="display: flex; flex-direction: column; gap: 10px; overflow-y: auto;">
+                <div class="feature-card" style="border-left: 3px solid var(--accent-cyan);">
+                  <div style="font-size: 13px; font-weight: 700; color: var(--accent-cyan); margin-bottom: 5px;">
+                    <i class="fa-solid fa-wrench"></i> Tools
+                  </div>
+                  <div style="font-size: 11px; color: var(--text-muted);">Executable functions Claude can call. Database queries, API calls, file operations. Defined with JSON Schema for inputs. Claude calls these autonomously.</div>
+                </div>
+                <div class="feature-card" style="border-left: 3px solid var(--accent-purple);">
+                  <div style="font-size: 13px; font-weight: 700; color: var(--accent-purple); margin-bottom: 5px;">
+                    <i class="fa-solid fa-box-archive"></i> Resources
+                  </div>
+                  <div style="font-size: 11px; color: var(--text-muted);">Read-only data exposed by the server — files, database records, documentation. URI-addressable. Claude can read these like context documents.</div>
+                </div>
+                <div class="feature-card" style="border-left: 3px solid var(--success-green);">
+                  <div style="font-size: 13px; font-weight: 700; color: var(--success-green); margin-bottom: 5px;">
+                    <i class="fa-solid fa-comment-dots"></i> Prompts
+                  </div>
+                  <div style="font-size: 11px; color: var(--text-muted);">Pre-defined prompt templates with arguments. Users can invoke these from the UI (slash commands, etc.). Useful for standardizing common workflows.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- SLIDE 7: SAFETY & GOVERNANCE -->
+        <!-- ============================================================ -->
+        <div class="slide-container" id="slide-7">
+          <div class="slide-eyebrow">// SAFETY &amp; GOVERNANCE</div>
+          <div class="slide-title">
+            <i class="fa-solid fa-key" style="color: var(--accent-cyan);"></i>
+            Enterprise Authentication: OAuth, Secrets, and the Audit Trail
+          </div>
+
+          <div class="grid-2">
+            <!-- Left: Before/After code -->
+            <div style="display: flex; flex-direction: column; gap: 12px; min-height: 0;">
+              <div style="font-family: var(--font-mono); font-size: 11px; color: var(--alert-red); letter-spacing: 0.5px; margin-bottom: 2px;">❌ BEFORE — Credential Exposure</div>
+              <div class="code-box" style="border-color: rgba(239,68,68,0.3);">
+<span style="color:#6B7280">// .mcp.json — NEVER DO THIS</span>
+{
+  <span style="color:#06B6D4">"headers"</span>: {
+    <span style="color:#06B6D4">"Authorization"</span>: <span style="color:#EF4444">"Bearer sk-prod-9x2kLm..."</span>,
+    <span style="color:#06B6D4">"X-API-Secret"</span>: <span style="color:#EF4444">"apex_secret_8f3k..."</span>
+  }
+}
+<span style="color:#6B7280">// Even after overwrite — git history retains key forever</span>
+<span style="color:#6B7280">// git log --all -p .mcp.json | grep Authorization</span>
+              </div>
+              <div style="font-family: var(--font-mono); font-size: 11px; color: var(--success-green); letter-spacing: 0.5px; margin-bottom: 2px;">✓ AFTER — Environment Variable Reference</div>
+              <div class="code-box" style="border-color: rgba(16,185,129,0.3);">
+<span style="color:#6B7280">// .mcp.json — SAFE pattern</span>
+{
+  <span style="color:#06B6D4">"headers"</span>: {
+    <span style="color:#06B6D4">"Authorization"</span>: <span style="color:#10B981">"Bearer ${WAREHOUSE_MCP_TOKEN}"</span>
+  },
+  <span style="color:#06B6D4">"env"</span>: {
+    <span style="color:#06B6D4">"WAREHOUSE_MCP_TOKEN"</span>: <span style="color:#10B981">"${WAREHOUSE_MCP_TOKEN}"</span>
+  }
+}
+<span style="color:#6B7280">// Token lives in .env (gitignored) or secret manager</span>
+<span style="color:#6B7280">// Rotate without touching codebase</span>
+              </div>
+              <div class="code-box" style="font-size: 11px;">
+<span style="color:#6B7280">// PostToolUse Audit Hook — logging every write</span>
+<span style="color:#8B5CF6">#!/bin/bash</span>
+INPUT=$(cat)
+TOOL=$(echo "$INPUT" | jq -r '.tool_name')
+TIMESTAMP=$(date -u +<span style="color:#10B981">"%Y-%m-%dT%H:%M:%SZ"</span>)
+echo <span style="color:#10B981">"$TIMESTAMP $TOOL"</span> &gt;&gt; ~/.claude/audit.log
+              </div>
+            </div>
+
+            <!-- Right: Feature cards -->
+            <div style="display: flex; flex-direction: column; gap: 10px; overflow-y: auto;">
+              <div class="feature-card" style="border-left: 3px solid var(--accent-cyan);">
+                <div style="font-size: 13px; font-weight: 700; color: var(--accent-cyan); margin-bottom: 6px;"><i class="fa-brands fa-openid"></i> OAuth Pattern</div>
+                <div style="font-size: 11px; color: var(--text-muted); line-height: 1.5;">MCP over HTTP supports OAuth 2.0. The MCP server acts as resource server; Claude's client obtains a token from the authorization server. Token is passed in the Authorization header. No static secrets in config.</div>
+              </div>
+              <div class="feature-card" style="border-left: 3px solid var(--accent-purple);">
+                <div style="font-size: 13px; font-weight: 700; color: var(--accent-purple); margin-bottom: 6px;"><i class="fa-solid fa-id-card"></i> Service Identity Pattern</div>
+                <div style="font-size: 11px; color: var(--text-muted); line-height: 1.5;">In production, inject tokens at runtime via secrets manager (AWS Secrets Manager, HashiCorp Vault, GCP Secret Manager). MCP server receives token from environment, never from committed config file.</div>
+              </div>
+              <div class="feature-card" style="border-left: 3px solid var(--success-green);">
+                <div style="font-size: 13px; font-weight: 700; color: var(--success-green); margin-bottom: 6px;"><i class="fa-solid fa-clipboard-list"></i> PostToolUse Audit Hook</div>
+                <div style="font-size: 11px; color: var(--text-muted); line-height: 1.5;">Fires after every tool execution. Use to log all Write, Bash, and MCP tool calls with timestamps to an immutable audit log. Essential for SOC 2 / ISO 27001 compliance and incident post-mortems.</div>
+              </div>
+              <div class="feature-card" style="border-left: 3px solid var(--alert-amber);">
+                <div style="font-size: 13px; font-weight: 700; color: var(--alert-amber); margin-bottom: 6px;"><i class="fa-solid fa-building-lock"></i> Enterprise Managed Settings Lock</div>
+                <div style="font-size: 11px; color: var(--text-muted); line-height: 1.5;"><code style="color: var(--accent-cyan);">managed-settings.json</code> is admin-controlled. Deny rules here are non-negotiable — no developer or permission mode can override them. Use to enforce org-wide security baseline.</div>
+              </div>
+              <div class="insight-card">
+                <strong>Authentication Checklist:</strong><br>
+                ✓ No inline secrets in .mcp.json<br>
+                ✓ All tokens in environment variables or secret manager<br>
+                ✓ PostToolUse hook logs all tool executions<br>
+                ✓ Enterprise deny rules protect critical paths<br>
+                ✓ .gitignore includes .env and local credential files
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- SLIDE 8: INTERACTIVE LAB -->
+        <!-- ============================================================ -->
+        <div class="slide-container" id="slide-8">
+          <div class="slide-eyebrow">// INTERACTIVE LAB</div>
+          <div class="slide-title">
+            <i class="fa-solid fa-flask" style="color: var(--accent-cyan);"></i>
+            MCP Configuration Lab: Build a Compliant Server Config
+          </div>
+
+          <div class="grid-2" style="gap: 16px;">
+            <!-- Left: Controls -->
+            <div class="lab-controls" style="overflow-y: auto;">
+              <div class="feature-card">
+                <div class="lab-label">Transport Layer</div>
+                <select class="lab-select" id="lab-transport" onchange="updateLabConfig()">
+                  <option value="http">HTTP / SSE (Remote)</option>
+                  <option value="stdio">stdio (Local Process)</option>
+                </select>
+              </div>
+              <div class="feature-card">
+                <div class="lab-label">Configuration Scope</div>
+                <select class="lab-select" id="lab-scope" onchange="updateLabConfig()">
+                  <option value="project">Project (.mcp.json)</option>
+                  <option value="user">User (~/.claude.json)</option>
+                  <option value="local">Local (not shared)</option>
+                  <option value="enterprise">Enterprise (managed-settings.json)</option>
+                </select>
+              </div>
+              <div class="feature-card">
+                <div class="lab-label">Credential Handling</div>
+                <select class="lab-select" id="lab-cred" onchange="updateLabConfig()">
+                  <option value="env">Environment Variable Reference ✓</option>
+                  <option value="inline">Inline Hardcoded Value ✗</option>
+                </select>
+              </div>
+              <div class="feature-card">
+                <div class="lab-label">Permission Mode</div>
+                <select class="lab-select" id="lab-perm" onchange="updateLabConfig()">
+                  <option value="default">default (safest)</option>
+                  <option value="acceptEdits">acceptEdits</option>
+                  <option value="plan">plan (read-only)</option>
+                  <option value="bypassPermissions">bypassPermissions ⚠</option>
+                </select>
+              </div>
+              <div class="feature-card" style="border: 1px solid rgba(255,255,255,0.1);">
+                <div class="lab-label" style="margin-bottom: 8px;">Compliance Score</div>
+                <div class="score-badge">
+                  <span style="color: var(--text-muted); font-size: 12px;">Score:</span>
+                  <span id="lab-score-badge" id="lab-score" style="font-size: 22px; color: var(--success-green);">100</span>
+                  <span style="color: var(--text-muted); font-size: 12px;">/ 100</span>
+                </div>
+                <div id="lab-warnings" style="margin-top: 8px;">
+                  <div style="color: var(--success-green); font-size: 12px;">✓ Configuration looks compliant</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Config preview -->
+            <div style="display: flex; flex-direction: column; gap: 10px; min-height: 0;">
+              <div style="font-family: var(--font-mono); font-size: 11px; color: var(--text-muted);">// GENERATED CONFIG PREVIEW — updates live</div>
+              <pre class="code-box" id="lab-config-preview" style="flex: 1; overflow-y: auto; white-space: pre-wrap; word-break: break-word; font-size: 11px;"></pre>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- SLIDE 9: PRODUCTION PITFALLS -->
+        <!-- ============================================================ -->
+        <div class="slide-container" id="slide-9">
+          <div class="slide-eyebrow">// PRODUCTION PITFALLS</div>
+          <div class="slide-title">
+            <i class="fa-solid fa-land-mine-on" style="color: var(--alert-red);"></i>
+            Three Traps That Fail Security Reviews
+          </div>
+
+          <div class="grid-3" style="flex: 1; min-height: 0;">
+            <!-- Trap 1 -->
+            <div class="feature-card" style="border: 1px solid rgba(239,68,68,0.4); border-top: 3px solid var(--alert-red); display: flex; flex-direction: column; gap: 10px; overflow-y: auto;">
+              <div style="font-size: 13px; font-weight: 700; color: var(--alert-red); display: flex; align-items: center; gap: 8px;">
+                <i class="fa-solid fa-circle" style="font-size: 10px;"></i>
+                bypassPermissions Without Deny Rules
+              </div>
+              <div class="code-box" style="font-size: 11px;">
+<span style="color:#EF4444">"defaultMode": "bypassPermissions"</span>
+<span style="color:#6B7280">// No deny rules ← CATASTROPHIC</span>
+              </div>
+              <div style="font-size: 12px; color: var(--text-muted); line-height: 1.6;">
+                Removes ALL safety prompts — including the ones you didn't anticipate. The pattern-match ran broader than intended and deleted production config files without a single checkpoint.
+              </div>
+              <div style="font-size: 11px; color: var(--alert-red); font-family: var(--font-mono); margin-top: auto;">
+                FIX: Define deny rules FIRST, then enable bypass.
+              </div>
+              <div class="code-box" style="font-size: 11px;">
+<span style="color:#10B981">"deny"</span>: [
+  <span style="color:#10B981">"Write(/infra/**)"</span>,
+  <span style="color:#10B981">"Bash(rm *)"</span>
+]
+              </div>
+            </div>
+
+            <!-- Trap 2 -->
+            <div class="feature-card" style="border: 1px solid rgba(245,158,11,0.4); border-top: 3px solid var(--alert-amber); display: flex; flex-direction: column; gap: 10px; overflow-y: auto;">
+              <div style="font-size: 13px; font-weight: 700; color: var(--alert-amber); display: flex; align-items: center; gap: 8px;">
+                <i class="fa-solid fa-circle" style="font-size: 10px;"></i>
+                API Key Committed to .mcp.json
+              </div>
+              <div class="code-box" style="font-size: 11px;">
+<span style="color:#EF4444">"Authorization": "Bearer sk-prod-abc123"</span>
+<span style="color:#6B7280">// IN GIT HISTORY FOREVER</span>
+              </div>
+              <div style="font-size: 12px; color: var(--text-muted); line-height: 1.6;">
+                Overwriting the file doesn't remove it from git history. The key must be treated as permanently compromised and immediately rotated — breaking every downstream consumer simultaneously.
+              </div>
+              <div style="font-size: 11px; color: var(--alert-amber); font-family: var(--font-mono); margin-top: auto;">
+                FIX: Always use env var references. Add .mcp.json to .gitignore if it contains sensitive config.
+              </div>
+              <div class="code-box" style="font-size: 11px;">
+<span style="color:#10B981">"Authorization":</span>
+  <span style="color:#10B981">"Bearer ${MCP_TOKEN}"</span>
+              </div>
+            </div>
+
+            <!-- Trap 3 -->
+            <div class="feature-card" style="border: 1px solid rgba(6,182,212,0.4); border-top: 3px solid var(--accent-cyan); display: flex; flex-direction: column; gap: 10px; overflow-y: auto;">
+              <div style="font-size: 13px; font-weight: 700; color: var(--accent-cyan); display: flex; align-items: center; gap: 8px;">
+                <i class="fa-solid fa-circle" style="font-size: 10px;"></i>
+                847-Line CLAUDE.md Rule Dilution
+              </div>
+              <div class="code-box" style="font-size: 11px;">
+<span style="color:#6B7280">Line 1–346:  style rules...</span>
+<span style="color:#EF4444">Line 347:   "Never modify /infra"</span>
+<span style="color:#6B7280">Line 348–847: more rules...</span>
+<span style="color:#EF4444">→ Line 347 was ignored</span>
+              </div>
+              <div style="font-size: 12px; color: var(--text-muted); line-height: 1.6;">
+                Every line you add reduces the attention weight of every other line. Critical path restrictions buried at line 347 got ignored during the incident. CLAUDE.md is probabilistic — it can fail.
+              </div>
+              <div style="font-size: 11px; color: var(--accent-cyan); font-family: var(--font-mono); margin-top: auto;">
+                FIX: Use PreToolUse hooks for deterministic enforcement. Keep CLAUDE.md under 200 lines.
+              </div>
+              <div class="code-box" style="font-size: 11px;">
+<span style="color:#10B981">PreToolUse hook fires EVERY time</span>
+<span style="color:#6B7280">// regardless of CLAUDE.md length</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="exam-bar" style="margin-top: 14px;">
+            <i class="fa-solid fa-graduation-cap"></i>
+            EXAM PATTERN: Security reviews test whether you can identify ALL three failure modes in a given config.
+          </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- SLIDE 10: EXAM SIMULATION -->
+        <!-- ============================================================ -->
+        <div class="slide-container" id="slide-10">
+          <div class="slide-eyebrow">// CCDV-F EXAM SIMULATION</div>
+          <div class="slide-title">
+            <i class="fa-solid fa-circle-question" style="color: var(--accent-cyan);"></i>
+            Practice Question — Permission Modes &amp; Hook Lifecycle
+          </div>
+
+          <div style="background: rgba(6,182,212,0.07); border: 1px solid rgba(6,182,212,0.25); border-radius: 8px; padding: 16px 20px; margin-bottom: 18px; font-size: 14px; color: var(--text-main); line-height: 1.6;">
+            <strong style="color: var(--accent-cyan); font-family: var(--font-mono); font-size: 11px; display: block; margin-bottom: 8px;">QUESTION</strong>
+            A Claude Code project uses <code style="color: var(--accent-cyan);">acceptEdits</code> mode. A <code style="color: var(--accent-cyan);">PreToolUse</code> hook is configured to block writes to <code style="color: var(--accent-cyan);">.env.production</code>. During a session, the developer switches to <code style="color: var(--accent-cyan);">bypassPermissions</code>. Which of the following statements is <strong>TRUE</strong>?
+          </div>
+
+          <div onclick="checkAnswer(this, true)" class="quiz-option">
+            <span class="quiz-letter">A</span>
+            <span>The hook still fires and blocks writes to <code style="color: var(--accent-cyan);">.env.production</code> because hooks are lifecycle-bound, not mode-bound.</span>
+          </div>
+          <div onclick="checkAnswer(this, false)" class="quiz-option">
+            <span class="quiz-letter">B</span>
+            <span>The hook is disabled because <code style="color: var(--accent-cyan);">bypassPermissions</code> overrides all configuration layers.</span>
+          </div>
+          <div onclick="checkAnswer(this, false)" class="quiz-option">
+            <span class="quiz-letter">C</span>
+            <span>The <code style="color: var(--accent-cyan);">.env.production</code> file is protected because <code style="color: var(--accent-cyan);">acceptEdits</code> mode's protected-path guard remains active.</span>
+          </div>
+          <div onclick="checkAnswer(this, false)" class="quiz-option">
+            <span class="quiz-letter">D</span>
+            <span>The developer must add a separate <code style="color: var(--accent-cyan);">allow</code> rule to maintain hook functionality in bypass mode.</span>
+          </div>
+
+          <div id="quiz-explanation" style="display: none; background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.3); border-radius: 8px; padding: 14px 18px; margin-top: 12px; font-size: 13px; color: var(--text-muted); line-height: 1.6;">
+            <strong style="color: var(--success-green); display: block; margin-bottom: 6px;">✓ CORRECT — Option A</strong>
+            Hooks fire at their lifecycle event <strong style="color: var(--text-main);">regardless of the permission mode in effect</strong>. <code style="color: var(--accent-cyan);">bypassPermissions</code> removes user confirmation prompts but does <strong style="color: var(--text-main);">not</strong> disable hooks. This is precisely why hooks are the preferred enforcement mechanism for critical path restrictions — they are deterministic across all modes, including bypass mode. The PreToolUse hook will still receive the tool call, evaluate the path, and return a block decision.
+          </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- SLIDE 11: CERTIFICATION CHEAT SHEET -->
+        <!-- ============================================================ -->
+        <div class="slide-container" id="slide-11">
+          <div class="slide-eyebrow">// CERTIFICATION CHEAT SHEET</div>
+          <div class="slide-title">
+            <i class="fa-solid fa-star" style="color: var(--accent-cyan);"></i>
+            Module 3 Master Rules: What CCDV-F Tests
+          </div>
+
+          <div class="grid-2" style="flex: 1; min-height: 0;">
+            <!-- Left card -->
+            <div class="master-card" style="border: 1px solid rgba(6,182,212,0.35); overflow-y: auto;">
+              <div style="font-family: var(--font-mono); font-size: 11px; color: var(--accent-cyan); letter-spacing: 1px; margin-bottom: 14px;">PERMISSION &amp; ENFORCEMENT</div>
+
+              <div class="master-rule">
+                <div class="master-rule-title" style="color: var(--accent-cyan);">
+                  <i class="fa-solid fa-shield"></i>
+                  1. Deny Rules Override Everything
+                </div>
+                <div class="master-rule-desc">A deny rule at enterprise scope wins over any allow rule and cannot be overridden by individual developers, even in bypassPermissions mode. Configure deny rules before enabling any elevated mode.</div>
+              </div>
+
+              <div class="master-rule">
+                <div class="master-rule-title" style="color: var(--accent-cyan);">
+                  <i class="fa-solid fa-bolt"></i>
+                  2. Hooks Are Deterministic; Instructions Are Probabilistic
+                </div>
+                <div class="master-rule-desc">A CLAUDE.md rule can be diluted, ignored, or misinterpreted — especially in long files. A PreToolUse hook fires every single time regardless of context, model decisions, or permission mode. Use hooks for all critical path enforcement.</div>
+              </div>
+
+              <div class="master-rule" style="border-bottom: none; padding-bottom: 0;">
+                <div class="master-rule-title" style="color: var(--accent-cyan);">
+                  <i class="fa-solid fa-layer-group"></i>
+                  5. Scope Hierarchy
+                </div>
+                <div class="master-rule-desc">Enterprise (managed) &gt; Project (.mcp.json) &gt; User (~/.claude.json) &gt; Local. Higher scope wins on conflicts. Deny rules at any higher scope block lower scope allows.</div>
+              </div>
+            </div>
+
+            <!-- Right card -->
+            <div class="master-card" style="border: 1px solid rgba(16,185,129,0.35); overflow-y: auto;">
+              <div style="font-family: var(--font-mono); font-size: 11px; color: var(--success-green); letter-spacing: 1px; margin-bottom: 14px;">TRANSPORT, SCOPE &amp; SECRETS</div>
+
+              <div class="master-rule">
+                <div class="master-rule-title" style="color: var(--success-green);">
+                  <i class="fa-solid fa-network-wired"></i>
+                  3. stdio = Local Only; HTTP = Remote/Shared
+                </div>
+                <div class="master-rule-desc">Transport and scope are independent but their combination must match intent. A stdio server in .mcp.json looks shareable in the config file — but it is not. It runs a local process. Only HTTP transport enables true team-sharing and remote access.</div>
+              </div>
+
+              <div class="master-rule">
+                <div class="master-rule-title" style="color: var(--success-green);">
+                  <i class="fa-solid fa-key"></i>
+                  4. Credentials in Config = Permanent Exposure
+                </div>
+                <div class="master-rule-desc">An inline key committed to .mcp.json enters git history forever. Overwriting the file or deleting the key does not remove it from git history. Any key committed even once must be treated as compromised and rotated immediately. Always use environment variable references.</div>
+              </div>
+
+              <div class="master-rule" style="border-bottom: none; padding-bottom: 0;">
+                <div class="master-rule-title" style="color: var(--success-green);">
+                  <i class="fa-solid fa-file-lines"></i>
+                  6. CLAUDE.md Size = Attention Dilution
+                </div>
+                <div class="master-rule-desc">Every instruction added to CLAUDE.md reduces the effective weight of every other instruction. Keep files concise. Place critical rules at the top. For non-negotiable enforcement, always use hooks — not documentation.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="closing-bar">
+            <i class="fa-solid fa-certificate" style="color: var(--accent-cyan); margin-right: 8px;"></i>
+            You are cleared to defend this architecture under exam conditions.
+            <i class="fa-solid fa-certificate" style="color: var(--accent-cyan); margin-left: 8px;"></i>
+          </div>
+        </div>
+
+      </div><!-- end slides-wrapper -->
+
+      <!-- FOOTER -->
+      <div class="deck-footer">
+        <div class="footer-left">CCDV-F EXAM PREPARATION • LESSON 3 OF 4</div>
+        <div class="footer-right">
+          <span><span id="current-slide-num">1</span> / 11</span>
+          <button class="nav-btn" id="btn-prev" onclick="prevSlide()">← PREV</button>
+          <button class="nav-btn" id="btn-next" onclick="nextSlide()">NEXT →</button>
+        </div>
+      </div>
+
+    </div><!-- end deck-container -->
+  </div><!-- end viewport -->
+
+  <script>
+    // ============================================================
+    // NAVIGATION
+    // ============================================================
+    let currentSlide = 1;
+    const totalSlides = 11;
+
+    function updateDeckState() {
+      document.querySelectorAll('.slide-container').forEach(s => s.classList.remove('active'));
+      document.getElementById(`slide-${currentSlide}`).classList.add('active');
+      document.getElementById('current-slide-num').innerText = currentSlide;
+      document.getElementById('btn-prev').disabled = (currentSlide === 1);
+      document.getElementById('btn-next').disabled = (currentSlide === totalSlides);
+    }
+
+    function nextSlide() { if (currentSlide < totalSlides) { currentSlide++; updateDeckState(); } }
+    function prevSlide() { if (currentSlide > 1) { currentSlide--; updateDeckState(); } }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
+      else if (e.key === 'ArrowLeft') prevSlide();
+    });
+
+    updateDeckState();
+
+    // ============================================================
+    // QUIZ
+    // ============================================================
+    function checkAnswer(el, isCorrect) {
+      const quizSlide = el.closest('.slide-container');
+      quizSlide.querySelectorAll('.quiz-option').forEach(opt => {
+        opt.classList.remove('selected-correct', 'selected-wrong');
+      });
+      if (isCorrect) {
+        el.classList.add('selected-correct');
+        document.getElementById('quiz-explanation').style.display = 'block';
+      } else {
+        el.classList.add('selected-wrong');
+        document.getElementById('quiz-explanation').style.display = 'none';
+      }
+    }
+
+    // ============================================================
+    // INTERACTIVE LAB
+    // ============================================================
+    function updateLabConfig() {
+      const transport = document.getElementById('lab-transport').value;
+      const scope = document.getElementById('lab-scope').value;
+      const credMode = document.getElementById('lab-cred').value;
+      const permMode = document.getElementById('lab-perm').value;
+
+      let score = 100;
+      let warnings = [];
+
+      // Check credential mode
+      if (credMode === 'inline') {
+        score -= 50;
+        warnings.push('⚠ CRITICAL: Inline credential will be committed to git history. Rotate immediately after any commit.');
+      }
+
+      // Check permission mode
+      if (permMode === 'bypassPermissions') {
+        score -= 30;
+        warnings.push('⚠ DANGER: bypassPermissions removes ALL confirmation prompts including unexpected file access.');
+      }
+
+      // Check transport/scope mismatch
+      if (transport === 'stdio' && (scope === 'project' || scope === 'enterprise')) {
+        score -= 20;
+        warnings.push('⚠ MISMATCH: stdio transport cannot be shared. Use HTTP for project/enterprise scope.');
+      }
+
+      // Build config preview
+      const credValue = credMode === 'inline'
+        ? '"Bearer sk-prod-abc123..."  // ← DANGER: hardcoded!'
+        : '"Bearer ${WAREHOUSE_MCP_TOKEN}"  // ← SAFE: env var';
+
+      const scopeComment = {
+        local: '// ~/.claude.json (personal, not shared)',
+        user: '// user settings (personal, all projects)',
+        project: '// .mcp.json (committed to repo)',
+        enterprise: '// managed-settings.json (admin-controlled)'
+      }[scope];
+
+      const permComment = {
+        default: '// Prompts for every tool use — safest',
+        acceptEdits: '// Auto-approves edits; prompts for shell',
+        plan: '// Read and plan only — no writes',
+        bypassPermissions: '// ⚠ ALL prompts removed — add deny rules!'
+      }[permMode];
+
+      let transportBlock = '';
+      if (transport === 'stdio') {
+        transportBlock = '      "command": "node server.js",\n      "args": ["--port", "3000"],';
+      } else {
+        transportBlock = '      "url": "https://warehouse.internal/mcp",';
+      }
+
+      const configPreview = `{
+  "mcpServers": {
+    "data-warehouse": {
+      "type": "${transport}",
+${transportBlock}
+      "headers": {
+        "Authorization": ${credValue}
+      }
+    }
+  }
+}
+// Scope: ${scope} ${scopeComment}
+
+// Permission mode: ${permMode}
+// ${permComment}`;
+
+      // Update DOM
+      document.getElementById('lab-config-preview').innerHTML = formatConfigPreview(configPreview, credMode);
+
+      const finalScore = Math.max(0, score);
+      const scoreEl = document.getElementById('lab-score-badge');
+      scoreEl.textContent = finalScore;
+      scoreEl.style.color = finalScore >= 80 ? '#10B981' : finalScore >= 50 ? '#F59E0B' : '#EF4444';
+
+      document.getElementById('lab-warnings').innerHTML = warnings.length > 0
+        ? warnings.map(w => `<div style="color: ${w.startsWith('⚠ CRITICAL') ? '#EF4444' : w.startsWith('⚠ DANGER') ? '#F59E0B' : '#06B6D4'}; font-size: 12px; margin-top: 6px;">${w}</div>`).join('')
+        : '<div style="color: #10B981; font-size: 12px;">✓ Configuration looks compliant</div>';
+    }
+
+    function formatConfigPreview(text, credMode) {
+      // Escape HTML first
+      let escaped = text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+
+      // Apply syntax highlighting
+      escaped = escaped
+        // Object keys
+        .replace(/"(type|command|args|url|headers|Authorization|mcpServers|data-warehouse|env)"/g,
+          '<span style="color:#06B6D4">"$1"</span>')
+        // Comments
+        .replace(/(\/\/[^\n]+)/g, '<span style="color:#6B7280">$1</span>')
+        // Danger strings
+        .replace(/(Bearer sk-prod[^"]*)/g, '<span style="color:#EF4444">$1</span>')
+        .replace(/(DANGER:[^"]*)/g, '<span style="color:#EF4444">$1</span>')
+        // Safe env var strings
+        .replace(/(\$\{[^}]+\})/g, '<span style="color:#10B981">$1</span>')
+        .replace(/(SAFE:[^"]*)/g, '<span style="color:#10B981">$1</span>')
+        // Generic string values (green)
+        .replace(/"(http|stdio|https:\/\/[^"]+|node|server\.js|--port|3000|Bearer[^"]*)"(?![^<]*<\/span>)/g,
+          '<span style="color:#10B981">"$1"</span>')
+        // Newlines
+        .replace(/\n/g, '<br>');
+
+      return escaped;
+    }
+
+    // Initialize lab on page load
+    updateLabConfig();
+  </script>
+</body>
+</html>

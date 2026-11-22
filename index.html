@@ -872,12 +872,33 @@
                         </div>
                     </div>
 
-                    <div class="flex items-center space-x-3 self-end sm:self-center">
-                        <button onclick="alert('Module 03 Slide Deck coming soon!')" class="bg-gray-800 text-gray-500 border border-gray-700 px-3 py-1.5 rounded text-xs font-mono cursor-not-allowed flex items-center gap-1.5">
-                            <i class="fa-solid fa-lock text-[10px]"></i> Slides Soon
-                        </button>
-                        <button onclick="toggleAccordion('acc-3')" class="bg-gray-800 hover:bg-gray-700 text-gray-300 p-2 rounded transition">
+                    <!-- Desktop Quick Actions -->
+                    <div class="hidden xl:flex flex-wrap items-center gap-2 self-start sm:self-center">
+                        <a href="Claude%20Code%2C%20MCP%20%26%20Integration/Cumulative_Integration_War_Room.html" target="_blank" class="bg-rose-500/10 hover:bg-rose-600 hover:text-white text-rose-400 border border-rose-500/40 px-3 py-1.5 rounded text-xs font-mono transition flex items-center gap-1.5 glow-rose" title="Launch Incident #403 Enterprise War Room">
+                            <i class="fa-solid fa-shield-halved text-[10px]"></i> War Room #403
+                        </a>
+                        <a href="Claude%20Code%2C%20MCP%20%26%20Integration/Permission_Modes_and_Human_Gates.html" target="_blank" class="bg-amber-500/10 hover:bg-amber-500 hover:text-black text-amber-400 border border-amber-500/40 px-3 py-1.5 rounded text-xs font-mono transition flex items-center gap-1.5 glow-amber" title="Launch Lesson 1: Permission Modes">
+                            <i class="fa-solid fa-play text-[10px]"></i> Permissions
+                        </a>
+                        <a href="Claude%20Code%2C%20MCP%20%26%20Integration/MCP_Servers_and_Transports.html" target="_blank" class="bg-cyber-cyan/10 hover:bg-cyber-cyan hover:text-black text-cyber-cyan border border-cyber-cyan/40 px-3 py-1.5 rounded text-xs font-mono transition flex items-center gap-1.5 glow-cyan" title="Launch Lesson 4: MCP Servers">
+                            <i class="fa-solid fa-network-wired text-[10px]"></i> MCP Servers
+                        </a>
+                        <a href="Claude%20Code%2C%20MCP%20%26%20Integration/recap_slide_deck.html" target="_blank" class="bg-cyber-purple/10 hover:bg-cyber-purple hover:text-white text-cyber-purple border border-cyber-purple/40 px-3 py-1.5 rounded text-xs font-mono transition flex items-center gap-1.5 glow-purple" title="Launch Module 3 Grand Recap Deck">
+                            <i class="fa-solid fa-bookmark text-[10px]"></i> Recap Deck
+                        </a>
+                        <button onclick="toggleAccordion('acc-3')" class="bg-gray-800 hover:bg-gray-700 text-gray-300 p-2 rounded transition" title="Toggle Module Details">
                             <i id="icon-acc-3" class="fa-solid fa-chevron-down text-xs"></i>
+                        </button>
+                    </div>
+
+                    <!-- Mobile / Tablet Action Bar -->
+                    <div class="flex xl:hidden items-center gap-2 w-full sm:w-auto">
+                        <a href="Claude%20Code%2C%20MCP%20%26%20Integration/Cumulative_Integration_War_Room.html" target="_blank" class="flex-1 sm:flex-initial bg-rose-500/10 hover:bg-rose-600 hover:text-white text-rose-400 border border-rose-500/40 px-3 py-2 rounded text-xs font-mono transition flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-shield-halved text-[10px]"></i> War Room
+                        </a>
+                        <button onclick="toggleAccordion('acc-3')" class="flex-1 sm:flex-initial bg-gray-800 hover:bg-gray-700 text-gray-200 px-3 py-2 rounded text-xs font-mono transition flex items-center justify-center gap-2" title="Toggle Module Details">
+                            <span>Interactive Decks (8)</span>
+                            <i id="icon-acc-3-mob" class="fa-solid fa-chevron-down text-xs"></i>
                         </button>
                     </div>
                 </div>
@@ -900,6 +921,231 @@
                         <div class="bg-black/50 p-3 rounded border border-gray-800">
                             <span class="text-cyber-purple font-bold block mb-1"><i class="fa-solid fa-plug mr-1"></i> Key Competency 03</span>
                             External system connections & secure transport setup.
+                        </div>
+                    </div>
+
+                    <!-- Slide Decks & Simulators Grid -->
+                    <div class="space-y-3 pt-2">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                            <span class="text-xs font-mono font-bold text-gray-200 uppercase tracking-wider flex items-center gap-2">
+                                <i class="fa-solid fa-folder-open text-cyber-purple"></i> Interactive Slide Decks &amp; Simulators
+                                <span class="bg-cyber-purple/10 text-cyber-purple border border-cyber-purple/30 text-[10px] px-2 py-0.5 rounded font-mono">
+                                    FOLDER: Claude Code, MCP & Integration
+                                </span>
+                            </span>
+                            <span class="text-[11px] font-mono text-gray-400">8 Interactive Missions Available</span>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            
+                            <!-- Deck 1 Card: Permission Modes -->
+                            <div class="bg-gray-900/90 border border-cyber-border hover:border-amber-500/60 rounded-xl p-4 flex flex-col justify-between space-y-3 transition">
+                                <div class="space-y-2">
+                                    <div class="flex items-center justify-between">
+                                        <span class="bg-amber-500/10 text-amber-400 border border-amber-500/30 text-[10px] font-mono px-2 py-0.5 rounded uppercase font-semibold">
+                                            Lesson 01 &bull; 10 Slides
+                                        </span>
+                                        <span class="text-gray-400 text-[11px] font-mono"><i class="fa-regular fa-clock mr-1"></i> ~24 Min</span>
+                                    </div>
+                                    <h4 class="text-sm font-bold text-white font-mono flex items-center gap-2">
+                                        <i class="fa-solid fa-shield-halved text-amber-400"></i> Permission Modes &amp; Gates
+                                    </h4>
+                                    <p class="text-xs text-gray-300 leading-relaxed">
+                                        Agent loop mechanics (explore, plan, code), 4 permission modes, settings hierarchy, deterministic deny rules, and human oversight gates.
+                                    </p>
+                                    <div class="text-[11px] font-mono text-gray-400 flex items-center gap-1.5">
+                                        <i class="fa-regular fa-file-code text-amber-400"></i>
+                                        <span>Claude Code.../Permission_Modes_and_Human_Gates.html</span>
+                                    </div>
+                                </div>
+                                <a href="Claude%20Code%2C%20MCP%20%26%20Integration/Permission_Modes_and_Human_Gates.html" target="_blank" class="w-full bg-amber-500/10 hover:bg-amber-500 hover:text-black text-amber-400 border border-amber-500/40 px-3 py-2 rounded-lg text-xs font-mono font-semibold transition flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-play text-[10px]"></i> Launch "Permission Modes"
+                                    <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                                </a>
+                            </div>
+
+                            <!-- Deck 2 Card: Durable Project Context -->
+                            <div class="bg-gray-900/90 border border-cyber-border hover:border-cyber-cyan/60 rounded-xl p-4 flex flex-col justify-between space-y-3 transition">
+                                <div class="space-y-2">
+                                    <div class="flex items-center justify-between">
+                                        <span class="bg-cyber-cyan/10 text-cyber-cyan border border-cyber-cyan/30 text-[10px] font-mono px-2 py-0.5 rounded uppercase font-semibold">
+                                            Lesson 02 &bull; 10 Slides
+                                        </span>
+                                        <span class="text-gray-400 text-[11px] font-mono"><i class="fa-regular fa-clock mr-1"></i> ~27 Min</span>
+                                    </div>
+                                    <h4 class="text-sm font-bold text-white font-mono flex items-center gap-2">
+                                        <i class="fa-solid fa-file-code text-cyber-cyan"></i> Durable Project Context
+                                    </h4>
+                                    <p class="text-xs text-gray-300 leading-relaxed">
+                                        CLAUDE.md lean memory, scoped rules files with path globs, PreToolUse hook exit code 2 guardrails, and subagent context boundaries.
+                                    </p>
+                                    <div class="text-[11px] font-mono text-gray-400 flex items-center gap-1.5">
+                                        <i class="fa-regular fa-file-code text-cyber-cyan"></i>
+                                        <span>Claude Code.../Durable_Project_Context.html</span>
+                                    </div>
+                                </div>
+                                <a href="Claude%20Code%2C%20MCP%20%26%20Integration/Durable_Project_Context.html" target="_blank" class="w-full bg-cyber-cyan/10 hover:bg-cyber-cyan hover:text-black text-cyber-cyan border border-cyber-cyan/40 px-3 py-2 rounded-lg text-xs font-mono font-semibold transition flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-play text-[10px]"></i> Launch "Durable Context"
+                                    <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                                </a>
+                            </div>
+
+                            <!-- Deck 3 Card: Packaging Workflows & Plugins -->
+                            <div class="bg-gray-900/90 border border-cyber-border hover:border-cyber-purple/60 rounded-xl p-4 flex flex-col justify-between space-y-3 transition">
+                                <div class="space-y-2">
+                                    <div class="flex items-center justify-between">
+                                        <span class="bg-cyber-purple/10 text-cyber-purple border border-cyber-purple/30 text-[10px] font-mono px-2 py-0.5 rounded uppercase font-semibold">
+                                            Lesson 03 &bull; 10 Slides
+                                        </span>
+                                        <span class="text-gray-400 text-[11px] font-mono"><i class="fa-regular fa-clock mr-1"></i> ~18 Min</span>
+                                    </div>
+                                    <h4 class="text-sm font-bold text-white font-mono flex items-center gap-2">
+                                        <i class="fa-solid fa-box-archive text-cyber-purple"></i> Packaging Workflows &amp; Plugins
+                                    </h4>
+                                    <p class="text-xs text-gray-300 leading-relaxed">
+                                        Authoring portable SKILL.md across CLI, Messages API, and Agent SDK; commands vs skills, subagent clean-slate rule, and plugin bundles.
+                                    </p>
+                                    <div class="text-[11px] font-mono text-gray-400 flex items-center gap-1.5">
+                                        <i class="fa-regular fa-file-code text-cyber-purple"></i>
+                                        <span>Claude Code.../Packaging_Workflows_and_Plugins.html</span>
+                                    </div>
+                                </div>
+                                <a href="Claude%20Code%2C%20MCP%20%26%20Integration/Packaging_Workflows_and_Plugins.html" target="_blank" class="w-full bg-cyber-purple/10 hover:bg-cyber-purple hover:text-white text-cyber-purple border border-cyber-purple/40 px-3 py-2 rounded-lg text-xs font-mono font-semibold transition flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-play text-[10px]"></i> Launch "Workflow Packaging"
+                                    <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                                </a>
+                            </div>
+
+                            <!-- Deck 4 Card: MCP Servers & Transports -->
+                            <div class="bg-gray-900/90 border border-cyber-border hover:border-blue-500/60 rounded-xl p-4 flex flex-col justify-between space-y-3 transition">
+                                <div class="space-y-2">
+                                    <div class="flex items-center justify-between">
+                                        <span class="bg-blue-500/10 text-blue-400 border border-blue-500/30 text-[10px] font-mono px-2 py-0.5 rounded uppercase font-semibold">
+                                            Lesson 04 &bull; 10 Slides
+                                        </span>
+                                        <span class="text-gray-400 text-[11px] font-mono"><i class="fa-regular fa-clock mr-1"></i> ~29 Min</span>
+                                    </div>
+                                    <h4 class="text-sm font-bold text-white font-mono flex items-center gap-2">
+                                        <i class="fa-solid fa-network-wired text-blue-400"></i> MCP Servers &amp; Transports
+                                    </h4>
+                                    <p class="text-xs text-gray-300 leading-relaxed">
+                                        Primitives (tools, resources, prompts), stdio subprocess vs HTTP/SSE transport, project vs user vs enterprise scopes, and prompt caching.
+                                    </p>
+                                    <div class="text-[11px] font-mono text-gray-400 flex items-center gap-1.5">
+                                        <i class="fa-regular fa-file-code text-blue-400"></i>
+                                        <span>Claude Code.../MCP_Servers_and_Transports.html</span>
+                                    </div>
+                                </div>
+                                <a href="Claude%20Code%2C%20MCP%20%26%20Integration/MCP_Servers_and_Transports.html" target="_blank" class="w-full bg-blue-500/10 hover:bg-blue-500 hover:text-white text-blue-400 border border-blue-500/40 px-3 py-2 rounded-lg text-xs font-mono font-semibold transition flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-play text-[10px]"></i> Launch "MCP Servers"
+                                    <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                                </a>
+                            </div>
+
+                            <!-- Deck 5 Card: Enterprise Integration & Security -->
+                            <div class="bg-gray-900/90 border border-cyber-border hover:border-emerald-500/60 rounded-xl p-4 flex flex-col justify-between space-y-3 transition">
+                                <div class="space-y-2">
+                                    <div class="flex items-center justify-between">
+                                        <span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 text-[10px] font-mono px-2 py-0.5 rounded uppercase font-semibold">
+                                            Lesson 05 &bull; 10 Slides
+                                        </span>
+                                        <span class="text-gray-400 text-[11px] font-mono"><i class="fa-regular fa-clock mr-1"></i> ~20 Min</span>
+                                    </div>
+                                    <h4 class="text-sm font-bold text-white font-mono flex items-center gap-2">
+                                        <i class="fa-solid fa-shield-virus text-emerald-400"></i> Enterprise Integration &amp; Security
+                                    </h4>
+                                    <p class="text-xs text-gray-300 leading-relaxed">
+                                        OAuth user identity vs service env keys, PostToolUse deterministic audit hooks, managed-settings.json locked policies, and SOC2/HIPAA compliance.
+                                    </p>
+                                    <div class="text-[11px] font-mono text-gray-400 flex items-center gap-1.5">
+                                        <i class="fa-regular fa-file-code text-emerald-400"></i>
+                                        <span>Claude Code.../Enterprise_Integration_and_Security.html</span>
+                                    </div>
+                                </div>
+                                <a href="Claude%20Code%2C%20MCP%20%26%20Integration/Enterprise_Integration_and_Security.html" target="_blank" class="w-full bg-emerald-500/10 hover:bg-emerald-500 hover:text-black text-emerald-400 border border-emerald-500/40 px-3 py-2 rounded-lg text-xs font-mono font-semibold transition flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-play text-[10px]"></i> Launch "Enterprise Security"
+                                    <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                                </a>
+                            </div>
+
+                            <!-- Deck 6 Card: Cumulative War Room -->
+                            <div class="bg-gray-900/90 border border-rose-500/40 hover:border-rose-500 rounded-xl p-4 flex flex-col justify-between space-y-3 transition glow-rose">
+                                <div class="space-y-2">
+                                    <div class="flex items-center justify-between">
+                                        <span class="bg-rose-500/20 text-rose-300 border border-rose-500/50 text-[10px] font-mono px-2 py-0.5 rounded uppercase font-bold">
+                                            WAR ROOM LAB &bull; INTERACTIVE
+                                        </span>
+                                        <span class="text-gray-400 text-[11px] font-mono"><i class="fa-regular fa-clock mr-1"></i> ~25 Min</span>
+                                    </div>
+                                    <h4 class="text-sm font-bold text-white font-mono flex items-center gap-2">
+                                        <i class="fa-solid fa-triangle-exclamation text-rose-400"></i> War Room: Incident #403-MCP
+                                    </h4>
+                                    <p class="text-xs text-gray-300 leading-relaxed">
+                                        Hands-on live incident simulator: diagnose and repair 4 cascading multi-layer production failures across permissions, context, skills, and MCP secrets.
+                                    </p>
+                                    <div class="text-[11px] font-mono text-gray-400 flex items-center gap-1.5">
+                                        <i class="fa-regular fa-file-code text-rose-400"></i>
+                                        <span>Claude Code.../Cumulative_Integration_War_Room.html</span>
+                                    </div>
+                                </div>
+                                <a href="Claude%20Code%2C%20MCP%20%26%20Integration/Cumulative_Integration_War_Room.html" target="_blank" class="w-full bg-rose-500/20 hover:bg-rose-600 hover:text-white text-rose-300 border border-rose-500/50 px-3 py-2 rounded-lg text-xs font-mono font-bold transition flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-shield-halved text-[10px]"></i> Launch War Room Mission
+                                    <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                                </a>
+                            </div>
+
+                            <!-- Deck 7 Card: Executive Architecture Deck -->
+                            <div class="bg-gray-900/90 border border-cyber-border hover:border-cyan-500/60 rounded-xl p-4 flex flex-col justify-between space-y-3 transition">
+                                <div class="space-y-2">
+                                    <div class="flex items-center justify-between">
+                                        <span class="bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 text-[10px] font-mono px-2 py-0.5 rounded uppercase font-semibold">
+                                            Overview &bull; 11 Slides
+                                        </span>
+                                        <span class="text-gray-400 text-[11px] font-mono"><i class="fa-regular fa-clock mr-1"></i> ~20 Min</span>
+                                    </div>
+                                    <h4 class="text-sm font-bold text-white font-mono flex items-center gap-2">
+                                        <i class="fa-solid fa-layer-group text-cyan-400"></i> Executive Architecture Deck
+                                    </h4>
+                                    <p class="text-xs text-gray-300 leading-relaxed">
+                                        High-level architectural overview covering the 3 cascading failures of Incident #403-MCP with interactive configuration builders.
+                                    </p>
+                                    <div class="text-[11px] font-mono text-gray-400 flex items-center gap-1.5">
+                                        <i class="fa-regular fa-file-code text-cyan-400"></i>
+                                        <span>Claude Code.../Claude_Code_MCP_Integration.html</span>
+                                    </div>
+                                </div>
+                                <a href="Claude%20Code%2C%20MCP%20%26%20Integration/Claude_Code_MCP_Integration.html" target="_blank" class="w-full bg-cyan-500/10 hover:bg-cyan-500 hover:text-black text-cyan-400 border border-cyan-500/40 px-3 py-2 rounded-lg text-xs font-mono font-semibold transition flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-play text-[10px]"></i> Launch Executive Deck
+                                    <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                                </a>
+                            </div>
+
+                            <!-- Deck 8 Card: Grand Recap Deck -->
+                            <div class="bg-gray-900/90 border border-cyber-border hover:border-cyber-purple/60 rounded-xl p-4 flex flex-col justify-between space-y-3 transition">
+                                <div class="space-y-2">
+                                    <div class="flex items-center justify-between">
+                                        <span class="bg-cyber-purple/10 text-cyber-purple border border-cyber-purple/30 text-[10px] font-mono px-2 py-0.5 rounded uppercase font-semibold">
+                                            Recap &bull; 7 Slides
+                                        </span>
+                                        <span class="text-gray-400 text-[11px] font-mono"><i class="fa-regular fa-clock mr-1"></i> ~15 Min</span>
+                                    </div>
+                                    <h4 class="text-sm font-bold text-white font-mono flex items-center gap-2">
+                                        <i class="fa-solid fa-award text-cyber-purple"></i> Module 3 Grand Recap Deck
+                                    </h4>
+                                    <p class="text-xs text-gray-300 leading-relaxed">
+                                        Complete 5-domain certification synthesis, master exam traps, permission mode cheat sheets, and readiness verification checklist.
+                                    </p>
+                                    <div class="text-[11px] font-mono text-gray-400 flex items-center gap-1.5">
+                                        <i class="fa-regular fa-file-code text-cyber-purple"></i>
+                                        <span>Claude Code.../recap_slide_deck.html</span>
+                                    </div>
+                                </div>
+                                <a href="Claude%20Code%2C%20MCP%20%26%20Integration/recap_slide_deck.html" target="_blank" class="w-full bg-cyber-purple/10 hover:bg-cyber-purple hover:text-white text-cyber-purple border border-cyber-purple/40 px-3 py-2 rounded-lg text-xs font-mono font-semibold transition flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-bookmark text-[10px]"></i> Launch Grand Recap Deck
+                                    <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                                </a>
+                            </div>
+
                         </div>
                     </div>
                 </div>

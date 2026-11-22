@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>CCDV-F | Module 3: Durable Project Context</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+    
+    :root {
+      --bg-dark: #0B0F19;
+      --surface-navy: #111827;
+      --surface-card: #1F2937;
+      --border-cyan: rgba(6, 182, 212, 0.3);
+      --accent-blue: #3B82F6;
+      --accent-cyan: #06B6D4;
+      --alert-amber: #F59E0B;
+      --alert-red: #EF4444;
+      --success-green: #10B981;
+      --accent-purple: #8B5CF6;
+      --text-main: #F3F4F6;
+      --text-muted: #9CA3AF;
+      --font-mono: 'Fira Code', monospace;
+      --font-sans: 'Inter', sans-serif;
+    }
+    
+    body {
+      background-color: #030712;
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    
+    .viewport {
+      width: 100vw;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    
+    .deck-container {
+      width: 100%;
+      max-width: 1280px;
+      aspect-ratio: 16 / 9;
+      max-height: calc(100vh - 40px);
+      background-color: var(--bg-dark);
+      border: 1px solid var(--border-cyan);
+      box-shadow: 0 0 35px rgba(6, 182, 212, 0.15), inset 0 0 15px rgba(0, 0, 0, 0.8);
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .deck-header {
+      height: 48px;
+      background-color: rgba(17, 24, 39, 0.95);
+      border-bottom: 1px solid rgba(6, 182, 212, 0.25);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+    }
+    
+    .deck-header .brand {
+      color: var(--accent-cyan);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+    }
+    
+    .deck-header .status {
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .badge-exam {
+      background: rgba(6, 182, 212, 0.15);
+      border: 1px solid rgba(6, 182, 212, 0.4);
+      color: var(--accent-cyan);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+    }
+
+    .slides-wrapper {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      min-height: 0;
+    }
+    
+    .slide-container {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      padding: 32px 44px;
+      display: none;
+      flex-direction: column;
+      opacity: 0;
+      transition: opacity 0.2s ease-in-out;
+      overflow-y: auto;
+    }
+    
+    .slide-container.active {
+      display: flex;
+      opacity: 1;
+    }
+
+    .slide-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--accent-cyan);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 6px;
+    }
+
+    .slide-title {
+      font-size: 24px;
+      font-weight: 800;
+      color: #FFFFFF;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .feature-card {
+      background: var(--surface-card);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 16px 20px;
+    }
+
+    .code-box {
+      background: #060913;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 14px 18px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      line-height: 1.6;
+      overflow-x: auto;
+    }
+
+    .nav-btn {
+      background: var(--surface-navy);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: var(--text-main);
+      padding: 6px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      transition: all 0.2s;
+    }
+
+    .nav-btn:hover:not(:disabled) {
+      background: var(--accent-cyan);
+      color: #000;
+    }
+
+    .nav-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    .quiz-option {
+      background: var(--surface-card);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 12px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-bottom: 10px;
+      font-size: 13px;
+      transition: all 0.2s;
+    }
+
+    .quiz-option:hover {
+      border-color: var(--accent-cyan);
+    }
+
+    .quiz-option.selected-correct {
+      border-color: var(--success-green);
+      background: rgba(16, 185, 129, 0.15);
+      color: #A7F3D0;
+    }
+
+    .quiz-option.selected-wrong {
+      border-color: var(--alert-red);
+      background: rgba(239, 68, 68, 0.15);
+      color: #FCA5A5;
+    }
+
+    .deck-footer {
+      height: 52px;
+      background-color: rgba(17, 24, 39, 0.95);
+      border-top: 1px solid rgba(6, 182, 212, 0.25);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+    }
+
+    @media (max-width: 768px) {
+      .viewport { padding: 0 !important; }
+      .deck-container {
+        border-radius: 0 !important;
+        border: none !important;
+        max-height: none !important;
+        aspect-ratio: auto !important;
+        min-height: 100dvh !important;
+      }
+      .deck-header {
+        position: sticky; top: 0; z-index: 100;
+        height: 44px; padding: 0 12px;
+      }
+      .slide-container {
+        position: relative !important;
+        height: auto !important; min-height: calc(100dvh - 98px) !important;
+        padding: 16px !important;
+      }
+      .grid-2, .grid-4 { grid-template-columns: 1fr !important; }
+      .deck-footer {
+        position: sticky; bottom: 0; z-index: 100;
+        height: 54px; padding: 0 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="viewport">
+    <div class="deck-container">
+      
+      <!-- Deck Header -->
+      <header class="deck-header">
+        <div class="brand">
+          <i class="fa-solid fa-file-code"></i>
+          <span>CCDV-F // MODULE 3: DURABLE PROJECT CONTEXT</span>
+        </div>
+        <div class="status">
+          <a href="../index.html" style="color:var(--text-muted); text-decoration:none; font-size:11px; margin-right:8px;">
+            <i class="fa-solid fa-arrow-left"></i> HUB
+          </a>
+          <span class="badge-exam"><i class="fa-solid fa-certificate"></i> EXAM LESSON 2</span>
+        </div>
+      </header>
+
+      <!-- Slides Wrapper -->
+      <main class="slides-wrapper">
+
+        <!-- SLIDE 1: Cover / Mission Briefing -->
+        <section class="slide-container active" id="slide-1">
+          <div class="slide-eyebrow">// MISSION BRIEFING &bull; INCIDENT #402-CTXT</div>
+          <h1 class="slide-title">
+            <i class="fa-solid fa-triangle-exclamation" style="color: var(--alert-red);"></i>
+            The 2,500-Line Memory Collapse
+          </h1>
+          
+          <div class="grid-2">
+            <div class="feature-card" style="border-left: 3px solid var(--accent-cyan); display: flex; flex-direction: column; justify-content: space-between;">
+              <div>
+                <span style="font-family: var(--font-mono); font-size: 11px; color: var(--accent-cyan); display: block; margin-bottom: 8px;">
+                  APEXCORP PRODUCTION INCIDENT REPORT
+                </span>
+                <p style="font-size: 14px; line-height: 1.6; color: var(--text-main); margin-bottom: 12px;">
+                  ApexCorp developers dumped every rule, architectural diagram, coding standard, and deployment step into a single monolithic 2,500-line <code>CLAUDE.md</code> file.
+                </p>
+                <p style="font-size: 13px; line-height: 1.6; color: var(--text-muted);">
+                  Due to prompt dilution, critical data isolation rules at the bottom of the file were ignored. Later, a delegated <code>Explore</code> subagent accidentally exposed customer PII because built-in explore subagents skip <code>CLAUDE.md</code>!
+                </p>
+              </div>
+              <div style="background: rgba(6, 182, 212, 0.1); border: 1px solid rgba(6, 182, 212, 0.3); border-radius: 6px; padding: 10px 14px; font-size: 12px; color: var(--accent-cyan); font-family: var(--font-mono);">
+                <i class="fa-solid fa-circle-exclamation mr-2"></i> ERROR: Rule dilution and misconfigured subagent boundaries lead to catastrophic context loss.
+              </div>
+            </div>
+
+            <div class="code-box">
+<span style="color: #6B7280;"># CLAUDE.md (ApexCorp Anti-Pattern)</span>
+<span style="color: #6B7280;"># 2,500+ lines of un-scoped instructions...</span>
+...
+Line 2410: <span style="color: #EF4444;">DO NOT EVER READ /data/pii_records.json!</span>
+...
+
+<span style="color: #6B7280;">// Execution Trace:</span>
+$ claude "investigate customer retention metrics"
+[Agent] Spawning built-in 'Explore' subagent...
+<span style="color: #EF4444;">[Explore Subagent] SKIPPED CLAUDE.md &amp; git status!</span>
+[Explore Subagent] Reading /data/pii_records.json directly...
+<span style="color: #EF4444;">FATAL: PII leaked into conversation context!</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 2: Root Cause Analysis -->
+        <section class="slide-container" id="slide-2">
+          <div class="slide-eyebrow">// ROOT CAUSE ANALYSIS</div>
+          <h2 class="slide-title"><i class="fa-solid fa-magnifying-glass" style="color: var(--accent-cyan);"></i> Why Monolithic Context Fails</h2>
+          <div class="grid-2">
+            <div class="feature-card">
+              <h3 style="font-size: 14px; font-weight: bold; color: var(--alert-amber); margin-bottom: 8px;">1. Context Dilution</h3>
+              <p style="font-size: 12px; color: var(--text-muted); line-height: 1.6; margin-bottom: 12px;">
+                <code>CLAUDE.md</code> is loaded on every turn. As it balloons in size, the model's probabilistic attention splits across thousands of irrelevant tokens, missing core constraints.
+              </p>
+              <h3 style="font-size: 14px; font-weight: bold; color: var(--alert-red); margin-bottom: 8px;">2. Probabilistic vs Deterministic Enforcement</h3>
+              <p style="font-size: 12px; color: var(--text-muted); line-height: 1.6;">
+                Prompt instructions are suggestions. If an action <strong>must never happen</strong> (e.g. blocking PII reads or blocking drop table), it must be enforced by a deterministic hook, not a text note.
+              </p>
+            </div>
+            <div class="feature-card">
+              <h3 style="font-size: 14px; font-weight: bold; color: var(--accent-cyan); margin-bottom: 8px;">3. Subagent Context Boundaries</h3>
+              <p style="font-size: 12px; color: var(--text-muted); line-height: 1.6; margin-bottom: 12px;">
+                Subagents start with a <strong>clean slate</strong>. Built-in <code>Explore</code> and <code>Plan</code> subagents deliberately skip <code>CLAUDE.md</code> to stay fast and cost-effective.
+              </p>
+              <h3 style="font-size: 14px; font-weight: bold; color: var(--success-green); margin-bottom: 8px;">The Architecture Fix</h3>
+              <p style="font-size: 12px; color: var(--text-muted); line-height: 1.6;">
+                Separate responsibilities into 4 specialized mechanisms: <code>CLAUDE.md</code>, scoped rules files, lifecycle hooks, and configured subagents.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 3: The 4 Context Mechanisms -->
+        <section class="slide-container" id="slide-3">
+          <div class="slide-eyebrow">// CONTEXT TAXONOMY</div>
+          <h2 class="slide-title"><i class="fa-solid fa-cubes" style="color: var(--accent-cyan);"></i> Four Specialized Context Mechanisms</h2>
+          <div class="grid-4">
+            <div class="feature-card" style="border-top: 3px solid var(--accent-cyan);">
+              <h3 style="font-size: 13px; font-weight: bold; color: var(--accent-cyan); margin-bottom: 6px;">1. CLAUDE.md</h3>
+              <p style="font-size: 11px; color: var(--text-muted); line-height: 1.5;">
+                Always-on, persistent memory for the session. Keep it lean (under 100 lines): build commands, testing scripts, and high-level project philosophy.
+              </p>
+            </div>
+            <div class="feature-card" style="border-top: 3px solid var(--accent-blue);">
+              <h3 style="font-size: 13px; font-weight: bold; color: var(--accent-blue); margin-bottom: 6px;">2. Rules Files</h3>
+              <p style="font-size: 11px; color: var(--text-muted); line-height: 1.5;">
+                Files in <code>.claude/rules/</code> scoped to specific paths using glob matchers. Only injected when touching matching files.
+              </p>
+            </div>
+            <div class="feature-card" style="border-top: 3px solid var(--alert-amber);">
+              <h3 style="font-size: 13px; font-weight: bold; color: var(--alert-amber); margin-bottom: 6px;">3. Hooks</h3>
+              <p style="font-size: 11px; color: var(--text-muted); line-height: 1.5;">
+                Deterministic shell scripts bound to execution events (<code>PreToolUse</code>, <code>PostToolUse</code>). Exit code 2 blocks tool calls instantly.
+              </p>
+            </div>
+            <div class="feature-card" style="border-top: 3px solid var(--accent-purple);">
+              <h3 style="font-size: 13px; font-weight: bold; color: var(--accent-purple); margin-bottom: 6px;">4. Subagents</h3>
+              <p style="font-size: 11px; color: var(--text-muted); line-height: 1.5;">
+                Isolated task delegates. Keeps large exploratory traces out of the main conversation, returning only concise summaries.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 4: Rules Files & Path Scoping -->
+        <section class="slide-container" id="slide-4">
+          <div class="slide-eyebrow">// SCOPED GUIDANCE</div>
+          <h2 class="slide-title"><i class="fa-solid fa-filter" style="color: var(--accent-blue);"></i> Scoped Rules in .claude/rules/</h2>
+          <div class="grid-2">
+            <div class="feature-card">
+              <h3 style="font-size: 14px; font-weight: bold; color: var(--accent-blue); margin-bottom: 8px;">Path Scoping via Frontmatter</h3>
+              <p style="font-size: 12px; color: var(--text-muted); line-height: 1.6; margin-bottom: 12px;">
+                Rather than loading backend security rules during a frontend React CSS edit, rules files define <code>paths</code> globs in YAML frontmatter.
+              </p>
+              <ul style="font-size: 12px; color: var(--text-main); line-height: 1.6; padding-left: 18px;">
+                <li>Prevents token waste in unrelated sessions.</li>
+                <li>Eliminates rule collisions across stacks.</li>
+                <li>Automatically injected by Claude Code when touching matching paths.</li>
+              </ul>
+            </div>
+            <div class="code-box">
+<span style="color: #6B7280;"># .claude/rules/api-security.md</span>
+---
+<span style="color: #06B6D4;">description</span>: API security and authentication standards
+<span style="color: #06B6D4;">paths</span>:
+  - <span style="color: #10B981;">"src/api/**/*.ts"</span>
+  - <span style="color: #10B981;">"services/**/routes.py"</span>
+---
+
+<span style="color: #6B7280;">## Authentication Enforcement</span>
+- All endpoints must include `@require_auth` decorator
+- Validate tenant isolation parameter on every SQL query
+- Never log headers containing `Bearer` tokens
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 5: Deterministic Hooks -->
+        <section class="slide-container" id="slide-5">
+          <div class="slide-eyebrow">// LIFECYCLE ENFORCEMENT</div>
+          <h2 class="slide-title"><i class="fa-solid fa-code-branch" style="color: var(--alert-amber);"></i> PreToolUse &amp; Exit Code 2 Blocking</h2>
+          <div class="grid-2">
+            <div class="feature-card">
+              <h3 style="font-size: 14px; font-weight: bold; color: var(--alert-amber); margin-bottom: 8px;">Hook Lifecycle &amp; Exit Codes</h3>
+              <div style="font-size: 12px; line-height: 1.6; color: var(--text-main);">
+                <p style="margin-bottom: 8px;">
+                  Hooks run shell commands at specific lifecycle triggers:
+                  <code>PreToolUse</code>, <code>PostToolUse</code>, <code>UserPromptSubmit</code>, <code>Stop</code>.
+                </p>
+                <div style="background: rgba(239, 68, 68, 0.1); border-left: 3px solid var(--alert-red); padding: 8px 12px; margin-bottom: 8px;">
+                  <strong style="color: var(--alert-red);">PreToolUse Exit Code 2:</strong><br>
+                  Exiting with <strong>code 2</strong> cancels the tool call before execution! Whatever is written to <code>stderr</code> is returned to Claude as feedback to adapt.
+                </div>
+                <p style="color: var(--text-muted); font-size: 11px;">
+                  Exit code 0 permits execution. Any non-zero exit code other than 2 indicates hook runtime failure.
+                </p>
+              </div>
+            </div>
+            <div class="code-box">
+<span style="color: #6B7280;">// .claude/settings.json Hook Configuration</span>
+{
+  <span style="color: #06B6D4;">"hooks"</span>: {
+    <span style="color: #06B6D4;">"PreToolUse"</span>: [
+      {
+        <span style="color: #06B6D4;">"matcher"</span>: <span style="color: #10B981;">"Bash"</span>,
+        <span style="color: #06B6D4;">"command"</span>: <span style="color: #10B981;">"./scripts/guard_rail.sh"</span>
+      }
+    ]
+  }
+}
+
+<span style="color: #6B7280;"># ./scripts/guard_rail.sh</span>
+<span style="color: #8B5CF6;">if</span> echo <span style="color: #10B981;">"$TOOL_INPUT"</span> | grep -q <span style="color: #EF4444;">"rm -rf"</span>; <span style="color: #8B5CF6;">then</span>
+  echo <span style="color: #EF4444;">"ERROR: rm -rf is strictly blocked by company policy."</span> &gt;&amp;2
+  <span style="color: #EF4444;">exit 2</span>  <span style="color: #6B7280;"># Blocks the tool call deterministically!</span>
+<span style="color: #8B5CF6;">fi</span>
+<span style="color: #10B981;">exit 0</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 6: Subagent Context Boundaries -->
+        <section class="slide-container" id="slide-6">
+          <div class="slide-eyebrow">// SUBAGENT ISOLATION</div>
+          <h2 class="slide-title"><i class="fa-solid fa-robot" style="color: var(--accent-purple);"></i> Built-in Subagents vs Project Rules</h2>
+          <div class="feature-card" style="font-size: 12px; overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left;">
+              <thead>
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.1); color: var(--accent-cyan);">
+                  <th style="padding: 10px;">Subagent Type</th>
+                  <th style="padding: 10px;">Loads CLAUDE.md?</th>
+                  <th style="padding: 10px;">Loads Git Status?</th>
+                  <th style="padding: 10px;">Design Purpose</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                  <td style="padding: 10px; font-family: var(--font-mono); color: var(--alert-amber);">Explore</td>
+                  <td style="padding: 10px; color: var(--alert-red);">❌ NO (Skipped)</td>
+                  <td style="padding: 10px; color: var(--alert-red);">❌ NO (Skipped)</td>
+                  <td style="padding: 10px;">Optimized for cheap, fast, unbounded codebase search</td>
+                </tr>
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                  <td style="padding: 10px; font-family: var(--font-mono); color: var(--alert-amber);">Plan</td>
+                  <td style="padding: 10px; color: var(--alert-red);">❌ NO (Skipped)</td>
+                  <td style="padding: 10px; color: var(--alert-red);">❌ NO (Skipped)</td>
+                  <td style="padding: 10px;">Optimized for fast architectural planning without bias</td>
+                </tr>
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                  <td style="padding: 10px; font-family: var(--font-mono); color: var(--success-green);">General-purpose</td>
+                  <td style="padding: 10px; color: var(--success-green);">✅ YES (Loaded)</td>
+                  <td style="padding: 10px; color: var(--success-green);">✅ YES (Loaded)</td>
+                  <td style="padding: 10px;">Standard execution delegate; respects full project rules</td>
+                </tr>
+                <tr>
+                  <td style="padding: 10px; font-family: var(--font-mono); color: var(--accent-cyan);">Custom Subagent</td>
+                  <td style="padding: 10px;">Configurable</td>
+                  <td style="padding: 10px;">Configurable</td>
+                  <td style="padding: 10px;">Explicitly configured to load specific scoped rules files</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div style="margin-top: 14px; font-size: 12px; color: var(--alert-amber); background: rgba(245, 158, 11, 0.1); padding: 10px 14px; border-radius: 6px; font-family: var(--font-mono);">
+            💡 CCDV-F KEY EXAM FACT: If an Explore or Plan subagent ignores CLAUDE.md, it is by design! For tasks requiring project constraints, use general-purpose or custom subagents.
+          </div>
+        </section>
+
+        <!-- SLIDE 7: Mechanism Comparison Matrix -->
+        <section class="slide-container" id="slide-7">
+          <div class="slide-eyebrow">// ARCHITECTURAL MATRIX</div>
+          <h2 class="slide-title"><i class="fa-solid fa-network-wired" style="color: var(--accent-cyan);"></i> Which Mechanism When?</h2>
+          <div class="grid-2" style="font-size: 13px;">
+            <div class="feature-card" style="display: flex; flex-direction: column; gap: 10px;">
+              <strong style="color: var(--accent-cyan);">Use CLAUDE.md For:</strong>
+              <p style="color: var(--text-muted); font-size: 12px;">Global, always-on context needed for 90%+ of sessions (build command: <code>npm run build</code>, test command: <code>pytest</code>, project architecture summary).</p>
+              
+              <strong style="color: var(--accent-blue); margin-top: 6px;">Use Rules Files (.claude/rules/) For:</strong>
+              <p style="color: var(--text-muted); font-size: 12px;">Domain-specific guidelines that only matter when editing matching directories (e.g. GraphQL schemas, SQL migration safety, React state patterns).</p>
+            </div>
+            <div class="feature-card" style="display: flex; flex-direction: column; gap: 10px;">
+              <strong style="color: var(--alert-amber);">Use PreToolUse Hooks For:</strong>
+              <p style="color: var(--text-muted); font-size: 12px;">Hard, non-negotiable boundaries where model compliance cannot be left to probabilistic prompting (blocking drop database, secrets validation, audit logging).</p>
+              
+              <strong style="color: var(--accent-purple); margin-top: 6px;">Use Subagents For:</strong>
+              <p style="color: var(--text-muted); font-size: 12px;">High-token exploratory spikes (searching 50 log files, reading massive repos) so intermediate junk does not bloat the main conversation memory.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 8: Interactive Simulator -->
+        <section class="slide-container" id="slide-8">
+          <div class="slide-eyebrow">// INTERACTIVE LAB</div>
+          <h2 class="slide-title"><i class="fa-solid fa-flask" style="color: var(--accent-cyan);"></i> Context Mechanism Router</h2>
+          <div class="grid-2">
+            <div class="feature-card" style="display: flex; flex-direction: column; gap: 10px;">
+              <label style="font-size: 12px; color: var(--text-muted); font-family: var(--font-mono);">
+                SELECT AN ARCHITECTURAL REQUIREMENT:
+              </label>
+              <button class="nav-btn" style="text-align: left;" onclick="testRoute('build')">
+                A. Project build command &amp; repo test runner
+              </button>
+              <button class="nav-btn" style="text-align: left;" onclick="testRoute('api-rule')">
+                B. Restrict REST API route conventions in src/api/
+              </button>
+              <button class="nav-btn" style="text-align: left;" onclick="testRoute('block-drop')">
+                C. Block 'DROP TABLE' commands deterministically
+              </button>
+              <button class="nav-btn" style="text-align: left;" onclick="testRoute('log-spike')">
+                D. Search 200MB of server logs without context bloat
+              </button>
+            </div>
+
+            <div class="code-box" id="route-display" style="display: flex; flex-direction: column; justify-content: space-between;">
+              <div>
+                <span style="color: #6B7280;">// Architecture Router Output</span><br>
+                <div id="route-output" style="margin-top: 10px; line-height: 1.6;">
+                  Select a requirement on the left to route it to the optimal mechanism.
+                </div>
+              </div>
+              <div id="route-badge" style="margin-top: 10px; padding: 6px 12px; border-radius: 6px; font-size: 11px; font-family: var(--font-mono); background: rgba(255,255,255,0.05); color: #9CA3AF;">
+                MECHANISM: NONE
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 9: CCDV-F Exam Simulation -->
+        <section class="slide-container" id="slide-9">
+          <div class="slide-eyebrow">// CCDV-F EXAM SIMULATION</div>
+          <h2 class="slide-title"><i class="fa-solid fa-circle-question" style="color: var(--accent-cyan);"></i> Practice Question: Subagent Context</h2>
+          <div class="feature-card" style="font-size: 13px;">
+            <p style="margin-bottom: 14px; line-height: 1.6; color: var(--text-main);">
+              <strong>Scenario:</strong> A developer documents database query constraints in <code>CLAUDE.md</code>. However, when delegating a deep search query to the built-in <code>Explore</code> subagent, the subagent issues an unbounded query that exhausts DB connections. What is the root cause?
+            </p>
+
+            <div class="quiz-option" onclick="checkAnswer(this, false)">
+              <span style="font-weight: bold; color: var(--accent-cyan);">A.</span> The subagent was executed in <code>plan</code> mode which automatically disables SQL queries.
+            </div>
+            <div class="quiz-option" onclick="checkAnswer(this, true)">
+              <span style="font-weight: bold; color: var(--accent-cyan);">B.</span> Built-in Explore and Plan subagents skip loading CLAUDE.md and git status to optimize speed and cost.
+            </div>
+            <div class="quiz-option" onclick="checkAnswer(this, false)">
+              <span style="font-weight: bold; color: var(--accent-cyan);">C.</span> <code>CLAUDE.md</code> rules only apply when git working directory is clean.
+            </div>
+            <div class="quiz-option" onclick="checkAnswer(this, false)">
+              <span style="font-weight: bold; color: var(--accent-cyan);">D.</span> The subagent was blocked by a <code>PostToolUse</code> hook returning exit code 2.
+            </div>
+
+            <div id="quiz-explanation" style="display: none; margin-top: 14px; padding: 12px 16px; background: rgba(16, 185, 129, 0.1); border: 1px solid var(--success-green); border-radius: 6px; font-size: 12px; color: #A7F3D0;">
+              <strong>Correct! Option B:</strong> Built-in <code>Explore</code> and <code>Plan</code> subagents do not load <code>CLAUDE.md</code> or git status. For tasks requiring project rules, use the <code>general-purpose</code> subagent or a custom subagent.
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 10: Summary & Cheat Sheet -->
+        <section class="slide-container" id="slide-10">
+          <div class="slide-eyebrow">// CERTIFICATION CHEAT SHEET</div>
+          <h2 class="slide-title"><i class="fa-solid fa-award" style="color: var(--accent-cyan);"></i> Lesson 2 Master Rules for CCDV-F</h2>
+          <div class="grid-2" style="font-size: 13px;">
+            <div class="feature-card" style="border-left: 3px solid var(--accent-cyan); display: flex; flex-direction: column; gap: 8px;">
+              <strong style="color: var(--accent-cyan);">1. CLAUDE.md Dilution Trap</strong>
+              <p style="color: var(--text-muted); font-size: 12px;">Keep <code>CLAUDE.md</code> under 100 lines for universal essentials. Move domain logic to <code>.claude/rules/</code>.</p>
+              
+              <strong style="color: var(--accent-cyan); margin-top: 6px;">2. Exit Code 2 for Tool Blocking</strong>
+              <p style="color: var(--text-muted); font-size: 12px;"><code>PreToolUse</code> hooks block tool execution deterministically with exit code 2. Stderr provides model feedback.</p>
+            </div>
+            <div class="feature-card" style="border-left: 3px solid var(--accent-purple); display: flex; flex-direction: column; gap: 8px;">
+              <strong style="color: var(--accent-purple);">3. Subagent Clean Slate</strong>
+              <p style="color: var(--text-muted); font-size: 12px;">Subagents start with empty context. Explore and Plan subagents skip <code>CLAUDE.md</code> and git status.</p>
+              
+              <strong style="color: var(--accent-purple); margin-top: 6px;">4. Deterministic vs Probabilistic</strong>
+              <p style="color: var(--text-muted); font-size: 12px;">Never rely on prompts or CLAUDE.md for hard security gates. Always enforce via settings deny rules or PreToolUse hooks.</p>
+            </div>
+          </div>
+        </section>
+
+      </main>
+
+      <!-- Deck Footer -->
+      <footer class="deck-footer">
+        <div style="color: var(--text-muted);">
+          CCDV-F EXAM PREPARATION &bull; MODULE 3 &bull; LESSON 02
+        </div>
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <span>SLIDE <strong id="current-slide-num" style="color: #fff;">1</strong> / 10</span>
+          <div style="display: flex; gap: 6px;">
+            <button id="btn-prev" class="nav-btn" onclick="prevSlide()"><i class="fa-solid fa-chevron-left"></i></button>
+            <button id="btn-next" class="nav-btn" onclick="nextSlide()"><i class="fa-solid fa-chevron-right"></i></button>
+          </div>
+        </div>
+      </footer>
+
+    </div>
+  </div>
+
+  <script>
+    let currentSlide = 1;
+    const totalSlides = 10;
+
+    function updateDeckState() {
+      document.querySelectorAll('.slide-container').forEach(s => s.classList.remove('active'));
+      const active = document.getElementById(`slide-${currentSlide}`);
+      if (active) active.classList.add('active');
+      document.getElementById('current-slide-num').innerText = currentSlide;
+      document.getElementById('btn-prev').disabled = (currentSlide === 1);
+      document.getElementById('btn-next').disabled = (currentSlide === totalSlides);
+    }
+
+    function nextSlide() { if (currentSlide < totalSlides) { currentSlide++; updateDeckState(); } }
+    function prevSlide() { if (currentSlide > 1) { currentSlide--; updateDeckState(); } }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
+      else if (e.key === 'ArrowLeft') prevSlide();
+    });
+
+    function testRoute(type) {
+      const out = document.getElementById('route-output');
+      const badge = document.getElementById('route-badge');
+
+      if (type === 'build') {
+        out.innerHTML = `
+          <strong style="color: #06B6D4;">Optimal Solution: CLAUDE.md</strong><br>
+          <span style="color: #F3F4F6;">Build and test commands are universal across all developer sessions in the repo.</span><br><br>
+          <span style="color: #6B7280;">Config:</span> Place in repo root <code>CLAUDE.md</code> under ## Commands. Always-on, persistent.
+        `;
+        badge.style.background = 'rgba(6, 182, 212, 0.2)';
+        badge.style.color = '#06B6D4';
+        badge.innerText = 'MECHANISM: CLAUDE.md (GLOBAL)';
+      } else if (type === 'api-rule') {
+        out.innerHTML = `
+          <strong style="color: #3B82F6;">Optimal Solution: .claude/rules/api.md</strong><br>
+          <span style="color: #F3F4F6;">Only injected when editing files matching <code>paths: ["src/api/**"]</code>.</span><br><br>
+          <span style="color: #6B7280;">Benefit:</span> Prevents polluting front-end CSS sessions with REST schema guidelines.
+        `;
+        badge.style.background = 'rgba(59, 130, 246, 0.2)';
+        badge.style.color = '#3B82F6';
+        badge.innerText = 'MECHANISM: SCOPED RULES FILE';
+      } else if (type === 'block-drop') {
+        out.innerHTML = `
+          <strong style="color: #F59E0B;">Optimal Solution: PreToolUse Hook (exit code 2)</strong><br>
+          <span style="color: #F3F4F6;">Deterministic shell script that intercepts tool input and halts execution before SQL runs.</span><br><br>
+          <span style="color: #EF4444;">Why not prompt?</span> Prompts are probabilistic and can fail under context pressure!
+        `;
+        badge.style.background = 'rgba(245, 158, 11, 0.2)';
+        badge.style.color = '#F59E0B';
+        badge.innerText = 'MECHANISM: PRETOOLUSE HOOK (EXIT 2)';
+      } else if (type === 'log-spike') {
+        out.innerHTML = `
+          <strong style="color: #8B5CF6;">Optimal Solution: Subagent (Explore / Custom)</strong><br>
+          <span style="color: #F3F4F6;">Delegates the 200MB search to an isolated scratch context.</span><br><br>
+          <span style="color: #10B981;">Benefit:</span> Returns only the 5 matching error lines to the main session, keeping memory pristine.
+        `;
+        badge.style.background = 'rgba(139, 92, 246, 0.2)';
+        badge.style.color = '#8B5CF6';
+        badge.innerText = 'MECHANISM: ISOLATED SUBAGENT';
+      }
+    }
+
+    function checkAnswer(el, isCorrect) {
+      document.querySelectorAll('#slide-9 .quiz-option').forEach(opt => {
+        opt.classList.remove('selected-correct', 'selected-wrong');
+      });
+      if (isCorrect) {
+        el.classList.add('selected-correct');
+        document.getElementById('quiz-explanation').style.display = 'block';
+      } else {
+        el.classList.add('selected-wrong');
+        document.getElementById('quiz-explanation').style.display = 'none';
+      }
+    }
+
+    updateDeckState();
+  </script>
+</body>
+</html>

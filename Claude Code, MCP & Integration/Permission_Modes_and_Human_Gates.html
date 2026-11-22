@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>CCDV-F | Module 3: Permission Modes & Human Gates</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+    
+    :root {
+      --bg-dark: #0B0F19;
+      --surface-navy: #111827;
+      --surface-card: #1F2937;
+      --border-cyan: rgba(6, 182, 212, 0.3);
+      --accent-blue: #3B82F6;
+      --accent-cyan: #06B6D4;
+      --alert-amber: #F59E0B;
+      --alert-red: #EF4444;
+      --success-green: #10B981;
+      --accent-purple: #8B5CF6;
+      --text-main: #F3F4F6;
+      --text-muted: #9CA3AF;
+      --font-mono: 'Fira Code', monospace;
+      --font-sans: 'Inter', sans-serif;
+    }
+    
+    body {
+      background-color: #030712;
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    
+    .viewport {
+      width: 100vw;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    
+    .deck-container {
+      width: 100%;
+      max-width: 1280px;
+      aspect-ratio: 16 / 9;
+      max-height: calc(100vh - 40px);
+      background-color: var(--bg-dark);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      box-shadow: 0 0 35px rgba(245, 158, 11, 0.15), inset 0 0 15px rgba(0, 0, 0, 0.8);
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .deck-header {
+      height: 48px;
+      background-color: rgba(17, 24, 39, 0.95);
+      border-bottom: 1px solid rgba(245, 158, 11, 0.25);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+    }
+    
+    .deck-header .brand {
+      color: var(--alert-amber);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+    }
+    
+    .deck-header .status {
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .badge-exam {
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      color: var(--alert-amber);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+    }
+
+    .slides-wrapper {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      min-height: 0;
+    }
+    
+    .slide-container {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      padding: 32px 44px;
+      display: none;
+      flex-direction: column;
+      opacity: 0;
+      transition: opacity 0.2s ease-in-out;
+      overflow-y: auto;
+    }
+    
+    .slide-container.active {
+      display: flex;
+      opacity: 1;
+    }
+
+    .slide-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--alert-amber);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 6px;
+    }
+
+    .slide-title {
+      font-size: 24px;
+      font-weight: 800;
+      color: #FFFFFF;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .feature-card {
+      background: var(--surface-card);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 16px 20px;
+    }
+
+    .code-box {
+      background: #060913;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 14px 18px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      line-height: 1.6;
+      overflow-x: auto;
+    }
+
+    .nav-btn {
+      background: var(--surface-navy);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: var(--text-main);
+      padding: 6px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      transition: all 0.2s;
+    }
+
+    .nav-btn:hover:not(:disabled) {
+      background: var(--alert-amber);
+      color: #000;
+    }
+
+    .nav-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    .quiz-option {
+      background: var(--surface-card);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 12px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-bottom: 10px;
+      font-size: 13px;
+      transition: all 0.2s;
+    }
+
+    .quiz-option:hover {
+      border-color: var(--alert-amber);
+    }
+
+    .quiz-option.selected-correct {
+      border-color: var(--success-green);
+      background: rgba(16, 185, 129, 0.15);
+      color: #A7F3D0;
+    }
+
+    .quiz-option.selected-wrong {
+      border-color: var(--alert-red);
+      background: rgba(239, 68, 68, 0.15);
+      color: #FCA5A5;
+    }
+
+    .deck-footer {
+      height: 52px;
+      background-color: rgba(17, 24, 39, 0.95);
+      border-top: 1px solid rgba(245, 158, 11, 0.25);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+    }
+
+    /* Interactive Simulator Elements */
+    .sim-button {
+      background: var(--surface-card);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: var(--text-main);
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      transition: all 0.15s;
+    }
+    .sim-button.active, .sim-button:hover {
+      background: var(--alert-amber);
+      color: #000;
+      font-weight: bold;
+    }
+
+    /* Mobile Responsiveness */
+    @media (max-width: 768px) {
+      .viewport { padding: 0 !important; }
+      .deck-container {
+        border-radius: 0 !important;
+        border: none !important;
+        max-height: none !important;
+        aspect-ratio: auto !important;
+        min-height: 100dvh !important;
+      }
+      .deck-header {
+        position: sticky; top: 0; z-index: 100;
+        height: 44px; padding: 0 12px;
+      }
+      .slide-container {
+        position: relative !important;
+        height: auto !important; min-height: calc(100dvh - 98px) !important;
+        padding: 16px !important;
+      }
+      .grid-2, .grid-3 { grid-template-columns: 1fr !important; }
+      .deck-footer {
+        position: sticky; bottom: 0; z-index: 100;
+        height: 54px; padding: 0 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="viewport">
+    <div class="deck-container">
+      
+      <!-- Deck Header -->
+      <header class="deck-header">
+        <div class="brand">
+          <i class="fa-solid fa-shield-halved"></i>
+          <span>CCDV-F // MODULE 3: PERMISSION MODES & HUMAN GATES</span>
+        </div>
+        <div class="status">
+          <a href="../index.html" style="color:var(--text-muted); text-decoration:none; font-size:11px; margin-right:8px;">
+            <i class="fa-solid fa-arrow-left"></i> HUB
+          </a>
+          <span class="badge-exam"><i class="fa-solid fa-certificate"></i> EXAM LESSON 1</span>
+        </div>
+      </header>
+
+      <!-- Slides Wrapper -->
+      <main class="slides-wrapper">
+
+        <!-- SLIDE 1: Cover / Mission Briefing -->
+        <section class="slide-container active" id="slide-1">
+          <div class="slide-eyebrow">// MISSION BRIEFING &bull; INCIDENT #401-PERM</div>
+          <h1 class="slide-title">
+            <i class="fa-solid fa-triangle-exclamation" style="color: var(--alert-amber);"></i>
+            The Unfettered Terminal Incident
+          </h1>
+          
+          <div class="grid-2">
+            <div class="feature-card" style="border-left: 3px solid var(--alert-amber); display: flex; flex-direction: column; justify-content: space-between;">
+              <div>
+                <span style="font-family: var(--font-mono); font-size: 11px; color: var(--alert-amber); display: block; margin-bottom: 8px;">
+                  APEXCORP PRODUCTION INCIDENT REPORT
+                </span>
+                <p style="font-size: 14px; line-height: 1.6; color: var(--text-main); margin-bottom: 12px;">
+                  At 02:14 UTC, an SRE switched Claude Code into <code>bypassPermissions</code> mode to "speed up" a routine API route refactoring task across microservices.
+                </p>
+                <p style="font-size: 13px; line-height: 1.6; color: var(--text-muted);">
+                  The agent misinterpreted a cleanup prompt, executing an unconstrained <code>rm -rf</code> on shared volume configs and pushing an untested commit directly to production, bypassing staging gates.
+                </p>
+              </div>
+              <div style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 6px; padding: 10px 14px; font-size: 12px; color: var(--alert-amber); font-family: var(--font-mono);">
+                <i class="fa-solid fa-skull-crossbones mr-2"></i> ERROR: Critical shared volume state destroyed. Lack of permission boundaries and human verification gates.
+              </div>
+            </div>
+
+            <div class="code-box">
+<span style="color: #6B7280;">// .claude/settings.json (ApexCorp Faulty Configuration)</span>
+{
+  <span style="color: #06B6D4;">"defaultMode"</span>: <span style="color: #EF4444;">"bypassPermissions"</span>,  <span style="color: #6B7280;">// ⚠ CRITICAL RISK!</span>
+  <span style="color: #06B6D4;">"deny"</span>: []  <span style="color: #6B7280;">// Zero deterministic boundaries configured!</span>
+}
+
+<span style="color: #6B7280;">// Terminal Execution Trace:</span>
+$ claude "refactor legacy /v1 routes and clean unused config files"
+[Agent Loop] Exploring codebase...
+[Agent Loop] Proposing plan: delete obsolete configs
+[Execution]  <span style="color: #EF4444;">Auto-approving: rm -rf /etc/apex-configs/*</span>
+[Execution]  <span style="color: #EF4444;">Auto-approving: git push origin main --force</span>
+<span style="color: #EF4444;">FATAL: Production config volume wiped with ZERO human review!</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 2: Root Cause Analysis -->
+        <section class="slide-container" id="slide-2">
+          <div class="slide-eyebrow">// ROOT CAUSE ANALYSIS</div>
+          <h2 class="slide-title"><i class="fa-solid fa-magnifying-glass" style="color: var(--alert-amber);"></i> The Cost of Speed Over Oversight</h2>
+          <div class="grid-3">
+            <div class="feature-card" style="border-top: 3px solid var(--alert-red);">
+              <h3 style="font-size: 15px; font-weight: bold; margin-bottom: 8px; color: var(--alert-red);"><i class="fa-solid fa-bolt mr-2"></i> Unconstrained Autonomy</h3>
+              <p style="font-size: 12px; color: var(--text-muted); line-height: 1.5;">
+                In <code>bypassPermissions</code>, Claude Code suppresses all interactive confirmation dialogs for file writes and shell commands, trusting prompt interpretations blindly.
+              </p>
+            </div>
+            <div class="feature-card" style="border-top: 3px solid var(--alert-amber);">
+              <h3 style="font-size: 15px; font-weight: bold; margin-bottom: 8px; color: var(--alert-amber);"><i class="fa-solid fa-ban mr-2"></i> Missing Deny Rules</h3>
+              <p style="font-size: 12px; color: var(--text-muted); line-height: 1.5;">
+                Neither the user settings nor the project settings specified non-overridable <code>deny</code> patterns to guard against dangerous shell commands (<code>rm</code>, <code>git push --force</code>).
+              </p>
+            </div>
+            <div class="feature-card" style="border-top: 3px solid var(--accent-cyan);">
+              <h3 style="font-size: 15px; font-weight: bold; margin-bottom: 8px; color: var(--accent-cyan);"><i class="fa-solid fa-user-lock mr-2"></i> No Human-in-the-Loop Gate</h3>
+              <p style="font-size: 12px; color: var(--text-muted); line-height: 1.5;">
+                High-blast-radius actions (destructive shell commands, writing outside working dir) must be deterministically gated by human approval.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 3: The Claude Code Agent Loop -->
+        <section class="slide-container" id="slide-3">
+          <div class="slide-eyebrow">// ARCHITECTURE</div>
+          <h2 class="slide-title"><i class="fa-solid fa-arrows-spin" style="color: var(--accent-cyan);"></i> The Explore &bull; Plan &bull; Code Loop</h2>
+          <div class="grid-2">
+            <div class="feature-card">
+              <h3 style="font-size: 14px; font-weight: bold; color: var(--accent-cyan); margin-bottom: 12px;">Three-Phase Loop Mechanics</h3>
+              <div style="font-size: 12px; line-height: 1.7; color: var(--text-main);">
+                <div style="margin-bottom: 10px;">
+                  <strong style="color: var(--accent-cyan);">1. Explore Phase:</strong> Reads files, traces logic, gathers repo context. Read-only tools invoked without state modification.
+                </div>
+                <div style="margin-bottom: 10px;">
+                  <strong style="color: var(--alert-amber);">2. Plan Phase:</strong> Synthesizes findings, proposes specific file diffs and tool executions in a structured plan.
+                </div>
+                <div>
+                  <strong style="color: var(--success-green);">3. Code Phase:</strong> Executes file edits, runs tests, and applies terminal commands once released by the permission gate.
+                </div>
+              </div>
+            </div>
+            <div class="code-box">
+<span style="color: #6B7280;">// How Permission Modes Plug into the Loop:</span>
+
+[User Task Given]
+        │
+        ▼
+┌──────────────┐
+│ EXPLORE LOOP │ ──> Reads files (Auto in most modes)
+└──────┬───────┘
+        ▼
+┌──────────────┐
+│  PLAN PHASE  │ ──> Proposes changes
+└──────┬───────┘
+        ▼
+   <span style="color: #F59E0B;">[PERMISSION GATE]</span> ──> <span style="color: #8B5CF6;">"plan" mode STOPS here!</span>
+        │               <span style="color: #10B981;">"default" asks user confirmation</span>
+        ▼
+┌──────────────┐
+│  CODE PHASE  │ ──> Writes files, runs commands
+└──────────────┘
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 4: The 4 Permission Modes Compared -->
+        <section class="slide-container" id="slide-4">
+          <div class="slide-eyebrow">// PERMISSION TAXONOMY</div>
+          <h2 class="slide-title"><i class="fa-solid fa-table-columns" style="color: var(--accent-purple);"></i> The Four Permission Modes</h2>
+          <div class="feature-card" style="overflow-x: auto; font-size: 12px;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left;">
+              <thead>
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.1); color: var(--accent-cyan);">
+                  <th style="padding: 10px;">Mode</th>
+                  <th style="padding: 10px;">Auto-Approves</th>
+                  <th style="padding: 10px;">Interactive Prompt Required</th>
+                  <th style="padding: 10px;">Best Suited For</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                  <td style="padding: 10px; font-family: var(--font-mono); color: var(--success-green);">default</td>
+                  <td style="padding: 10px;">Read-only exploration</td>
+                  <td style="padding: 10px; color: var(--alert-amber);">All file edits, shell commands, MCP calls</td>
+                  <td style="padding: 10px;">Unfamiliar codebases, high-stakes tasks</td>
+                </tr>
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                  <td style="padding: 10px; font-family: var(--font-mono); color: var(--accent-blue);">acceptEdits</td>
+                  <td style="padding: 10px;">File reads &amp; edits inside working dir</td>
+                  <td style="padding: 10px; color: var(--alert-amber);">Shell commands &amp; writes outside repo</td>
+                  <td style="padding: 10px;">Rapid feature development &amp; refactoring</td>
+                </tr>
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                  <td style="padding: 10px; font-family: var(--font-mono); color: var(--accent-purple);">plan</td>
+                  <td style="padding: 10px;">Read-only exploration &amp; plan generation</td>
+                  <td style="padding: 10px; color: var(--alert-red);">BLOCKED: No file edits or commands allowed</td>
+                  <td style="padding: 10px;">Architectural review, read-only code audits</td>
+                </tr>
+                <tr>
+                  <td style="padding: 10px; font-family: var(--font-mono); color: var(--alert-red);">bypassPermissions</td>
+                  <td style="padding: 10px; color: var(--alert-red);">Everything (Edits, Shell, MCP)</td>
+                  <td style="padding: 10px;">NONE (Except non-overridable Deny rules)</td>
+                  <td style="padding: 10px;">Sandboxed CI/CD ephemeral containers ONLY</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- SLIDE 5: Configuration Hierarchy -->
+        <section class="slide-container" id="slide-5">
+          <div class="slide-eyebrow">// CONFIGURATION SCOPES</div>
+          <h2 class="slide-title"><i class="fa-solid fa-layer-group" style="color: var(--accent-cyan);"></i> Settings Hierarchy Precedence</h2>
+          <div class="grid-2">
+            <div class="feature-card" style="font-size: 13px; display: flex; flex-direction: column; gap: 12px;">
+              <div style="border-left: 3px solid var(--alert-red); padding-left: 10px;">
+                <strong style="color: var(--alert-red);">1. Enterprise Level (managed-settings.json)</strong>
+                <p style="color: var(--text-muted); font-size: 12px;">Admin deployed. CANNOT be overridden by developers or repos. Used for mandatory deny rules and OAuth.</p>
+              </div>
+              <div style="border-left: 3px solid var(--accent-cyan); padding-left: 10px;">
+                <strong style="color: var(--accent-cyan);">2. Project Level (.claude/settings.json)</strong>
+                <p style="color: var(--text-muted); font-size: 12px;">Committed to repo root. Shared across all team members who clone the repository.</p>
+              </div>
+              <div style="border-left: 3px solid var(--accent-purple); padding-left: 10px;">
+                <strong style="color: var(--accent-purple);">3. User Level (~/.claude/settings.json)</strong>
+                <p style="color: var(--text-muted); font-size: 12px;">Developer's personal global configuration across all local projects.</p>
+              </div>
+            </div>
+            <div class="code-box">
+<span style="color: #6B7280;">// Enterprise Enforced Settings: managed-settings.json</span>
+{
+  <span style="color: #06B6D4;">"defaultMode"</span>: <span style="color: #10B981;">"default"</span>,
+  <span style="color: #06B6D4;">"deny"</span>: [
+    <span style="color: #10B981;">"rm -rf *"</span>,
+    <span style="color: #10B981;">"git push --force*"</span>,
+    <span style="color: #10B981;">"*.env"</span>,
+    <span style="color: #10B981;">"/etc/*"</span>
+  ],
+  <span style="color: #06B6D4;">"allowModeOverride"</span>: <span style="color: #FBBF24;">false</span>  <span style="color: #6B7280;">// Prevents CLI flags like --dangerously-skip-permissions</span>
+}
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 6: Deny Rules & Boundaries -->
+        <section class="slide-container" id="slide-6">
+          <div class="slide-eyebrow">// DETERMINISTIC DEFENSE</div>
+          <h2 class="slide-title"><i class="fa-solid fa-shield-cat" style="color: var(--success-green);"></i> Deterministic Deny Rules</h2>
+          <div class="grid-2">
+            <div class="feature-card">
+              <h3 style="font-size: 14px; font-weight: bold; color: var(--success-green); margin-bottom: 8px;">Why Instructions in CLAUDE.md Fail</h3>
+              <p style="font-size: 12px; color: var(--text-muted); line-height: 1.6; margin-bottom: 12px;">
+                Instructions like <em>"Never run rm -rf"</em> in <code>CLAUDE.md</code> are <strong>probabilistic</strong>. As context windows grow, prompt instructions can be forgotten or deprioritized.
+              </p>
+              <h3 style="font-size: 14px; font-weight: bold; color: var(--alert-amber); margin-bottom: 8px;">Deny Rules are Deterministic</h3>
+              <p style="font-size: 12px; color: var(--text-muted); line-height: 1.6;">
+                The <code>deny</code> array is enforced at the harness layer by Claude Code before the tool call or terminal command is dispatched. Even in <code>bypassPermissions</code>, a denied rule halts execution immediately.
+              </p>
+            </div>
+            <div class="code-box">
+<span style="color: #6B7280;">// .claude/settings.json — Project Level Guardrails</span>
+{
+  <span style="color: #06B6D4;">"deny"</span>: [
+    <span style="color: #10B981;">"rm -rf"</span>,
+    <span style="color: #10B981;">"git reset --hard"</span>,
+    <span style="color: #10B981;">"sudo *"</span>,
+    <span style="color: #10B981;">".env*"</span>,
+    <span style="color: #10B981;">"**/*.pem"</span>
+  ]
+}
+
+<span style="color: #6B7280;">// What happens on violation:</span>
+$ claude "delete stale keys: rm -rf keys/"
+<span style="color: #EF4444;">[BLOCKED] Action denied by project security configuration.</span>
+<span style="color: #EF4444;">Matched deny rule: 'rm -rf'</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 7: Placing Human Review Gates -->
+        <section class="slide-container" id="slide-7">
+          <div class="slide-eyebrow">// HUMAN-IN-THE-LOOP (HITL)</div>
+          <h2 class="slide-title"><i class="fa-solid fa-user-check" style="color: var(--accent-cyan);"></i> Calibrated Trust & Gate Placement</h2>
+          <div class="grid-3">
+            <div class="feature-card" style="border-left: 3px solid var(--success-green);">
+              <h3 style="font-size: 14px; font-weight: bold; color: var(--success-green); margin-bottom: 6px;">Auto-Approve (Low Risk)</h3>
+              <p style="font-size: 12px; color: var(--text-muted); line-height: 1.5;">
+                • Grep / codebase exploration<br>
+                • Unit test execution in sandboxes<br>
+                • Scoped documentation edits<br>
+                • Formatting &amp; lint fixes
+              </p>
+            </div>
+            <div class="feature-card" style="border-left: 3px solid var(--alert-amber);">
+              <h3 style="font-size: 14px; font-weight: bold; color: var(--alert-amber); margin-bottom: 6px;">Prompt Gate (Medium Risk)</h3>
+              <p style="font-size: 12px; color: var(--text-muted); line-height: 1.5;">
+                • Modifying core business logic<br>
+                • Installing new npm/pip packages<br>
+                • Editing CI/CD workflows<br>
+                • Database schema migrations
+              </p>
+            </div>
+            <div class="feature-card" style="border-left: 3px solid var(--alert-red);">
+              <h3 style="font-size: 14px; font-weight: bold; color: var(--alert-red); margin-bottom: 6px;">Deterministic Block (High Risk)</h3>
+              <p style="font-size: 12px; color: var(--text-muted); line-height: 1.5;">
+                • Destructive filesystem operations<br>
+                • Direct production deployments<br>
+                • Reading or modifying private keys<br>
+                • Force-pushing version control
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 8: Interactive Simulator -->
+        <section class="slide-container" id="slide-8">
+          <div class="slide-eyebrow">// INTERACTIVE LAB</div>
+          <h2 class="slide-title"><i class="fa-solid fa-flask" style="color: var(--alert-amber);"></i> Permission Mode &amp; Gate Simulator</h2>
+          <div class="grid-2">
+            <div class="feature-card" style="display: flex; flex-direction: column; gap: 14px;">
+              <div>
+                <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 6px; font-family: var(--font-mono);">
+                  1. SELECT PERMISSION MODE:
+                </label>
+                <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                  <button class="sim-button active" onclick="setSimMode('default', this)">default</button>
+                  <button class="sim-button" onclick="setSimMode('acceptEdits', this)">acceptEdits</button>
+                  <button class="sim-button" onclick="setSimMode('plan', this)">plan</button>
+                  <button class="sim-button" onclick="setSimMode('bypassPermissions', this)">bypassPermissions</button>
+                </div>
+              </div>
+
+              <div>
+                <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 6px; font-family: var(--font-mono);">
+                  2. TEST ACTION PAYLOAD:
+                </label>
+                <div style="display: flex; flex-direction: column; gap: 6px;">
+                  <button class="nav-btn" style="text-align: left;" onclick="testAction('read')">
+                    <i class="fa-solid fa-file-lines mr-2"></i> Read src/auth.ts (Explore)
+                  </button>
+                  <button class="nav-btn" style="text-align: left;" onclick="testAction('edit')">
+                    <i class="fa-solid fa-pen-to-square mr-2"></i> Edit src/routes.ts (Write)
+                  </button>
+                  <button class="nav-btn" style="text-align: left;" onclick="testAction('rm')">
+                    <i class="fa-solid fa-skull mr-2"></i> Run shell: rm -rf /etc/configs
+                  </button>
+                  <button class="nav-btn" style="text-align: left;" onclick="testAction('env')">
+                    <i class="fa-solid fa-key mr-2"></i> Read .env (Protected Secret)
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="code-box" id="sim-terminal" style="display: flex; flex-direction: column; justify-content: space-between;">
+              <div>
+                <span style="color: #6B7280;">// Real-time Harness Evaluation Console</span><br>
+                <span style="color: #06B6D4;">[Harness]</span> Active Mode: <span id="sim-active-mode" style="color: #10B981;">default</span><br>
+                <span style="color: #06B6D4;">[Harness]</span> Deny Rules: <span style="color: #F59E0B;">["rm -rf*", "*.env*"]</span><br>
+                ────────────────────────────────────────────<br>
+                <div id="sim-output" style="margin-top: 10px; line-height: 1.6;">
+                  Select an action on the left to see the evaluation.
+                </div>
+              </div>
+              <div id="sim-status-banner" style="margin-top: 10px; padding: 8px 12px; border-radius: 6px; font-size: 11px; font-family: var(--font-mono); background: rgba(255,255,255,0.05); color: #9CA3AF;">
+                STATUS: IDLE
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 9: CCDV-F Exam Simulation -->
+        <section class="slide-container" id="slide-9">
+          <div class="slide-eyebrow">// CCDV-F EXAM SIMULATION</div>
+          <h2 class="slide-title"><i class="fa-solid fa-circle-question" style="color: var(--accent-cyan);"></i> Practice Question: Settings Precedence</h2>
+          <div class="feature-card" style="font-size: 13px;">
+            <p style="margin-bottom: 14px; line-height: 1.6; color: var(--text-main);">
+              <strong>Scenario:</strong> An enterprise administrator sets a rule denying edits to <code>*.env</code> in <code>managed-settings.json</code>. A developer working on a high-speed bug fix adds <code>"defaultMode": "bypassPermissions"</code> to their local <code>.claude/settings.json</code>. What happens when Claude Code attempts to modify <code>.env.production</code>?
+            </p>
+
+            <div class="quiz-option" onclick="checkAnswer(this, false)">
+              <span style="font-weight: bold; color: var(--alert-amber);">A.</span> Claude Code modifies <code>.env.production</code> because project-level settings override enterprise managed settings.
+            </div>
+            <div class="quiz-option" onclick="checkAnswer(this, false)">
+              <span style="font-weight: bold; color: var(--alert-amber);">B.</span> Claude Code pauses and prompts the developer for interactive confirmation before writing to the file.
+            </div>
+            <div class="quiz-option" onclick="checkAnswer(this, true)">
+              <span style="font-weight: bold; color: var(--alert-amber);">C.</span> The action is blocked deterministically because enterprise managed-settings.json cannot be overridden by user or project files.
+            </div>
+            <div class="quiz-option" onclick="checkAnswer(this, false)">
+              <span style="font-weight: bold; color: var(--alert-amber);">D.</span> Claude Code creates an isolated subagent to perform the write outside the main conversation context.
+            </div>
+
+            <div id="quiz-explanation" style="display: none; margin-top: 14px; padding: 12px 16px; background: rgba(16, 185, 129, 0.1); border: 1px solid var(--success-green); border-radius: 6px; font-size: 12px; color: #A7F3D0;">
+              <strong>Correct! Option C:</strong> Enterprise level configuration (<code>managed-settings.json</code>) has highest precedence and cannot be overridden by project-level (<code>.claude/settings.json</code>) or user-level (<code>~/.claude/settings.json</code>) configurations, even in <code>bypassPermissions</code> mode.
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 10: Summary & Cheat Sheet -->
+        <section class="slide-container" id="slide-10">
+          <div class="slide-eyebrow">// CERTIFICATION CHEAT SHEET</div>
+          <h2 class="slide-title"><i class="fa-solid fa-award" style="color: var(--alert-amber);"></i> Lesson 1 Master Rules for CCDV-F</h2>
+          <div class="grid-2" style="font-size: 13px;">
+            <div class="feature-card" style="border-left: 3px solid var(--alert-amber); display: flex; flex-direction: column; gap: 8px;">
+              <strong style="color: var(--alert-amber);">1. Plan Mode Stops at Plan</strong>
+              <p style="color: var(--text-muted); font-size: 12px;">
+                <code>plan</code> mode runs the Explore phase and constructs the plan, but strictly prevents writes and shell executions. Ideal for safe exploration.
+              </p>
+              <strong style="color: var(--alert-amber); margin-top: 6px;">2. Hierarchy Precedence</strong>
+              <p style="color: var(--text-muted); font-size: 12px;">
+                <code>managed-settings.json</code> (Enterprise) &gt; <code>.claude/settings.json</code> (Project) &gt; <code>~/.claude/settings.json</code> (User).
+              </p>
+            </div>
+            <div class="feature-card" style="border-left: 3px solid var(--accent-cyan); display: flex; flex-direction: column; gap: 8px;">
+              <strong style="color: var(--accent-cyan);">3. Deny Rules are Inviolable</strong>
+              <p style="color: var(--text-muted); font-size: 12px;">
+                Deny rules in settings files block actions deterministically before execution, regardless of mode.
+              </p>
+              <strong style="color: var(--accent-cyan); margin-top: 6px;">4. Human Gate Placement</strong>
+              <p style="color: var(--text-muted); font-size: 12px;">
+                Place human review gates whenever action cost/reversibility is asymmetric (destructive commands, secrets, production deploys).
+              </p>
+            </div>
+          </div>
+        </section>
+
+      </main>
+
+      <!-- Deck Footer -->
+      <footer class="deck-footer">
+        <div style="color: var(--text-muted);">
+          CCDV-F EXAM PREPARATION &bull; MODULE 3 &bull; LESSON 01
+        </div>
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <span>SLIDE <strong id="current-slide-num" style="color: #fff;">1</strong> / 10</span>
+          <div style="display: flex; gap: 6px;">
+            <button id="btn-prev" class="nav-btn" onclick="prevSlide()"><i class="fa-solid fa-chevron-left"></i></button>
+            <button id="btn-next" class="nav-btn" onclick="nextSlide()"><i class="fa-solid fa-chevron-right"></i></button>
+          </div>
+        </div>
+      </footer>
+
+    </div>
+  </div>
+
+  <script>
+    let currentSlide = 1;
+    const totalSlides = 10;
+    let simMode = 'default';
+
+    function updateDeckState() {
+      document.querySelectorAll('.slide-container').forEach(s => s.classList.remove('active'));
+      const active = document.getElementById(`slide-${currentSlide}`);
+      if (active) active.classList.add('active');
+      document.getElementById('current-slide-num').innerText = currentSlide;
+      document.getElementById('btn-prev').disabled = (currentSlide === 1);
+      document.getElementById('btn-next').disabled = (currentSlide === totalSlides);
+    }
+
+    function nextSlide() { if (currentSlide < totalSlides) { currentSlide++; updateDeckState(); } }
+    function prevSlide() { if (currentSlide > 1) { currentSlide--; updateDeckState(); } }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
+      else if (e.key === 'ArrowLeft') prevSlide();
+    });
+
+    function setSimMode(mode, btn) {
+      simMode = mode;
+      document.querySelectorAll('.sim-button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('sim-active-mode').innerText = mode;
+      document.getElementById('sim-active-mode').style.color = 
+        mode === 'default' ? '#10B981' : mode === 'acceptEdits' ? '#3B82F6' : mode === 'plan' ? '#8B5CF6' : '#EF4444';
+      testAction('read');
+    }
+
+    function testAction(type) {
+      const out = document.getElementById('sim-output');
+      const banner = document.getElementById('sim-status-banner');
+
+      if (type === 'rm') {
+        out.innerHTML = `
+          <span style="color: #EF4444;">[INTERCEPT] Command: rm -rf /etc/configs</span><br>
+          <span style="color: #F59E0B;">[EVALUATION] Matched deny rule: "rm -rf*"</span><br>
+          <span style="color: #EF4444; font-weight: bold;">RESULT: 🛑 BLOCKED DETERMINISTICALLY BY HARNESS!</span><br>
+          <span style="color: #6B7280;">Even in bypassPermissions, deny rules cannot be bypassed.</span>
+        `;
+        banner.style.background = 'rgba(239, 68, 68, 0.2)';
+        banner.style.color = '#EF4444';
+        banner.innerText = 'STATUS: 🛑 BLOCKED BY DENY RULE';
+      } else if (type === 'env') {
+        out.innerHTML = `
+          <span style="color: #EF4444;">[INTERCEPT] Access path: .env</span><br>
+          <span style="color: #F59E0B;">[EVALUATION] Matched enterprise deny rule: "*.env*"</span><br>
+          <span style="color: #EF4444; font-weight: bold;">RESULT: 🛑 BLOCKED BY ENTERPRISE SETTINGS!</span><br>
+          <span style="color: #6B7280;">Protected secrets are shielded at the harness level.</span>
+        `;
+        banner.style.background = 'rgba(239, 68, 68, 0.2)';
+        banner.style.color = '#EF4444';
+        banner.innerText = 'STATUS: 🛑 ENTERPRISE BLOCK';
+      } else if (type === 'read') {
+        out.innerHTML = `
+          <span style="color: #10B981;">[INTERCEPT] Tool: ReadFile(src/auth.ts)</span><br>
+          <span style="color: #10B981;">[EVALUATION] Read-only explore operation inside working directory.</span><br>
+          <span style="color: #10B981; font-weight: bold;">RESULT: ✅ AUTO-APPROVED IN ALL MODES</span>
+        `;
+        banner.style.background = 'rgba(16, 185, 129, 0.2)';
+        banner.style.color = '#10B981';
+        banner.innerText = 'STATUS: ✅ AUTO-APPROVED';
+      } else if (type === 'edit') {
+        if (simMode === 'plan') {
+          out.innerHTML = `
+            <span style="color: #8B5CF6;">[INTERCEPT] Tool: EditFile(src/routes.ts)</span><br>
+            <span style="color: #8B5CF6;">[EVALUATION] Mode is 'plan'. Write operations are forbidden.</span><br>
+            <span style="color: #8B5CF6; font-weight: bold;">RESULT: ⏸️ HELD IN PLAN MODE. Propose diff only.</span>
+          `;
+          banner.style.background = 'rgba(139, 92, 246, 0.2)';
+          banner.style.color = '#8B5CF6';
+          banner.innerText = 'STATUS: ⏸️ BLOCKED IN PLAN MODE';
+        } else if (simMode === 'default') {
+          out.innerHTML = `
+            <span style="color: #F59E0B;">[INTERCEPT] Tool: EditFile(src/routes.ts)</span><br>
+            <span style="color: #F59E0B;">[EVALUATION] Mode is 'default'. File edit requires confirmation.</span><br>
+            <span style="color: #F59E0B; font-weight: bold;">RESULT: ⚠️ HUMAN GATE TRIGGERED: [Approve (y) / Reject (n)]</span>
+          `;
+          banner.style.background = 'rgba(245, 158, 11, 0.2)';
+          banner.style.color = '#F59E0B';
+          banner.innerText = 'STATUS: ⚠️ AWAITING HUMAN CONFIRMATION';
+        } else {
+          out.innerHTML = `
+            <span style="color: #10B981;">[INTERCEPT] Tool: EditFile(src/routes.ts)</span><br>
+            <span style="color: #10B981;">[EVALUATION] Mode is '${simMode}'. Writes in repo are permitted.</span><br>
+            <span style="color: #10B981; font-weight: bold;">RESULT: ✅ AUTO-APPROVED FILE WRITE</span>
+          `;
+          banner.style.background = 'rgba(16, 185, 129, 0.2)';
+          banner.style.color = '#10B981';
+          banner.innerText = 'STATUS: ✅ AUTO-APPROVED WRITE';
+        }
+      }
+    }
+
+    function checkAnswer(el, isCorrect) {
+      document.querySelectorAll('#slide-9 .quiz-option').forEach(opt => {
+        opt.classList.remove('selected-correct', 'selected-wrong');
+      });
+      if (isCorrect) {
+        el.classList.add('selected-correct');
+        document.getElementById('quiz-explanation').style.display = 'block';
+      } else {
+        el.classList.add('selected-wrong');
+        document.getElementById('quiz-explanation').style.display = 'none';
+      }
+    }
+
+    updateDeckState();
+  </script>
+</body>
+</html>

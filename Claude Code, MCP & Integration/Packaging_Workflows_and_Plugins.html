@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>CCDV-F | Module 3: Packaging Workflows & Plugins</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+    
+    :root {
+      --bg-dark: #0B0F19;
+      --surface-navy: #111827;
+      --surface-card: #1F2937;
+      --border-cyan: rgba(6, 182, 212, 0.3);
+      --accent-blue: #3B82F6;
+      --accent-cyan: #06B6D4;
+      --alert-amber: #F59E0B;
+      --alert-red: #EF4444;
+      --success-green: #10B981;
+      --accent-purple: #8B5CF6;
+      --text-main: #F3F4F6;
+      --text-muted: #9CA3AF;
+      --font-mono: 'Fira Code', monospace;
+      --font-sans: 'Inter', sans-serif;
+    }
+    
+    body {
+      background-color: #030712;
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    
+    .viewport {
+      width: 100vw;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    
+    .deck-container {
+      width: 100%;
+      max-width: 1280px;
+      aspect-ratio: 16 / 9;
+      max-height: calc(100vh - 40px);
+      background-color: var(--bg-dark);
+      border: 1px solid rgba(139, 92, 246, 0.35);
+      box-shadow: 0 0 35px rgba(139, 92, 246, 0.15), inset 0 0 15px rgba(0, 0, 0, 0.8);
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .deck-header {
+      height: 48px;
+      background-color: rgba(17, 24, 39, 0.95);
+      border-bottom: 1px solid rgba(139, 92, 246, 0.25);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+    }
+    
+    .deck-header .brand {
+      color: var(--accent-purple);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+    }
+    
+    .deck-header .status {
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .badge-exam {
+      background: rgba(139, 92, 246, 0.15);
+      border: 1px solid rgba(139, 92, 246, 0.4);
+      color: var(--accent-purple);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+    }
+
+    .slides-wrapper {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      min-height: 0;
+    }
+    
+    .slide-container {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      padding: 32px 44px;
+      display: none;
+      flex-direction: column;
+      opacity: 0;
+      transition: opacity 0.2s ease-in-out;
+      overflow-y: auto;
+    }
+    
+    .slide-container.active {
+      display: flex;
+      opacity: 1;
+    }
+
+    .slide-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--accent-purple);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 6px;
+    }
+
+    .slide-title {
+      font-size: 24px;
+      font-weight: 800;
+      color: #FFFFFF;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .feature-card {
+      background: var(--surface-card);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 16px 20px;
+    }
+
+    .code-box {
+      background: #060913;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 14px 18px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      line-height: 1.6;
+      overflow-x: auto;
+    }
+
+    .nav-btn {
+      background: var(--surface-navy);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: var(--text-main);
+      padding: 6px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      transition: all 0.2s;
+    }
+
+    .nav-btn:hover:not(:disabled) {
+      background: var(--accent-purple);
+      color: #fff;
+    }
+
+    .nav-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    .quiz-option {
+      background: var(--surface-card);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 12px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-bottom: 10px;
+      font-size: 13px;
+      transition: all 0.2s;
+    }
+
+    .quiz-option:hover {
+      border-color: var(--accent-purple);
+    }
+
+    .quiz-option.selected-correct {
+      border-color: var(--success-green);
+      background: rgba(16, 185, 129, 0.15);
+      color: #A7F3D0;
+    }
+
+    .quiz-option.selected-wrong {
+      border-color: var(--alert-red);
+      background: rgba(239, 68, 68, 0.15);
+      color: #FCA5A5;
+    }
+
+    .deck-footer {
+      height: 52px;
+      background-color: rgba(17, 24, 39, 0.95);
+      border-top: 1px solid rgba(139, 92, 246, 0.25);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+    }
+
+    @media (max-width: 768px) {
+      .viewport { padding: 0 !important; }
+      .deck-container {
+        border-radius: 0 !important;
+        border: none !important;
+        max-height: none !important;
+        aspect-ratio: auto !important;
+        min-height: 100dvh !important;
+      }
+      .deck-header {
+        position: sticky; top: 0; z-index: 100;
+        height: 44px; padding: 0 12px;
+      }
+      .slide-container {
+        position: relative !important;
+        height: auto !important; min-height: calc(100dvh - 98px) !important;
+        padding: 16px !important;
+      }
+      .grid-2, .grid-3 { grid-template-columns: 1fr !important; }
+      .deck-footer {
+        position: sticky; bottom: 0; z-index: 100;
+        height: 54px; padding: 0 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="viewport">
+    <div class="deck-container">
+      
+      <!-- Deck Header -->
+      <header class="deck-header">
+        <div class="brand">
+          <i class="fa-solid fa-box-archive"></i>
+          <span>CCDV-F // MODULE 3: PACKAGING WORKFLOWS & PLUGINS</span>
+        </div>
+        <div class="status">
+          <a href="../index.html" style="color:var(--text-muted); text-decoration:none; font-size:11px; margin-right:8px;">
+            <i class="fa-solid fa-arrow-left"></i> HUB
+          </a>
+          <span class="badge-exam"><i class="fa-solid fa-certificate"></i> EXAM LESSON 3</span>
+        </div>
+      </header>
+
+      <!-- Slides Wrapper -->
+      <main class="slides-wrapper">
+
+        <!-- SLIDE 1: Cover / Mission Briefing -->
+        <section class="slide-container active" id="slide-1">
+          <div class="slide-eyebrow">// MISSION BRIEFING &bull; INCIDENT #403-PLUG</div>
+          <h1 class="slide-title">
+            <i class="fa-solid fa-triangle-exclamation" style="color: var(--accent-purple);"></i>
+            The Fragile Workflow Failure
+          </h1>
+          
+          <div class="grid-2">
+            <div class="feature-card" style="border-left: 3px solid var(--accent-purple); display: flex; flex-direction: column; justify-content: space-between;">
+              <div>
+                <span style="font-family: var(--font-mono); font-size: 11px; color: var(--accent-purple); display: block; margin-bottom: 8px;">
+                  APEXCORP WORKFLOW PORTABILITY INCIDENT
+                </span>
+                <p style="font-size: 14px; line-height: 1.6; color: var(--text-main); margin-bottom: 12px;">
+                  A lead architect created an automated database verification skill on their local Mac, which worked smoothly in local Claude Code.
+                </p>
+                <p style="font-size: 13px; line-height: 1.6; color: var(--text-muted);">
+                  When packaged into a team plugin and deployed across headless CI/CD containers and the Messages API, everything crashed: the skill hardcoded local paths, expected interactive shell inputs, and failed because subagents did not inherit the skill.
+                </p>
+              </div>
+              <div style="background: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 6px; padding: 10px 14px; font-size: 12px; color: var(--accent-purple); font-family: var(--font-mono);">
+                <i class="fa-solid fa-plug-circle-xmark mr-2"></i> ERROR: Local machine assumptions break portability across Claude Code, API, and SDK runtimes.
+              </div>
+            </div>
+
+            <div class="code-box">
+<span style="color: #6B7280;"># Faulty SKILL.md (ApexCorp Local Assumptions)</span>
+---
+<span style="color: #06B6D4;">name</span>: db-audit
+<span style="color: #06B6D4;">description</span>: Run DB compliance audit
+---
+<span style="color: #6B7280;"># Implementation:</span>
+1. Execute <span style="color: #EF4444;">/Users/alice/bin/db-check.sh</span>  <span style="color: #6B7280;"># ❌ Absolute host path!</span>
+2. Prompt user: "Confirm password:"         <span style="color: #6B7280;"># ❌ Interactive prompt in headless API!</span>
+3. Delegate verification to subagent         <span style="color: #6B7280;"># ❌ Subagent doesn't inherit skill!</span>
+
+<span style="color: #6B7280;">// Cloud Execution Trace:</span>
+$ claude-agent-sdk run db-audit
+<span style="color: #EF4444;">FileNotFoundError: /Users/alice/bin/db-check.sh</span>
+<span style="color: #EF4444;">SubagentError: skill 'db-audit' unknown in subagent context</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 2: Root Cause Analysis -->
+        <section class="slide-container" id="slide-2">
+          <div class="slide-eyebrow">// ROOT CAUSE ANALYSIS</div>
+          <h2 class="slide-title"><i class="fa-solid fa-magnifying-glass" style="color: var(--accent-purple);"></i> The Three Portability Traps</h2>
+          <div class="grid-3">
+            <div class="feature-card" style="border-top: 3px solid var(--alert-red);">
+              <h3 style="font-size: 14px; font-weight: bold; color: var(--alert-red); margin-bottom: 8px;">1. Environment Coupling</h3>
+              <p style="font-size: 12px; color: var(--text-muted); line-height: 1.5;">
+                Hardcoding absolute filesystem paths, OS-specific binaries, or machine-local dependencies destroys portability across developer platforms and CI runners.
+              </p>
+            </div>
+            <div class="feature-card" style="border-top: 3px solid var(--alert-amber);">
+              <h3 style="font-size: 14px; font-weight: bold; color: var(--alert-amber); margin-bottom: 8px;">2. Interactive Assumptions</h3>
+              <p style="font-size: 12px; color: var(--text-muted); line-height: 1.5;">
+                Relying on terminal prompts or interactive TTYs fails immediately when running via the Messages API or Agent SDK in automated pipelines.
+              </p>
+            </div>
+            <div class="feature-card" style="border-top: 3px solid var(--accent-cyan);">
+              <h3 style="font-size: 14px; font-weight: bold; color: var(--accent-cyan); margin-bottom: 8px;">3. Subagent Isolation</h3>
+              <p style="font-size: 12px; color: var(--text-muted); line-height: 1.5;">
+                Subagents launch with clean context. They do <strong>not</strong> automatically inherit preloaded skills or custom instructions from the main session.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 3: Anatomy of a Skill -->
+        <section class="slide-container" id="slide-3">
+          <div class="slide-eyebrow">// SPECIFICATION</div>
+          <h2 class="slide-title"><i class="fa-solid fa-file-invoice" style="color: var(--accent-cyan);"></i> Authoring Portable Skills: SKILL.md</h2>
+          <div class="grid-2">
+            <div class="feature-card">
+              <h3 style="font-size: 14px; font-weight: bold; color: var(--accent-cyan); margin-bottom: 8px;">The Author-Once Principle</h3>
+              <p style="font-size: 12px; color: var(--text-muted); line-height: 1.6; margin-bottom: 12px;">
+                A skill is a reusable, task-specific procedure. By conforming to standard YAML frontmatter and self-contained scripts, a single <code>SKILL.md</code> runs across all Claude runtimes.
+              </p>
+              <ul style="font-size: 12px; color: var(--text-main); line-height: 1.6; padding-left: 18px;">
+                <li><code>name</code>: Unique snake_case or kebab-case identifier.</li>
+                <li><code>description</code>: Clear semantic explanation of when Claude should invoke this skill.</li>
+                <li>Relative scripts placed inside <code>scripts/</code> or helper tools.</li>
+              </ul>
+            </div>
+            <div class="code-box">
+<span style="color: #6B7280;"># .claude/skills/db-audit/SKILL.md</span>
+---
+<span style="color: #06B6D4;">name</span>: db-audit
+<span style="color: #06B6D4;">description</span>: Run non-destructive database health &amp; schema verification
+---
+
+<span style="color: #6B7280;">## Execution Steps</span>
+1. Execute schema inspection using repository tools:
+   `node ./scripts/check-schema.js`
+2. Parse JSON output and report missing foreign keys
+3. If errors are found, write findings to `reports/db-audit.json`
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 4: The 3 Target Runtimes -->
+        <section class="slide-container" id="slide-4">
+          <div class="slide-eyebrow">// RUNTIME COMPARISON</div>
+          <h2 class="slide-title"><i class="fa-solid fa-server" style="color: var(--accent-purple);"></i> One Skill Across Three Runtimes</h2>
+          <div class="grid-3">
+            <div class="feature-card" style="border-top: 3px solid var(--accent-cyan);">
+              <h3 style="font-size: 14px; font-weight: bold; color: var(--accent-cyan); margin-bottom: 6px;">1. Claude Code CLI</h3>
+              <p style="font-size: 12px; color: var(--text-muted); line-height: 1.5; margin-bottom: 8px;">
+                Discovered automatically via local filesystem paths (<code>.claude/skills/</code>).
+              </p>
+              <span style="font-size: 11px; font-family: var(--font-mono); color: var(--text-muted);">
+                Runs in user terminal session under active permission mode.
+              </span>
+            </div>
+            <div class="feature-card" style="border-top: 3px solid var(--accent-blue);">
+              <h3 style="font-size: 14px; font-weight: bold; color: var(--accent-blue); margin-bottom: 6px;">2. Messages API</h3>
+              <p style="font-size: 12px; color: var(--text-muted); line-height: 1.5; margin-bottom: 8px;">
+                Loaded via beta headers and executed in sandboxed code execution containers.
+              </p>
+              <span style="font-size: 11px; font-family: var(--font-mono); color: var(--text-muted);">
+                Headless, non-interactive; must provide explicit tool definitions.
+              </span>
+            </div>
+            <div class="feature-card" style="border-top: 3px solid var(--accent-purple);">
+              <h3 style="font-size: 14px; font-weight: bold; color: var(--accent-purple); margin-bottom: 6px;">3. Agent SDK</h3>
+              <p style="font-size: 12px; color: var(--text-muted); line-height: 1.5; margin-bottom: 8px;">
+                Programmatically mounted using <code>settingSources</code> configuration in code.
+              </p>
+              <span style="font-size: 11px; font-family: var(--font-mono); color: var(--text-muted);">
+                Exposes same agent loop as CLI; ideal for server-side workflow pipelines.
+              </span>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 5: Commands vs Skills -->
+        <section class="slide-container" id="slide-5">
+          <div class="slide-eyebrow">// WORKFLOW ABSTRACTION</div>
+          <h2 class="slide-title"><i class="fa-solid fa-terminal" style="color: var(--alert-amber);"></i> Custom Commands vs Skills</h2>
+          <div class="grid-2">
+            <div class="feature-card">
+              <h3 style="font-size: 14px; font-weight: bold; color: var(--alert-amber); margin-bottom: 8px;">Custom Commands (.claude/commands/)</h3>
+              <p style="font-size: 12px; color: var(--text-muted); line-height: 1.6; margin-bottom: 10px;">
+                Simple markdown prompt templates invoked directly by the user with a slash (e.g. <code>/review-pr</code>).
+              </p>
+              <ul style="font-size: 12px; color: var(--text-main); line-height: 1.6; padding-left: 18px;">
+                <li>User-triggered shortcuts.</li>
+                <li>Fills the prompt prompt with instructions.</li>
+                <li>Does not include standalone bundled scripts.</li>
+              </ul>
+            </div>
+            <div class="feature-card">
+              <h3 style="font-size: 14px; font-weight: bold; color: var(--accent-purple); margin-bottom: 8px;">Skills (SKILL.md)</h3>
+              <p style="font-size: 12px; color: var(--text-muted); line-height: 1.6; margin-bottom: 10px;">
+                Self-contained, model-invoked procedures with schemas, executable scripts, and specialized instructions.
+              </p>
+              <ul style="font-size: 12px; color: var(--text-main); line-height: 1.6; padding-left: 18px;">
+                <li>Model autonomously invokes based on semantic description.</li>
+                <li>Can bundle supporting tools and code scripts.</li>
+                <li>Portable across CLI, API, and Agent SDK.</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 6: Packaging Plugins -->
+        <section class="slide-container" id="slide-6">
+          <div class="slide-eyebrow">// DISTRIBUTION</div>
+          <h2 class="slide-title"><i class="fa-solid fa-boxes-packing" style="color: var(--accent-cyan);"></i> Plugin Architecture &amp; Bundling</h2>
+          <div class="grid-2">
+            <div class="feature-card">
+              <h3 style="font-size: 14px; font-weight: bold; color: var(--accent-cyan); margin-bottom: 8px;">What is a Plugin?</h3>
+              <p style="font-size: 12px; color: var(--text-muted); line-height: 1.6; margin-bottom: 12px;">
+                A plugin is a versioned bundle distributed through a marketplace or repository that gives a recipient teammate the exact same tool suite in a single install command.
+              </p>
+              <div style="font-size: 12px; line-height: 1.6; color: var(--text-main);">
+                <strong>A complete plugin bundles:</strong><br>
+                • Skills (procedures &amp; scripts)<br>
+                • Custom Commands (slash templates)<br>
+                • Hooks (lifecycle enforcement scripts)<br>
+                • Subagent definitions &amp; MCP configs
+              </div>
+            </div>
+            <div class="code-box">
+<span style="color: #6B7280;"># Plugin Directory Layout</span>
+apex-compliance-plugin/
+├── <span style="color: #06B6D4;">plugin.json</span>          <span style="color: #6B7280;"># Manifest &amp; metadata</span>
+├── <span style="color: #10B981;">skills/</span>
+│   └── db-audit/
+│       └── <span style="color: #10B981;">SKILL.md</span>
+├── <span style="color: #F59E0B;">commands/</span>
+│   └── <span style="color: #F59E0B;">audit.md</span>
+├── <span style="color: #8B5CF6;">hooks/</span>
+│   └── <span style="color: #8B5CF6;">PreToolUse.sh</span>
+└── <span style="color: #3B82F6;">.mcp.json</span>            <span style="color: #6B7280;"># Bundled server configs</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 7: Subagents and Clean Slate -->
+        <section class="slide-container" id="slide-7">
+          <div class="slide-eyebrow">// SUBAGENT HYGIENE</div>
+          <h2 class="slide-title"><i class="fa-solid fa-broom" style="color: var(--alert-amber);"></i> The Clean Slate Rule for Subagents</h2>
+          <div class="grid-2">
+            <div class="feature-card">
+              <h3 style="font-size: 14px; font-weight: bold; color: var(--alert-amber); margin-bottom: 8px;">No Automatic Skill Inheritance</h3>
+              <p style="font-size: 12px; color: var(--text-muted); line-height: 1.6; margin-bottom: 10px;">
+                When Claude Code delegates a sub-task to a subagent, the subagent starts in a freshly initialized sandbox.
+              </p>
+              <p style="font-size: 12px; color: var(--text-main); line-height: 1.6;">
+                <strong>Key Takeaway:</strong> Subagents do <strong>not</strong> inherit skills loaded into the parent session. If a subagent must run a skill, that skill must be explicitly passed or configured in the subagent definition!
+              </p>
+            </div>
+            <div class="code-box">
+<span style="color: #6B7280;">// Subagent Invocation Reality:</span>
+
+Parent Session [Loaded: db-audit, git-sync]
+       │
+       ▼ Spawns delegate subagent
+┌─────────────────────────────────────────┐
+│ Clean Subagent Context                   │
+│                                         │
+│ • Parent conversation history: NONE     │
+│ • Preloaded skills: <span style="color: #EF4444;">NONE</span>                │
+│ • Scratchpad memory: FRESH              │
+└─────────────────────────────────────────┘
+       │ Returns summary string only
+       ▼
+Parent Session receives concise output
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 8: Interactive Simulator -->
+        <section class="slide-container" id="slide-8">
+          <div class="slide-eyebrow">// INTERACTIVE LAB</div>
+          <h2 class="slide-title"><i class="fa-solid fa-flask" style="color: var(--accent-purple);"></i> Skill Portability Checker</h2>
+          <div class="grid-2">
+            <div class="feature-card" style="display: flex; flex-direction: column; gap: 10px;">
+              <label style="font-size: 12px; color: var(--text-muted); font-family: var(--font-mono);">
+                CHOOSE A SKILL IMPLEMENTATION PATTERN:
+              </label>
+              <button class="nav-btn" style="text-align: left;" onclick="checkPortability('hardcoded')">
+                Pattern A: Hardcoded macOS path (/Users/dev/bin)
+              </button>
+              <button class="nav-btn" style="text-align: left;" onclick="checkPortability('interactive')">
+                Pattern B: Interactive shell confirmation prompt (read -p)
+              </button>
+              <button class="nav-btn" style="text-align: left;" onclick="checkPortability('subagent')">
+                Pattern C: Assuming subagent inherits parent skill
+              </button>
+              <button class="nav-btn" style="text-align: left;" onclick="checkPortability('clean')">
+                Pattern D: Relative scripts + non-interactive flags + explicit subagent config
+              </button>
+            </div>
+
+            <div class="code-box" style="display: flex; flex-direction: column; justify-content: space-between;">
+              <div>
+                <span style="color: #6B7280;">// Portability Test Across 3 Runtimes</span><br>
+                <div id="port-results" style="margin-top: 10px; line-height: 1.6;">
+                  Select a pattern on the left to test across Claude Code CLI, Messages API, and Agent SDK.
+                </div>
+              </div>
+              <div id="port-status" style="margin-top: 10px; padding: 6px 12px; border-radius: 6px; font-size: 11px; font-family: var(--font-mono); background: rgba(255,255,255,0.05); color: #9CA3AF;">
+                VERIFICATION: PENDING
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 9: CCDV-F Exam Simulation -->
+        <section class="slide-container" id="slide-9">
+          <div class="slide-eyebrow">// CCDV-F EXAM SIMULATION</div>
+          <h2 class="slide-title"><i class="fa-solid fa-circle-question" style="color: var(--accent-purple);"></i> Practice Question: Skill Discovery</h2>
+          <div class="feature-card" style="font-size: 13px;">
+            <p style="margin-bottom: 14px; line-height: 1.6; color: var(--text-main);">
+              <strong>Scenario:</strong> You authored a database auditing procedure in <code>SKILL.md</code>. You now wish to run this workflow across the Messages API and via the Agent SDK. Which of the following statements correctly describes skill handling in these runtimes?
+            </p>
+
+            <div class="quiz-option" onclick="checkAnswer(this, false)">
+              <span style="font-weight: bold; color: var(--accent-purple);">A.</span> All subagents automatically preload skills defined in the parent session.
+            </div>
+            <div class="quiz-option" onclick="checkAnswer(this, false)">
+              <span style="font-weight: bold; color: var(--accent-purple);">B.</span> Skills require local shell TTY access and cannot run in Messages API containers.
+            </div>
+            <div class="quiz-option" onclick="checkAnswer(this, true)">
+              <span style="font-weight: bold; color: var(--accent-purple);">C.</span> Claude Code uses filesystem discovery, while the Messages API uses beta headers with execution containers, and Agent SDK mounts skills via settingSources.
+            </div>
+            <div class="quiz-option" onclick="checkAnswer(this, false)">
+              <span style="font-weight: bold; color: var(--accent-purple);">D.</span> Skills can only be distributed by registering them on the public npm registry.
+            </div>
+
+            <div id="quiz-explanation" style="display: none; margin-top: 14px; padding: 12px 16px; background: rgba(16, 185, 129, 0.1); border: 1px solid var(--success-green); border-radius: 6px; font-size: 12px; color: #A7F3D0;">
+              <strong>Correct! Option C:</strong> A portable skill works across runtimes because each environment mounts it using its respective discovery mechanism (filesystem for CLI, container beta headers for Messages API, and settingSources for Agent SDK).
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 10: Summary & Cheat Sheet -->
+        <section class="slide-container" id="slide-10">
+          <div class="slide-eyebrow">// CERTIFICATION CHEAT SHEET</div>
+          <h2 class="slide-title"><i class="fa-solid fa-award" style="color: var(--accent-purple);"></i> Lesson 3 Master Rules for CCDV-F</h2>
+          <div class="grid-2" style="font-size: 13px;">
+            <div class="feature-card" style="border-left: 3px solid var(--accent-purple); display: flex; flex-direction: column; gap: 8px;">
+              <strong style="color: var(--accent-purple);">1. Subagents Never Inherit Skills</strong>
+              <p style="color: var(--text-muted); font-size: 12px;">Subagents start with a clean slate. They do not preload skills from the parent session.</p>
+              
+              <strong style="color: var(--accent-purple); margin-top: 6px;">2. Decouple Local Environment</strong>
+              <p style="color: var(--text-muted); font-size: 12px;">Never hardcode host paths or interactive shell prompts in <code>SKILL.md</code>.</p>
+            </div>
+            <div class="feature-card" style="border-left: 3px solid var(--accent-cyan); display: flex; flex-direction: column; gap: 8px;">
+              <strong style="color: var(--accent-cyan);">3. Commands vs Skills</strong>
+              <p style="color: var(--text-muted); font-size: 12px;">Commands are user prompt shortcuts (<code>.claude/commands/</code>); Skills are autonomous agent workflows.</p>
+              
+              <strong style="color: var(--accent-cyan); margin-top: 6px;">4. Plugins are Bundles</strong>
+              <p style="color: var(--text-muted); font-size: 12px;">Plugins bundle skills, commands, hooks, and MCP configs for consistent multi-team distribution.</p>
+            </div>
+          </div>
+        </section>
+
+      </main>
+
+      <!-- Deck Footer -->
+      <footer class="deck-footer">
+        <div style="color: var(--text-muted);">
+          CCDV-F EXAM PREPARATION &bull; MODULE 3 &bull; LESSON 03
+        </div>
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <span>SLIDE <strong id="current-slide-num" style="color: #fff;">1</strong> / 10</span>
+          <div style="display: flex; gap: 6px;">
+            <button id="btn-prev" class="nav-btn" onclick="prevSlide()"><i class="fa-solid fa-chevron-left"></i></button>
+            <button id="btn-next" class="nav-btn" onclick="nextSlide()"><i class="fa-solid fa-chevron-right"></i></button>
+          </div>
+        </div>
+      </footer>
+
+    </div>
+  </div>
+
+  <script>
+    let currentSlide = 1;
+    const totalSlides = 10;
+
+    function updateDeckState() {
+      document.querySelectorAll('.slide-container').forEach(s => s.classList.remove('active'));
+      const active = document.getElementById(`slide-${currentSlide}`);
+      if (active) active.classList.add('active');
+      document.getElementById('current-slide-num').innerText = currentSlide;
+      document.getElementById('btn-prev').disabled = (currentSlide === 1);
+      document.getElementById('btn-next').disabled = (currentSlide === totalSlides);
+    }
+
+    function nextSlide() { if (currentSlide < totalSlides) { currentSlide++; updateDeckState(); } }
+    function prevSlide() { if (currentSlide > 1) { currentSlide--; updateDeckState(); } }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
+      else if (e.key === 'ArrowLeft') prevSlide();
+    });
+
+    function checkPortability(pattern) {
+      const out = document.getElementById('port-results');
+      const status = document.getElementById('port-status');
+
+      if (pattern === 'hardcoded') {
+        out.innerHTML = `
+          <strong style="color: #EF4444;">Pattern A: Absolute Path (/Users/dev/bin)</strong><br>
+          • Claude Code CLI: <span style="color: #10B981;">Pass</span> (on author machine only!)<br>
+          • Messages API: <span style="color: #EF4444;">FAIL</span> (Linux container has no /Users/dev/)<br>
+          • Agent SDK: <span style="color: #EF4444;">FAIL</span> (Teammate machines crash)<br>
+          <span style="color: #F59E0B;">Remedy:</span> Use relative paths inside skill directory or repository.
+        `;
+        status.style.background = 'rgba(239, 68, 68, 0.2)';
+        status.style.color = '#EF4444';
+        status.innerText = 'STATUS: 🛑 PORTABILITY FAILURE';
+      } else if (pattern === 'interactive') {
+        out.innerHTML = `
+          <strong style="color: #F59E0B;">Pattern B: Interactive Shell Input (read -p)</strong><br>
+          • Claude Code CLI: <span style="color: #10B981;">Pass</span> (User types into terminal)<br>
+          • Messages API: <span style="color: #EF4444;">FAIL</span> (Hangs indefinitely on headless container)<br>
+          • Agent SDK: <span style="color: #EF4444;">FAIL</span> (No stdin attached in automated job)<br>
+          <span style="color: #F59E0B;">Remedy:</span> Pass parameters via tool arguments or env flags.
+        `;
+        status.style.background = 'rgba(245, 158, 11, 0.2)';
+        status.style.color = '#F59E0B';
+        status.innerText = 'STATUS: ⚠️ HEADLESS RUNTIME HANG';
+      } else if (pattern === 'subagent') {
+        out.innerHTML = `
+          <strong style="color: #EF4444;">Pattern C: Subagent Skill Inheritance</strong><br>
+          • Parent Session: Skill active and recognized.<br>
+          • Spawned Subagent: <span style="color: #EF4444;">FAIL: Skill not found!</span><br>
+          <span style="color: #F59E0B;">Remedy:</span> Subagents start clean; explicitly inject skill definitions in subagent config.
+        `;
+        status.style.background = 'rgba(239, 68, 68, 0.2)';
+        status.style.color = '#EF4444';
+        status.innerText = 'STATUS: 🛑 SUBAGENT CLEAN SLATE BREACH';
+      } else if (pattern === 'clean') {
+        out.innerHTML = `
+          <strong style="color: #10B981;">Pattern D: Fully Portable Workflow</strong><br>
+          • Claude Code CLI: <span style="color: #10B981;">Pass</span> (Filesystem auto-discovery)<br>
+          • Messages API: <span style="color: #10B981;">Pass</span> (Container code execution)<br>
+          • Agent SDK: <span style="color: #10B981;">Pass</span> (Clean settingSources mounting)<br>
+          <span style="color: #10B981;">Verdict:</span> Enterprise production-grade portability achieved!
+        `;
+        status.style.background = 'rgba(16, 185, 129, 0.2)';
+        status.style.color = '#10B981';
+        status.innerText = 'STATUS: ✅ UNIVERSAL PORTABILITY';
+      }
+    }
+
+    function checkAnswer(el, isCorrect) {
+      document.querySelectorAll('#slide-9 .quiz-option').forEach(opt => {
+        opt.classList.remove('selected-correct', 'selected-wrong');
+      });
+      if (isCorrect) {
+        el.classList.add('selected-correct');
+        document.getElementById('quiz-explanation').style.display = 'block';
+      } else {
+        el.classList.add('selected-wrong');
+        document.getElementById('quiz-explanation').style.display = 'none';
+      }
+    }
+
+    updateDeckState();
+  </script>
+</body>
+</html>

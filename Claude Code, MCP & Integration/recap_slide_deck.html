@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>CCDV-F | Module 3: Comprehensive Recap Deck</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+    
+    :root {
+      --bg-dark: #0B0F19;
+      --surface-navy: #111827;
+      --surface-card: #1F2937;
+      --border-cyan: rgba(6, 182, 212, 0.3);
+      --accent-blue: #3B82F6;
+      --accent-cyan: #06B6D4;
+      --alert-amber: #F59E0B;
+      --alert-red: #EF4444;
+      --success-green: #10B981;
+      --accent-purple: #8B5CF6;
+      --text-main: #F3F4F6;
+      --text-muted: #9CA3AF;
+      --font-mono: 'Fira Code', monospace;
+      --font-sans: 'Inter', sans-serif;
+    }
+    
+    body {
+      background-color: #030712;
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    
+    .viewport {
+      width: 100vw;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    
+    .deck-container {
+      width: 100%;
+      max-width: 1280px;
+      aspect-ratio: 16 / 9;
+      max-height: calc(100vh - 40px);
+      background-color: var(--bg-dark);
+      border: 1px solid var(--border-cyan);
+      box-shadow: 0 0 35px rgba(6, 182, 212, 0.2), inset 0 0 15px rgba(0, 0, 0, 0.8);
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .deck-header {
+      height: 48px;
+      background-color: rgba(17, 24, 39, 0.95);
+      border-bottom: 1px solid rgba(6, 182, 212, 0.25);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+    }
+    
+    .deck-header .brand {
+      color: var(--accent-cyan);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+    }
+    
+    .deck-header .status {
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .badge-exam {
+      background: rgba(6, 182, 212, 0.15);
+      border: 1px solid rgba(6, 182, 212, 0.4);
+      color: var(--accent-cyan);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+    }
+
+    .slides-wrapper {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      min-height: 0;
+    }
+    
+    .slide-container {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      padding: 32px 44px;
+      display: none;
+      flex-direction: column;
+      opacity: 0;
+      transition: opacity 0.2s ease-in-out;
+      overflow-y: auto;
+    }
+    
+    .slide-container.active {
+      display: flex;
+      opacity: 1;
+    }
+
+    .slide-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--accent-cyan);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 6px;
+    }
+
+    .slide-title {
+      font-size: 24px;
+      font-weight: 800;
+      color: #FFFFFF;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .feature-card {
+      background: var(--surface-card);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 16px 20px;
+    }
+
+    .nav-btn {
+      background: var(--surface-navy);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: var(--text-main);
+      padding: 6px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      transition: all 0.2s;
+    }
+
+    .nav-btn:hover:not(:disabled) {
+      background: var(--accent-cyan);
+      color: #000;
+    }
+
+    .nav-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    .deck-footer {
+      height: 52px;
+      background-color: rgba(17, 24, 39, 0.95);
+      border-top: 1px solid rgba(6, 182, 212, 0.25);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+    }
+
+    @media (max-width: 768px) {
+      .viewport { padding: 0 !important; }
+      .deck-container {
+        border-radius: 0 !important;
+        border: none !important;
+        max-height: none !important;
+        aspect-ratio: auto !important;
+        min-height: 100dvh !important;
+      }
+      .deck-header {
+        position: sticky; top: 0; z-index: 100;
+        height: 44px; padding: 0 12px;
+      }
+      .slide-container {
+        position: relative !important;
+        height: auto !important; min-height: calc(100dvh - 98px) !important;
+        padding: 16px !important;
+      }
+      .grid-2 { grid-template-columns: 1fr !important; }
+      .deck-footer {
+        position: sticky; bottom: 0; z-index: 100;
+        height: 54px; padding: 0 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="viewport">
+    <div class="deck-container">
+      
+      <!-- Deck Header -->
+      <header class="deck-header">
+        <div class="brand">
+          <i class="fa-solid fa-graduation-cap"></i>
+          <span>CCDV-F // MODULE 3: GRAND RECAP & CERTIFICATION CHEAT SHEET</span>
+        </div>
+        <div class="status">
+          <a href="../index.html" style="color:var(--text-muted); text-decoration:none; font-size:11px; margin-right:8px;">
+            <i class="fa-solid fa-arrow-left"></i> HUB
+          </a>
+          <span class="badge-exam"><i class="fa-solid fa-star"></i> MASTER SYNTHESIS</span>
+        </div>
+      </header>
+
+      <!-- Slides Wrapper -->
+      <main class="slides-wrapper">
+
+        <!-- SLIDE 1: Cover -->
+        <section class="slide-container active" id="slide-1" style="justify-content: center; align-items: center; text-align: center;">
+          <div style="max-width: 800px;">
+            <div class="slide-eyebrow">// CERTIFICATION MASTER SYNTHESIS</div>
+            <h1 style="font-size: 36px; font-weight: 800; color: #fff; margin: 12px 0 16px; font-family: var(--font-mono);">
+              Module 3 Recap: Claude Code, MCP &amp; Integration
+            </h1>
+            <p style="font-size: 14px; color: var(--text-muted); line-height: 1.6; margin-bottom: 24px;">
+              A comprehensive distillation of the five critical architectural domains tested in the CCDV-F exam: permission gating, durable project memory, portable workflow packaging, MCP protocol semantics, and enterprise compliance.
+            </p>
+            <div style="display: flex; justify-content: center; gap: 12px; font-family: var(--font-mono); font-size: 12px;">
+              <span style="background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.4); color: var(--alert-amber); padding: 4px 12px; border-radius: 4px;">
+                5 Core Lessons
+              </span>
+              <span style="background: rgba(6, 182, 212, 0.15); border: 1px solid rgba(6, 182, 212, 0.4); color: var(--accent-cyan); padding: 4px 12px; border-radius: 4px;">
+                Incident #403-MCP
+              </span>
+              <span style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4); color: var(--success-green); padding: 4px 12px; border-radius: 4px;">
+                100% Exam Aligned
+              </span>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 2: Synthesis Part 1 -->
+        <section class="slide-container" id="slide-2">
+          <div class="slide-eyebrow">// SYNTHESIS PART 1</div>
+          <h2 class="slide-title"><i class="fa-solid fa-shield-halved text-amber-400"></i> 1. Permission Modes &amp; Human Gates</h2>
+          <div class="grid-2" style="font-size: 13px;">
+            <div class="feature-card" style="border-left: 3px solid var(--alert-amber); display: flex; flex-direction: column; gap: 8px;">
+              <strong style="color: var(--alert-amber);">The Agent Loop &amp; Modes</strong>
+              <p style="color: var(--text-muted);">
+                Loop runs Explore &rarr; Plan &rarr; Code. <code>plan</code> mode blocks writes and stops at the plan. <code>default</code> prompts for every edit/command. <code>acceptEdits</code> auto-approves workspace edits but gates shell commands. <code>bypassPermissions</code> is restricted to sandboxed CI.
+              </p>
+              <strong style="color: var(--alert-amber); margin-top: 6px;">Hierarchy Precedence</strong>
+              <p style="color: var(--text-muted);">
+                <code>managed-settings.json</code> (Enterprise) &gt; <code>.claude/settings.json</code> (Project) &gt; <code>~/.claude/settings.json</code> (User).
+              </p>
+            </div>
+            <div class="feature-card" style="border-left: 3px solid var(--accent-cyan); display: flex; flex-direction: column; gap: 8px;">
+              <strong style="color: var(--accent-cyan);">Deterministic Deny Rules</strong>
+              <p style="color: var(--text-muted);">
+                The <code>deny</code> array in settings files operates deterministically at the harness level. Matched rules halt execution immediately, even in <code>bypassPermissions</code> mode.
+              </p>
+              <strong style="color: var(--accent-cyan); margin-top: 6px;">Human Gate Placement</strong>
+              <p style="color: var(--text-muted);">
+                Mandatory human gates for irreversible operations: writes outside repo, destructive shell commands, and production secrets.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 3: Synthesis Part 2 -->
+        <section class="slide-container" id="slide-3">
+          <div class="slide-eyebrow">// SYNTHESIS PART 2</div>
+          <h2 class="slide-title"><i class="fa-solid fa-file-code text-cyan-400"></i> 2. Durable Project Context</h2>
+          <div class="grid-2" style="font-size: 13px;">
+            <div class="feature-card" style="border-left: 3px solid var(--accent-cyan); display: flex; flex-direction: column; gap: 8px;">
+              <strong style="color: var(--accent-cyan);">CLAUDE.md vs Scoped Rules</strong>
+              <p style="color: var(--text-muted);">
+                Keep <code>CLAUDE.md</code> under 100 lines for global build/test instructions to prevent context dilution. Place domain-specific guidance in <code>.claude/rules/</code> scoped by frontmatter path globs.
+              </p>
+              <strong style="color: var(--accent-cyan); margin-top: 6px;">PreToolUse Exit Code 2</strong>
+              <p style="color: var(--text-muted);">
+                Hooks execute shell commands at lifecycle events. A <code>PreToolUse</code> hook exiting with <strong>code 2</strong> deterministically blocks tool calls, returning stderr to Claude as feedback.
+              </p>
+            </div>
+            <div class="feature-card" style="border-left: 3px solid var(--accent-purple); display: flex; flex-direction: column; gap: 8px;">
+              <strong style="color: var(--accent-purple);">Subagent Rule Inheritance</strong>
+              <p style="color: var(--text-muted);">
+                Built-in <code>Explore</code> and <code>Plan</code> subagents deliberately <strong>skip CLAUDE.md and git status</strong> to stay fast and cheap.
+              </p>
+              <strong style="color: var(--accent-purple); margin-top: 6px;">Preserving Project Constraints</strong>
+              <p style="color: var(--text-muted);">
+                For sub-tasks where project rules must be respected, use the <code>general-purpose</code> subagent or a custom subagent explicitly configured with required rules.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 4: Synthesis Part 3 -->
+        <section class="slide-container" id="slide-4">
+          <div class="slide-eyebrow">// SYNTHESIS PART 3</div>
+          <h2 class="slide-title"><i class="fa-solid fa-box-archive text-purple-400"></i> 3. Packaging Workflows &amp; Plugins</h2>
+          <div class="grid-2" style="font-size: 13px;">
+            <div class="feature-card" style="border-left: 3px solid var(--accent-purple); display: flex; flex-direction: column; gap: 8px;">
+              <strong style="color: var(--accent-purple);">Author-Once Portability</strong>
+              <p style="color: var(--text-muted);">
+                A portable <code>SKILL.md</code> runs across Claude Code CLI (filesystem discovery), Messages API (beta container), and Agent SDK (<code>settingSources</code>). Never hardcode host paths or interactive shell prompts.
+              </p>
+              <strong style="color: var(--accent-purple); margin-top: 6px;">Subagent Clean Slate Rule</strong>
+              <p style="color: var(--text-muted);">
+                Subagents launch with clean context and do <strong>not</strong> inherit preloaded skills from the parent session. Skills must be declared explicitly for subagents.
+              </p>
+            </div>
+            <div class="feature-card" style="border-left: 3px solid var(--accent-cyan); display: flex; flex-direction: column; gap: 8px;">
+              <strong style="color: var(--accent-cyan);">Commands vs Skills</strong>
+              <p style="color: var(--text-muted);">
+                Commands (<code>.claude/commands/</code>) are slash prompt shortcuts for human users. Skills (<code>SKILL.md</code>) are autonomous procedures with executable scripts and tool schemas.
+              </p>
+              <strong style="color: var(--accent-cyan); margin-top: 6px;">Plugin Bundles</strong>
+              <p style="color: var(--text-muted);">
+                Plugins package skills, commands, hooks, and MCP configs into versioned bundles distributed via marketplaces and deployed through enterprise managed settings.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 5: Synthesis Part 4 -->
+        <section class="slide-container" id="slide-5">
+          <div class="slide-eyebrow">// SYNTHESIS PART 4</div>
+          <h2 class="slide-title"><i class="fa-solid fa-network-wired text-blue-400"></i> 4. MCP Servers, Transports &amp; Caching</h2>
+          <div class="grid-2" style="font-size: 13px;">
+            <div class="feature-card" style="border-left: 3px solid var(--accent-blue); display: flex; flex-direction: column; gap: 8px;">
+              <strong style="color: var(--accent-blue);">The stdio Subprocess Rule</strong>
+              <p style="color: var(--text-muted);">
+                <code>stdio</code> spawns a local process on the user machine. Project-scoped configs in <code>.mcp.json</code> travel with git, so every teammate must have the local runtime installed. Never commit live keys!
+              </p>
+              <strong style="color: var(--accent-blue); margin-top: 6px;">HTTP / Remote Transport</strong>
+              <p style="color: var(--text-muted);">
+                Connects to centralized remote servers over HTTPS/SSE with zero developer runtime dependencies.
+              </p>
+            </div>
+            <div class="feature-card" style="border-left: 3px solid var(--success-green); display: flex; flex-direction: column; gap: 8px;">
+              <strong style="color: var(--success-green);">Prompt Caching in MCP</strong>
+              <p style="color: var(--text-muted);">
+                Default cache lifetime is <strong>5 minutes</strong> from last read. Opt-in 1-hour lifetime is available via <code>ttl: "1h"</code> on breakpoints.
+              </p>
+              <strong style="color: var(--success-green); margin-top: 6px;">1,024 Token Threshold</strong>
+              <p style="color: var(--text-muted);">
+                Caching only applies to requests exceeding 1,024 tokens. Short prompts are never cached even if breakpoints are specified.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 6: Synthesis Part 5 -->
+        <section class="slide-container" id="slide-6">
+          <div class="slide-eyebrow">// SYNTHESIS PART 5</div>
+          <h2 class="slide-title"><i class="fa-solid fa-shield-virus text-emerald-400"></i> 5. Enterprise Security &amp; Compliance</h2>
+          <div class="grid-2" style="font-size: 13px;">
+            <div class="feature-card" style="border-left: 3px solid var(--success-green); display: flex; flex-direction: column; gap: 8px;">
+              <strong style="color: var(--success-green);">Authentication Matrix</strong>
+              <p style="color: var(--text-muted);">
+                • <strong>Remote User Identity (SaaS):</strong> OAuth 2.0 per-user tokens.<br>
+                • <strong>Remote Service Identity (Internal):</strong> Environment variables only (never committed in git).
+              </p>
+              <strong style="color: var(--success-green); margin-top: 6px;">Deterministic Audit Trail</strong>
+              <p style="color: var(--text-muted);">
+                <code>PostToolUse</code> hook streams tool arguments and user identity directly to central SIEM on every tool execution. Model cannot suppress or falsify the log.
+              </p>
+            </div>
+            <div class="feature-card" style="border-left: 3px solid var(--accent-cyan); display: flex; flex-direction: column; gap: 8px;">
+              <strong style="color: var(--accent-cyan);">managed-settings.json Lock</strong>
+              <p style="color: var(--text-muted);">
+                Administrator deployed; cannot be overridden by user or repo configs. Used for mandatory deny rules and preconfigured company MCP servers.
+              </p>
+              <strong style="color: var(--accent-cyan); margin-top: 6px;">Regulated Customer Review</strong>
+              <p style="color: var(--text-muted);">
+                Passes SOC2 Type II, HIPAA, and ISO reviews by combining locked managed settings, OAuth identity attribution, and immutable PostToolUse hooks.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 7: Complete -->
+        <section class="slide-container" id="slide-7" style="justify-content: center; align-items: center; text-align: center;">
+          <div style="max-width: 800px;">
+            <div class="slide-eyebrow">// READY FOR CERTIFICATION</div>
+            <h1 style="font-size: 34px; font-weight: 800; color: #fff; margin: 12px 0 16px; font-family: var(--font-mono);">
+              Module 03 Complete!
+            </h1>
+            <p style="font-size: 14px; color: var(--text-muted); line-height: 1.6; margin-bottom: 24px;">
+              You have mastered Claude Code agent loop mechanics, permission boundaries, durable context architecture, portable workflow packaging, MCP transport engineering, and enterprise security governance.
+            </p>
+            <a href="../index.html" class="nav-btn" style="display: inline-flex; align-items: center; gap: 8px; text-decoration: none; padding: 10px 24px; font-size: 14px; background: var(--accent-cyan); color: #000; font-weight: bold;">
+              <i class="fa-solid fa-house"></i> Return to Certification Hub
+            </a>
+          </div>
+        </section>
+
+      </main>
+
+      <!-- Deck Footer -->
+      <footer class="deck-footer">
+        <div style="color: var(--text-muted);">
+          CCDV-F EXAM PREPARATION &bull; MODULE 3 GRAND RECAP
+        </div>
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <span>SLIDE <strong id="current-slide-num" style="color: #fff;">1</strong> / 7</span>
+          <div style="display: flex; gap: 6px;">
+            <button id="btn-prev" class="nav-btn" onclick="prevSlide()"><i class="fa-solid fa-chevron-left"></i></button>
+            <button id="btn-next" class="nav-btn" onclick="nextSlide()"><i class="fa-solid fa-chevron-right"></i></button>
+          </div>
+        </div>
+      </footer>
+
+    </div>
+  </div>
+
+  <script>
+    let currentSlide = 1;
+    const totalSlides = 7;
+
+    function updateDeckState() {
+      document.querySelectorAll('.slide-container').forEach(s => s.classList.remove('active'));
+      const active = document.getElementById(`slide-${currentSlide}`);
+      if (active) active.classList.add('active');
+      document.getElementById('current-slide-num').innerText = currentSlide;
+      document.getElementById('btn-prev').disabled = (currentSlide === 1);
+      document.getElementById('btn-next').disabled = (currentSlide === totalSlides);
+    }
+
+    function nextSlide() { if (currentSlide < totalSlides) { currentSlide++; updateDeckState(); } }
+    function prevSlide() { if (currentSlide > 1) { currentSlide--; updateDeckState(); } }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
+      else if (e.key === 'ArrowLeft') prevSlide();
+    });
+
+    updateDeckState();
+  </script>
+</body>
+</html>
